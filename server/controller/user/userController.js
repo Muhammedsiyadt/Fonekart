@@ -629,7 +629,7 @@ exports.saveToOrderdb = async (req, res) => {
             const address = await addressdb.aggregate([{
                 $unwind: "$address"
             }, { $match: { user_Id: new mongoose.Types.ObjectId(user_Id), 'address.defaultAddress': true } }])
-            // console.log('addresssss', address)
+            console.log('addresssss', address)
 
             if (address.length == 0) {
                 return res.status(405).send('Add Address') 
