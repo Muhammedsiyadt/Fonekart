@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Product Management</title>
+	<style>
+		/* Add your styling here */
+		body {
+			/* font-family: Arial, sans-serif; */
+			background-color: rgb(255, 255, 255);
+		}
+
+		table {
+			/* width: 1250px; */
+			border-collapse: collapse;
+			/* margin-top: 40px; */
+
+		}
+
+		th,
+		td {
+			border: 1px solid #ddd;
+			padding: 8px;
+			text-align: left;
+		}
+
+		th {
+			background-color: coral;
+		}
+
+		img {
+			max-width: 70px;
+			max-height: 70px;
+		}
+
+		button {
+			cursor: pointer;
+			margin: 5px;
+			background-color: #2bf532;
+			border-radius: 15px;
+		}
+
+		button:hover {
+			background-color: rgb(255, 238, 0);
+		}
+
+		/* #dee{
+			background-color: white;
+		} */
+	</style>
+	<link rel="stylesheet" href="/css/adminhome.css">
+</head>
+
+<body>
+
+	<!-- SIDEBAR -->
+	<section id="sidebar" style="border-radius: 20px; background-color: white;">
+		<!-- <a href="#"  class="brand" style="margin-left: 70px;"> -->
+		<!-- <i class='bx bxs-smile'></i> -->
+		<!-- <span  class="text">Fonekart</span> -->
+		<!-- </a> -->
+		<h1 style="margin-left: 45px; margin-top: 20px; font-size: 45px;">Fonekart</h1>
+		<ul class="side-menu top">
+			<li>
+				<a href="/adminhome">
+					<i class='bx bxs-dashboard'></i>
+					<span class="text">Dashboard</span>
+				</a>
+			</li>
+			<li class="active">
+				<a href="/product_management">
+					<i class='bx bxs-shopping-bag-alt'></i>
+					<span class="text">Product Management</span>
+				</a>
+			</li>
+			<li>
+				<a href="/User_management">
+					<i class='bx bxs-doughnut-chart'></i>
+					<span class="text">User Management</span>
+				</a>
+			</li>
+			<li>
+				<a href="/Order_management">
+					<i class='bx bxs-message-dots'></i>
+					<span class="text">Order Management</span>
+				</a>
+			</li>
+			<li>
+				<a href="/Categary_management">
+					<i class='bx bxs-group'></i>
+					<span class="text">Categary Management</span>
+				</a>
+			</li>
+			<li>
+				<a href="/Coupon_management">
+					<i class='bx bxs-group'></i>
+					<span class="text">Coupon Management</span>
+				</a>
+			</li>
+			<li>
+				<a href="/Offer_management">
+					<i class='bx bxs-group'></i>
+					<span class="text">Offer_Management</span>
+				</a>
+			</li>
+		</ul>
+		<ul class="side-menu">
+			<!-- <li>
+					<a href="#">
+						<i class='bx bxs-cog' ></i>
+						<span class="text">Settings</span>
+					</a>
+				</li> -->
+			<li>
+				<a href="/adminlogin" class="logout">
+					<i class='bx bxs-log-out-circle'></i>
+					<span class="text">Logout</span>
+				</a>
+			</li>
+		</ul>
+	</section>
+
+	<!-- SIDEBAR -->
+
+	<h1 style="margin-left: 320px; margin-top: 30px; color: rgb(35, 34, 43);">PRODUCT MANAGEMENT</h1>
+	<!-- <h1 style="margin-left: 300px; margin-top: 25px;  color: blue;"><b><em>PRODUCT MANAGEMENT</em></b></h1> -->
+
+	<div style="margin-top: 10px;">
+
+		<a href="/product/add-product" style="margin-left: 305px; "><button style="padding: 10px;  width: 200px;"><b>+
+					Add product</b></button></a>
+		<span><a href="/product/delete-product"><button style="padding: 10px; width: 200px; "><b>Unlisted product</b></button></a></span>
+		<table style="margin-left: 310px;  width: 75%; border-radius: 50px;  margin-top: 0;">
+			<thead>
+				<tr>
+					<th>Image</th>
+					<th>category</th>
+					<th>Name</th>
+					<th>Price</th>
+					<th>Quantity</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% if(typeof product !=='undefined' ){ %>
+					<% for (let i=0; i < product.length; i++){ %>
+						<tr>
+							<td><img  src="<%= product[i].images[0] %>" alt="product image"></td>
+							<td><%= product[i].Pcategory %></td>
+							<td><%= product[i].Pname %></td>
+							<td><%= product[i].price %></td>
+							<td><%= product[i].quantity %></td>
+							<td class="action-buttons">
+								<a href="/product/edit-product?id=<%= product[i]._id %>"><button
+										style="background-color: rgb(94, 224, 94); width: 60px; height: 30px; width: 70px; border-radius: 10px;"
+										class="edit">Edit</button></a>
+								<a href="/product/delete-products?id=<%= product[i]._id %>"><button
+										style="background-color: rgb(233, 85, 85); width: 60px; height: 30px; width: 70px; border-radius: 10px;"
+										class="delete">Delete</button></a>
+							</td>
+						</tr>
+					<% } %>
+				<% } %>
+			</tbody>
+
+		</table>
+	</div>
+
+	<script src="/js/adminhome.js"></script>
+
+</body>
+
+</html>

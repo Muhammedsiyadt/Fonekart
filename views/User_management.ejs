@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/User_management.css">
+    <title>User Management</title>
+    <style>
+        table {
+            width: 70%;
+            max-width: 80%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            margin-left: 330px;
+            margin-top: 20px;
+        }
+
+        th{
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        td{
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            background-color: #ffffff;
+        }
+        
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .block-btn,
+        .unblock-btn {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .block-btn {
+            background-color: #ff6666;
+            color: #fff;
+        }
+
+        .unblock-btn {
+            background-color: #66cc66;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- SIDEBAR -->
+    <section id="sidebar" style="background-color: white;">
+        <!-- <a href="#" class="brand" style="margin-left: 70px;"> -->
+            <!-- <i class='bx bxs-smile'></i> -->
+            <!-- <span class="text">Fonekart</span> -->
+        <!-- </a> -->
+        <h1 style="margin-left: 45px; margin-top: 20px; font-size: 45px;">Fonekart</h1>
+        <ul class="side-menu top">
+            <li>
+                <a href="/adminhome">
+                    <i class='bx bxs-dashboard'></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/product_management">
+                    <i class='bx bxs-shopping-bag-alt'></i>
+                    <span class="text">Product Management</span>
+                </a>
+            </li>
+            <li  class="active">
+                <a href="/User_management">
+                    <i class='bx bxs-doughnut-chart'></i>
+                    <span class="text">User Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="/Order_management">
+                    <i class='bx bxs-message-dots'></i>
+                    <span class="text">Order Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="/Categary_management">
+                    <i class='bx bxs-group'></i>
+                    <span class="text">Categary Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="/Coupon_management">
+                    <i class='bx bxs-group'></i>
+                    <span class="text">Coupon Management</span>
+                </a>
+            </li>
+            <li>
+				<a href="/Offer_management">
+					<i class='bx bxs-group'></i>
+					<span class="text">Offer_Management</span>
+				</a>
+			</li>
+        </ul>
+        <ul class="side-menu">
+            <!-- <li>
+				<a href="#">
+					<i class='bx bxs-cog' ></i>
+					<span class="text">Settings</span>
+				</a>
+			</li> -->
+            <li>
+                <a href="/adminlogin" class="logout">
+                    <i class='bx bxs-log-out-circle'></i>
+                    <span class="text">Logout</span>
+                </a>
+            </li>
+        </ul>
+
+
+    </section>
+    <h1 style="margin-left: 330px; margin-top: 50px; color: rgb(35, 34, 43);">User Management</h1>
+
+    
+
+    <table >
+        <!-- <thead> -->
+            <tr >
+                <th style="background-color: #ff6666;">Name</th>
+                <th style="background-color: #ff6666;">Email Address</th>
+                <th style="background-color: #ff6666;">Status</th>
+                <th style="background-color: #ff6666;">Action</th>
+            </tr>
+            <% 
+            if(user.length != 0){
+                for(let i=0; i<user.length; i++){
+                    %>
+                    <tr>
+                        <td> <%= user[i].name %> </td>
+                        <td> <%= user[i].email %> </td>
+                        <td> <%= user[i].status %> </td>
+                    <% if(user[i].block === false){ %>
+                        <td class="action-button">
+                            <form   action="/adminUserStatus/block?id=<%= user[i]._id %>" method="post" >
+                                <button style=" background-color: rgb(255, 0, 0);  padding: 5px; border-radius: 5px; width: 70px;" type="submit" class="btn btn-sm toggle-button">
+                                    <span class="status completed blockUnblock <% user[i].block ? 'red' : 'green' %>">
+                                        <b>Block</b>
+                                    </span>
+                                </button>
+                            </form>
+                        </td> 
+                    <% }else{ %>
+                        <td class="action-button">
+                            <form  action="/adminUserStatus/unblock?id=<%= user[i]._id %>" method="post">
+                                <button style="background-color: rgb(22, 208, 22);  padding: 5px; border-radius: 5px; width: 70px; " type="submit" class="btn btn-sm toggle-button">
+                                    <span class="status completed blockUnblock <% user[i].block ? 'red' : 'green' %>">
+                                        <b>Unblock</b>
+                                    </span>
+                                </button>
+                            </form>
+                        </td> 
+                    <% } %>
+                        
+                    </tr>
+                    <%
+                }
+            }else{
+                %>
+                <tr>
+                    <td colspan="5">Users Not Found</td>
+                </tr>
+                <%
+            }
+            %>
+        <!-- </thead> -->
+
+    </table>
+
+    
+
+</body>
+
+</html>

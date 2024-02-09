@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet"   />
+  <!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    /* Add your custom styles here */
+    /* Customize the sidebar styles */
+    .sidebar {
+      background-color: #ffffff;
+      /* padding-right: 20px; */
+    }
+
+    /* Customize the product card styles */
+    .product-card {
+      border: 1px solid #b3bac1;
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      /* border-color: black; */
+    }
+    .compact-filter-btn {
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+    height: 40px;
+    width: 150px;
+  }
+
+  /* Custom styles for filter options */
+  .filter-options {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    display: none;
+  }
+
+  .filter-options.show {
+    display: block;
+  }
+  </style>
+  <title>Product Listing</title>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top">
+    <a style="color: #0F0;" class="navbar-brand" href=""><b><em>Fonekart</em></b></a>
+    <button class="navbar-toggler bg-light" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class=" navbar-collapse" id="navbarNav" style="visibility: visible;">
+      <ul class="navbar-nav ml-auto" class="navv">
+
+        <li class="nav-item">
+          <a style="color: white;" class="nav-link" href=" /home"> <i class="ri-home-8-line"></i></a>
+        </li>
+        <li class="nav-item">
+          <a style="color: white;" class="nav-link" href="/cart"><i class="ri-shopping-cart-line"></i></a>
+        </li>
+        <li class="nav-item">
+          <a style="color: white;" class="nav-link" href="#"><i class="ri-heart-line"></i></a>
+        </li>
+        <li class="nav-item">
+          <a style="color: white;" class="nav-link" href="/home/profile"><i class="ri-account-circle-line"></i></a>
+        </li>
+        <!-- Add more navbar items as needed -->
+      </ul>
+
+    </div>
+  </nav>
+
+
+ <!-- Compact Filter Toggle Button -->
+<div class="container-fluid mt-5">
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <button class="compact-filter-btn mt-5" id="toggleFiltersBtn">
+        <i class="fas fa-sliders-h mr-2"></i> Filter
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Filter Options Section (Initially hidden) -->
+<div class="container filter-options mt-4">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="form-group">
+        <label for="category">Category:</label>
+        <select class="form-control" id="category">
+          <option value="All">All</option>
+          <option value="Mobile">Mobile</option>
+          <option value="Laptop">Laptop</option>
+          <option value="Earbuds">Earbuds</option>
+          <option value="Watches">Watches</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <label for="minPrice">Min Price:</label>
+        <input type="number" class="form-control" id="minPrice" placeholder="Min Price">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <label for="maxPrice">Max Price:</label>
+        <input type="number" class="form-control" id="maxPrice" placeholder="Max Price">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <label for="sort">Sort Price:</label>
+        <select class="form-control" id="sort">
+          <option value="highToLow">High to Low</option>
+          <option value="lowToHigh">Low to High</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-12 text-center">
+      <button class="btn btn-primary btn-block">Apply Filters</button>
+    </div>
+  </div>
+</div>
+
+
+  <div class="container-fluid" style="  padding-bottom: 100px;">
+    <div class="row">
+      <!-- Product Listing -->
+      <div class="col-md-12">
+        <div class="row" style="margin-top: 30px; ">
+
+          <!-- Product Cards -->
+          <% for(let i=0 ; i<productList.length ; i++ ){ %>
+            <div class="col-md-4 col-sm-6 col-xl-3">
+              <a style="text-decoration: none;" href="/home/singleProduct?id=<%= productList[i]._id %>">
+                <div class="product-card text-dark" style="justify-content: center; text-align: center;">
+                  <img style="width: 130px; height: 130px; margin-bottom: 20px;" src="<%= productList[i].images[0] %>"
+                    alt="Product 1" class="img-fluid">
+                  <h4>
+                    <%= productList[i].Pname %>
+                  </h4>
+                  <p>Price: $<%= productList[i].price %>
+                  </p>
+                  <p><b>Rating:</b><s style="color: yellow;">★★★★</s>★</p>
+                  <button class="btn btn-success">Buy Now</button>
+                </div>
+              </a>
+            </div>
+            <% } %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="bg-dark text-light pt-5  pb-3" id="footer">
+    <div class="container" style="padding: 30px;">
+      <div class="row">
+        <div class="col-md-4">
+          <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>About Us</em></b></a>
+          <p>E-commerce platform</p>
+        </div>
+        <div class="col-md-4">
+          <a class="navbar-brand" href="#"><b style="color: #0F0;"><em>Contact Us</em></b></a>
+          <p>Email: Fonekart@gmail.com<br>Phone: 7558001145</p>
+        </div>
+        <div class="col-md-4">
+          <a style="color: #0F0;" class="navbar-brand " href="#"><b><em>Follow Us</em></b></a>
+          <ul class="list-inline">
+            <li class="list-inline-item"><a class="text-light" href="https://wa.me/qr/QLG7ZQPTHYSDH1">Watsapp</a></li>
+            <br>
+            <li class="list-inline-item"><a class="text-light"
+                href="https://www.facebook.com/siyad.siyu.37?mibextid=ZbWKwL">Facebook</a>
+            </li>
+            <br>
+            <li class="list-inline-item"><a class="text-light"
+                href="https://instagram.com/siyad___._10?igshid=OGQ5ZDc2ODk2ZA==">Instagram</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script>
+  $(document).ready(function(){
+    // Toggle filter options on button click
+    $("#toggleFiltersBtn").click(function(){
+      $(".filter-options").toggle();
+    });
+  });
+  </script>
+
+
+  <!-- Bootstrap JS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <title>User Address</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet"   />
+    <style>
+        body {
+            background-color: #e5e6e7;
+        }
+
+        .address-card {
+            border: 1px solid #e2e2e2;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .edit-btn,
+        .delete-btn {
+            transition: background-color 0.3s ease;
+        }
+
+        .edit-btn:hover,
+        .delete-btn:hover {
+            background-color: #fff700;
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top p-3" >
+    <a style="color: #0F0;" class="navbar-brand" href=""><b><em>Fonekart</em></b></a>
+    <button class="navbar-toggler bg-light" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class=" navbar-collapse" id="navbarNav" style="visibility: visible;" >
+      <ul class="navbar-nav ml-auto" class="navv">
+        
+        <li class="nav-item">
+          <a style="color: white;" class="nav-link" href=" /home"> <i class="ri-home-8-line"></i></a>
+        </li>
+        <li class="nav-item">
+          <a style="color: white;" class="nav-link" href="/cart"><i class="ri-shopping-cart-line"></i></a>
+        </li>
+        <li class="nav-item">
+          <a style="color: white;" class="nav-link" href=""><i class="ri-heart-line"></i></a>
+        </li>
+        <li class="nav-item">
+          <a style="color: white;" class="nav-link" href="/home/profile"><i class="ri-account-circle-line"></i></a>
+        </li>
+        <!-- Add more navbar items as needed -->
+      </ul>
+
+    </div>
+  </nav>
+
+    <div class="container pt-4">
+        <a href="/home/profile"><button class="btn btn-sm btn-dark  edit-btn"
+                style="margin-top: 80px;">Back</button></a>
+        <a href="/address/add_address"><button class="btn btn-sm btn-primary  edit-btn" style="margin-top: 80px;">+Add
+                address</button></a>
+
+
+        <div class="container mt-5 p-0">
+            <div class="row">
+                <% if (address && address.length> 0 && typeof address[0].address !== 'undefined') { %>
+                    <% for (let i=0; i < address[0].address.length; i++) { %>
+                        <div class="col-md-4">
+                            <div class="address-card">
+                                <h5>
+                                    <%= address[0].address[i].name %>
+                                </h5>
+                                <Address>
+                                    <%= address[0].address[i].address %>
+                                </Address>
+                                <p>
+                                    <%= address[0].address[i].phone %>
+                                </p>
+                                <p>
+                                    <%= address[0].address[i].city %>
+                                </p>
+                                <p>
+                                    <%= address[0].address[i].district %>
+                                </p>
+                                <p>
+                                    <%= address[0].address[i].pin %>
+                                </p>
+                                <div class="d-flex justify-content-between">
+                                    <a href="/address/edit-address?id=<%= address[0].address[i]._id %>"><button
+                                            class="btn btn-sm btn-primary edit-btn">Edit</button></a>
+                                    <% if(address[0].address[i].defaultAddress===true){ %>
+                                        <button class="btn btn-sm btn-primary delete-btn">default</button>
+                                        <% }else{ %>
+                                            <a
+                                                href="/address/Unselectselect-address?id=<%= address[0].address[i]._id %>"><button
+                                                    class="btn btn-sm btn-success delete-btn">change</button></a>
+                                            <% } %>
+                                                <!-- <a href="/address/delete-address?id=<%#= address[0].address[i]._id %>"><button class="btn btn-sm btn-danger delete-btn">Delete</button></a> -->
+                                                <button type="button" class="btn btn-sm btn-danger delete-btn"
+                                                    data-toggle="modal" data-target="#confirmationModal">Delete</button>
+                                                <div class="modal" tabindex="-1" role="dialog" id="confirmationModal">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Fone kart says</h5>
+                                                                <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                Are you sure you want to delete this address?
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-dismiss="modal">Cancel</button>
+                                                                <a href="/address/delete-address?id=<%= address[0].address[i]._id %>"
+                                                                    class="btn btn-danger">Delete</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <% } %>
+                            <% } %>
+            </div>
+        </div>
+    </div>
+    <footer class="bg-dark text-light pt-5  pb-3" id="footer" style="margin-top: 100px; ">
+        <div class="container" style="padding: 30px">
+            <div class="row">
+                <div class="col-md-4">
+                    <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>About Us</em></b></a>
+                    <p>E-commerce platform</p>
+                </div>
+                <div class="col-md-4">
+                    <a class="navbar-brand" href="#"><b style="color: #0F0;"><em>Contact Us</em></b></a>
+                    <p>Email: Fonekart@gmail.com<br>Phone: 7558001145</p>
+                </div>
+                <div class="col-md-4">
+                    <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>Follow Us</em></b></a>
+                    <ul class="list-inline">
+                        <li class="list-inline-item"><a class="text-light"
+                                href="https://wa.me/qr/QLG7ZQPTHYSDH1">Watsapp</a></li>
+                        <br>
+                        <li class="list-inline-item"><a class="text-light"
+                                href="https://www.facebook.com/siyad.siyu.37?mibextid=ZbWKwL">Facebook</a>
+                        </li>
+                        <br>
+                        <li class="list-inline-item"><a class="text-light"
+                                href="https://instagram.com/siyad___._10?igshid=OGQ5ZDc2ODk2ZA==">Instagram</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+
+    <script>
+        function confirmDelete(event) {
+            var confirmation = confirm("Are you sure you want to delete this address?");
+
+            if (!confirmation) {
+                // If user cancels, prevent the default action (href navigation)
+                event.preventDefault();
+            }
+        }
+    </script>
+
+
+    <!-- Bootstrap JS and Popper.js (required for Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

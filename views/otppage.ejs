@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fonekart - OTP Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+            background-image: url(/images/First\ full\ pic.jpg);
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #timer {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        #resendButton {
+            width: 100%;
+            padding: 10px;
+            background-color: #4285f4;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: none; /* Initially hidden */
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <form action="/api/otpverify" method="post">
+            <input type="text" name="otp" id="otpInput" placeholder="Enter OTP">
+            <br>
+            <button type="submit">Verify</button>
+        </form>
+        <!-- Timer display -->
+        <div id="timer" style="color: red;">Time remaining: <span id="countdown" style="color: yellow;">60</span> seconds</div>
+        <!-- Resend OTP button -->
+        <button id="resendButton" onclick="resendOtp()">Resend OTP</button>
+    </main>
+
+    <script>
+        // JavaScript for countdown timer
+        var countdown = 60; // Initial countdown value in seconds
+
+        function updateCountdown() {
+            var countdownElement = document.getElementById("countdown");
+            countdownElement.textContent = countdown;
+
+            if (countdown === 0) {
+                document.getElementById("resendButton").style.display = "block"; // Show the Resend OTP button
+            } else {
+                countdown--;
+                setTimeout(updateCountdown, 1000); // Update every 1 second
+            }
+        }
+
+        // Function to handle Resend OTP button click
+        function resendOtp() {
+            // Add logic to resend OTP
+            // For now, let's reset the countdown and hide the button
+            countdown = 60;
+            document.getElementById("resendButton").style.display = "none";
+            updateCountdown(); // Start the countdown again
+        }
+
+        // Start the countdown when the page loads
+        window.onload = function () {
+            updateCountdown();
+        };
+    </script>
+</body>
+
+</html>

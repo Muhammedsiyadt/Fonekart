@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="css/adminhome.css">
+
+   
+
+    <title>Offer management</title>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <section id="sidebar" style="background-color: white;">
+        <!-- <a href="#" class="brand" style="margin-left: 70px;"> -->
+        <!-- <i class='bx bxs-smile'></i> -->
+        <!-- <span class="text">Fonekart</span> -->
+        <!-- </a> -->
+        <h1 style="margin-left: 45px; margin-top: 20px; font-size: 45px;">Fonekart</h1>
+        <ul class="side-menu top">
+            <li>
+                <a href="/adminhome">
+                    <i class='bx bxs-dashboard'></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/product_management">
+                    <i class='bx bxs-shopping-bag-alt'></i>
+                    <span class="text">Product Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="/User_management">
+                    <i class='bx bxs-doughnut-chart'></i>
+                    <span class="text">User Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="/Order_management">
+                    <i class='bx bxs-message-dots'></i>
+                    <span class="text">Order Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="/Categary_management">
+                    <i class='bx bxs-group'></i>
+                    <span class="text">Categary Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="/Coupon_management">
+                    <i class='bx bxs-group'></i>
+                    <span class="text">Coupon Management</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="/Offer_management">
+                    <i class='bx bxs-group'></i>
+                    <span class="text">Offer Management</span>
+                </a>
+            </li>
+        </ul>
+        <ul class="side-menu">
+            <!-- <li>
+                    <a href="#">
+                        <i class='bx bxs-cog' ></i>
+                        <span class="text">Settings</span>
+                    </a>
+                </li> -->
+            <li>
+                <a href="/adminlogin" class="logout">
+                    <i class='bx bxs-log-out-circle'></i>
+                    <span class="text">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+
+    <h1 style="margin-left: 310px;margin-top: 20px; margin-bottom: 20px; color: rgb(35, 34, 43);">OFFER MANAGEMENT</h1>
+
+    <div style="margin-left: 300px;">
+        <button class="btn1"   style="margin-right: 10px; height: 35px; width: 150px; background-color: yellow; border: black 1px solid; border-radius: 5px;">Add Category Offer</button>
+        <button class="btn2"   style="margin-right: 10px; height: 35px; width: 150px; background-color: yellow; border: black 1px solid; border-radius: 5px;">Add Product Offer</button>
+    </div>
+
+    <table style="width: 77%; margin-left: 300px; margin-top: 20px; border-collapse: collapse;">
+        <thead style="background-color: coral;">
+            <tr style="border-bottom: 1px solid black;">
+                <th style="padding: 10px; text-align: left;">Offer</th>
+                <th style="padding: 10px; text-align: left;">Discount</th>
+                <th style="padding: 10px; text-align: left;">Expiry Date</th>
+                <th style="padding: 10px; text-align: left;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Populate this section dynamically with data from your backend -->
+            <tr style="border-bottom: 1px solid black;">
+                <td style="padding: 10px;">Offer Name</td>
+                <td style="padding: 10px;">10%</td>
+                <td style="padding: 10px;">2024-12-31</td>
+                <td style="padding: 10px;"><button style="height: 30px; width: 50px;">Delete</button></td>
+            </tr>
+            <!-- Repeat this structure for each offer -->
+        </tbody>
+    </table>
+
+    <script src="js/adminhome.js"></script>
+</body>
+
+</html>

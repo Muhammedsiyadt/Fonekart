@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #ced4da;
+            /* background-image: url(/images/First\ full\ pic.jpg); */
+            
+        }
+
+        .address-form {
+            border: 1px solid #e2e2e2;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+
+        .submit-btn {
+            width: 100%;
+        }
+
+        p {
+            color: red;
+        }
+    </style>
+    <title>Add Address</title>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top" >
+        <a class="navbar-brand" href="/login"><b style="color: greenyellow;">Fonekart</b></a>
+    </nav>
+    <div class="container  pt-4" >
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="address-form">
+                    <h2 class="mb-4">Add Address</h2>
+                    <form action="/api/addaddress" method="post" onsubmit="addAddress(); return false;">
+                        <div class="form-group">
+                            <label for="userName">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+                            <p id="nameErr"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <textarea placeholder="Address" class="form-control" id="address" name="address" rows="3"></textarea>
+                            <p id="addressErr"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneNumber">Phone Number</label>
+                            <input type="number" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="+91 XXXX XXXX XX">
+                            <p id="phoneErr"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" class="form-control" id="city" name="city" placeholder="City">
+                            <p id="cityErr"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="district">District</label>
+                            <input type="text" class="form-control" id="dis" name="district" placeholder="District">
+                            <p id="disErr"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="pinCode">Pin Code</label>
+                            <input type="number" class="form-control" id="pinCode" name="pinCode" placeholder="XXX XXX">
+                            <p id="pinErr"></p>
+                        </div>
+                        <button type="submit" class="btn btn-primary submit-btn">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-light pt-5  pb-3" id="footer" style=" margin-top: 210px;">
+        <div class="container" style="padding: 30px;">
+            <div class="row">
+                <div class="col-md-4">
+                    <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>About Us</em></b></a>
+                    <p class="text-light">E-commerce platform</p>
+                </div>
+                <div class="col-md-4">
+                    <a class="navbar-brand" href="#"><b style="color: #0F0;"><em>Contact Us</em></b></a>
+                    <p class="text-light">Email: Fonekart@gmail.com<br>Phone: 7558001145</p>
+                </div>
+                <div class="col-md-4">
+                    <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>Follow Us</em></b></a>
+                    <ul class="list-inline">
+                        <li class="list-inline-item"><a style="text-decoration: none;" class="text-light"
+                                href="https://wa.me/qr/QLG7ZQPTHYSDH1">Watsapp</a></li>
+                        <br>
+                        <li class="list-inline-item"><a style="text-decoration: none;" class="text-light"
+                                href="https://www.facebook.com/siyad.siyu.37?mibextid=ZbWKwL">Facebook</a>
+                        </li>
+                        <br>
+                        <li class="list-inline-item"><a style="text-decoration: none;" class="text-light"
+                                href="https://instagram.com/siyad___._10?igshid=OGQ5ZDc2ODk2ZA==">Instagram</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+
+function addAddress() {
+            const name = document.getElementById('name').value;
+            const pin = document.getElementById('pinCode').value;
+            const address = document.getElementById('address').value;
+            const phone = document.getElementById('phoneNumber').value;
+            const dis = document.getElementById('dis').value;
+            const city = document.getElementById('city').value;
+
+            const nameErr = document.getElementById('nameErr');
+            const pinErr = document.getElementById('pinErr');
+            const addressErr = document.getElementById('addressErr');
+            const phoneErr = document.getElementById('phoneErr');
+            const disErr = document.getElementById('disErr');
+            const cityErr = document.getElementById('cityErr');
+
+            const nameErrmsg = [];
+            const pinErrmsg = [];
+            const addressErrmsg = [];
+            const phoneErrmsg = [];
+            const disErrmsg = [];
+            const cityErrmsg = [];
+
+            if (name.trim() === "") {
+                nameErrmsg.push("This field is required");
+            }
+            nameErr.innerHTML = nameErrmsg.join(", ");
+
+            if (pin.trim() === "") {
+                pinErrmsg.push("This field is required");
+            }
+            pinErr.innerHTML = pinErrmsg.join(", ");
+
+            if (address.trim() === "") {
+                addressErrmsg.push("This field is required");
+            }
+            addressErr.innerHTML = addressErrmsg.join(", ");
+
+            if (phone.trim() === "") {
+                phoneErrmsg.push("This field is required");
+            }
+            phoneErr.innerHTML = phoneErrmsg.join(", ");
+
+            if (dis.trim() === "") {
+                disErrmsg.push("This field is required");
+            }
+            disErr.innerHTML = disErrmsg.join(", ");
+
+            if (city.trim() === "") {
+                cityErrmsg.push("This field is required");
+            }
+            cityErr.innerHTML = cityErrmsg.join(", ");
+
+            if (nameErrmsg.length === 0 && pinErrmsg.length === 0 && addressErrmsg.length === 0 && phoneErrmsg.length === 0 && disErrmsg.length === 0 && cityErrmsg.length === 0) {
+                // Additional processing or actions before form submission
+                alert('Form submitted successfully!'); // Example: Display an alert
+
+                // Use document.forms[0].submit() or document.getElementById('yourFormId').submit()
+                document.forms[0].submit();
+            } else {
+                // Prevent form submission
+                return false;
+            }
+        }
+    </script> 
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

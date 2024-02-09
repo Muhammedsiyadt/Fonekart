@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f65f5f;
+            margin: 0;
+            padding: 0;
+            border-color: black;
+        }
+
+        .container {
+            width: 50%;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <a href="/product_management"><button>Back</button></a>
+        <h2 style="color: rgb(0, 157, 255); padding: 12px;"><em>Edit Product</em></h2>
+        <form action="/api/submitEdit_product?id=<%= editProduct._id %>" method="post" enctype="multipart/form-data"
+            onsubmit="addproduct(); return false;">
+            <label for="productName">Product Name:</label>
+            <input value="<%= editProduct.Pname %>" type="text" id="productName" name="productName">
+            <p style="color: #f65f5f;" id="pn"></p>
+
+            <label for="categoryName">Category Name</label>
+            <select class="form-control" name="categoryName" id="categoryName" value="<%= categorydata.category %>">
+                <% for(let i=0;i<categorydata.length;i++) {%>
+
+                    <option>
+                        <%= categorydata[i].category %>
+                    </option>
+
+                    <% } %>
+
+            </select>
+
+
+            <!-- <label for="categoryName">Category Name:</label>
+            <input value="<%#= editProduct.Pcategory %>" type="text" id="categoryName" name="categoryName" required> -->
+
+            <!-- <label for="productDescription">Product Description:</label>
+        <textarea id="productDescription" name="productDescription" rows="4" required></textarea> -->
+
+            <label for="productModel">Product Model:</label>
+            <input value="<%= editProduct.Pmodel %>" type="text" id="productModel" name="productModel">
+            <p style="color: #f65f5f;" id="pm"></p>
+
+            <label for="price">Price:</label>
+            <input value="<%= editProduct.price %>" type="number" id="price" name="price" step="0.01">
+            <p style="color: #f65f5f;" id="pr"></p>
+
+            <label for="color">Color:</label>
+            <input value="<%= editProduct.color %>" type="text" id="color" name="color">
+            <p style="color: #f65f5f;" id="clr"></p>
+
+            <label for="unit">Quantity:</label>
+            <input value="<%= editProduct.quantity %>" type="text" id="unit" name="Quantity">
+            <p style="color: #f65f5f;" id="qnt"></p>
+
+            <label for="image">Image:</label>
+            <input value="<%= editProduct.images %>" type="file" id="image" name="file" multiple>
+            <p style="color: #f65f5f;" id="img"></p>
+
+            <p><img src="<%= editProduct.images[0] %>" alt=""></p>
+            
+
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        function addproduct() {
+
+            const pmodel = document.getElementById('productModel').value
+            const pprice = document.getElementById('price').value
+            const pcolor = document.getElementById('color').value
+            const punit = document.getElementById('unit').value
+            const pimage = document.getElementById('image').value
+            const pname = document.getElementById('productName').value
+
+            const pmErr = document.getElementById('pm')
+            const prErr = document.getElementById('pr')
+            const clrErr = document.getElementById('clr')
+            const uniErr = document.getElementById('qnt')
+            const imgErr = document.getElementById('img')
+            const pnErr = document.getElementById('pn')
+
+
+            const pmErrmsg = []
+            const prErrmsg = []
+            const clrErrmsg = []
+            const uniErrmsg = []
+            const imgErrmsg = []
+            const pnErrmsg = []
+
+            if (pname.trim() === "") {
+                pnErrmsg.push("This feild is required")
+            }
+
+            if (pmodel.trim() === "") {
+                pmErrmsg.push("This feild is required")
+            }
+
+            if (pprice.trim() === "") {
+                prErrmsg.push("This feild is required")
+            }
+
+            if (pprice < 0) {
+                prErrmsg.push("Negative value not allowed")
+            }
+
+            if (punit.trim() === "") {
+                uniErrmsg.push("This feild is required")
+            }
+            if (punit < 0) {
+                uniErrmsg.push("Negative value not allowed")
+            }
+
+            if (pimage.trim() === "") {
+                imgErrmsg.push("This feild is required")
+            }
+
+            if (pcolor.trim() === "") {
+                clrErrmsg.push("This feild is required")
+            }
+
+            pmErr.innerHTML = pmErrmsg.join(". ")
+            prErr.innerHTML = prErrmsg.join(". ")
+            clrErr.innerHTML = clrErrmsg.join(". ")
+            uniErr.innerHTML = uniErrmsg.join(". ")
+            imgErr.innerHTML = imgErrmsg.join(". ")
+            pnErr.innerHTML = pnErrmsg.join(". ")
+
+
+            if (pmErrmsg.length === 0 && prErrmsg.length === 0 && clrErrmsg.length === 0 && uniErrmsg.length === 0 && imgErrmsg.length === 0 && pnErrmsg.length === 0) {
+                form.submit()
+            }
+
+        }
+    </script>
+
+</body>
+
+</html>

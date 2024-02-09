@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Section</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f65f5f;
+            margin-top: 50px;
+            width: 100%;
+        }
+
+        #category-form {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            /* margin-top: 100px; */
+
+        }
+
+        .category-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .category-row img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+
+        .delete-button {
+            background-color: #ff6961;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .submit-button {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="category-form">
+        <form action="/Categary_management"><button>Back</button></form>
+        <h2>Add Category</h2>
+
+
+        <form action="/api/addcategory" method="post" enctype="multipart/form-data" onsubmit="addCategory(); return false;">
+            <div class="category-row">
+
+                <input style="padding: .5em; width: 500px;" type="text" placeholder="Category Name" name="name"
+                    class="category-name" id="catName">
+
+            </div>
+            <p id="catNameErr" style="color: #f65f5f;"></p>
+
+            <div class="category-row">
+                <input id="catPic" type="file" name="file" class="category-image">
+
+                <!-- <button class="delete-button" onclick="">Delete</button> -->
+            </div>
+            <p style="color: #f65f5f;" id="catPicErr"></p>
+            <button class="submit-button" id="btntest" type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+
+        function addCategory() {
+            const catName = document.getElementById('catName').value;
+            const catPic = document.getElementById('catPic').value;
+
+            const catNameErr = document.getElementById('catNameErr');
+            const catPicErr = document.getElementById('catPicErr');
+
+            const nameErrMessage = [];
+            const picErrMessage = [];
+
+            if (catName.trim() === "") {
+                nameErrMessage.push("This field is required");
+            }
+
+            if (catPic.trim() === "") {
+                picErrMessage.push("You should provide a picture");
+            }
+
+            catPicErr.innerHTML = picErrMessage.join(". ");
+            catNameErr.innerHTML = nameErrMessage.join(". ");
+
+            if (nameErrMessage.length === 0 && picErrMessage.length === 0) {
+                // Your form submission logic
+                // If dealing with async operations, consider using fetch or other async approaches
+                forms.submit();
+            }
+        }
+
+
+    </script>
+
+</body>
+
+</html>

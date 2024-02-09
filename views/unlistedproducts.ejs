@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Product Management</title>
+	<style>
+		/* Add your styling here */
+		body {
+			/* font-family: Arial, sans-serif; */
+			background-color: rgb(255, 255, 255);
+		}
+
+		table {
+			/* width: 1250px; */
+			border-collapse: collapse;
+			/* margin-top: 40px; */
+
+		}
+
+		th,
+		td {
+			border: 1px solid #ddd;
+			padding: 8px;
+			text-align: left;
+		}
+
+		th {
+			background-color: coral;
+		}
+
+		img {
+			max-width: 50px;
+			max-height: 50px;
+		}
+
+		button {
+			cursor: pointer;
+			margin: 5px;
+			
+			border-radius: 15px;
+		}
+
+		button:hover {
+			background-color: rgb(255, 238, 0);
+		}
+
+		/* #dee{
+			background-color: white;
+		} */
+	</style>
+	<link rel="stylesheet" href="/css/adminhome.css">
+</head>
+
+<body>
+
+
+	<a href="/product_management"><button style="width: 80px; height: 40px; margin-top: 20px; margin-left: 20px; color: aqua; background-color: rgb(0, 81, 255);">Back</button></a>
+	
+
+	<h1 style="margin-left: 50px; margin-top: 30px; color: rgb(35, 34, 43);">UNLISTED PRODUCTS</h1>
+	<!-- <h1 style="margin-left: 300px; margin-top: 25px;  color: blue;"><b><em>PRODUCT MANAGEMENT</em></b></h1> -->
+
+	<div style="margin-top: 10px;">
+
+		
+		<table style="margin-left: 50px;  width: 90%; border-radius: 50px;  margin-top: 0;">
+			<thead>
+				<tr>
+					<th>Image</th>
+					<th>category</th>
+					<th>Name</th>
+					<th>Price</th>
+					<th>Quantity</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% if(typeof unlistProduct !=='undefined' ){ %>
+					<% for (let i=0; i < unlistProduct.length; i++){ %>
+						<tr>
+							<td><img src="<%= unlistProduct[i].images[0] %>" alt="product image"></td>
+							<td><%= unlistProduct[i].Pcategory %></td>
+							<td><%= unlistProduct[i].Pname %></td>
+							<td><%= unlistProduct[i].price %></td>
+							<td><%= unlistProduct[i].quantity %></td>
+							<td class="action-buttons">
+								<a href="/unlistToProduct?id=<%= unlistProduct[i]._id %>"><button
+										style="background-color: rgb(94, 224, 94); width: 140px; height: 40px;  border-radius: 10px;"
+										class="edit">Back to product</button></a>
+							</td>
+						</tr>
+					<% } %>
+				<% } %>
+			</tbody>
+
+		</table>
+	</div>
+
+	<script src="/js/adminhome.js"></script>
+
+</body>
+
+</html>

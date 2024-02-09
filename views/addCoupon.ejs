@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fonekart Admin</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+</head>
+
+<body >
+
+    <div class="container mt-5" >
+        <h2>Add Coupon</h2>
+        <form id="couponForm" action="/saveToCouponDb" method="post" style="border: 2px rgb(197, 131, 17) solid; border-radius: 10px ; padding: 10px;">
+            <div class="form-group">
+                <label for="couponCode">Coupon Code:</label>
+                <input name="couponCode" type="text" class="form-control" id="couponCode"
+                    placeholder="Enter coupon code">
+                <p id="couponCodeError" style="color: red; display: none;">Please enter a valid coupon code.</p>
+            </div>
+            <div class="form-group">
+                <label for="discount">Discount:</label>
+                <input name="discount" type="number" class="form-control" id="discount"
+                    placeholder="Enter discount percentage">
+                <p id="discountError" style="color: red; display: none;">Please enter a valid discount.</p>
+            </div>
+            <div class="form-group">
+                <label for="maxUse">Max Use:</label>
+                <input name="maxUse" type="number" class="form-control" id="maxUse"
+                    placeholder="Enter maximum usage limit">
+                <p id="maxUseError" style="color: red; display: none;">Please enter a valid maximum usage limit.</p>
+            </div>
+            <div class="form-group">
+                <label for="maxPrice">Max Price:</label>
+                <input name="maxPrice" type="number" class="form-control" id="maxPrice"
+                    placeholder="Enter maximum price limit">
+                <p id="maxPriceError" style="color: red; display: none;">Please enter a valid maximum price limit.</p>
+            </div>
+            <div class="form-group">
+                <label for="expiryDate">Expiry Date:</label>
+                <input name="expiryDate" type="date" class="form-control" id="expiryDate">
+                <p id="expiryDateError" style="color: red; display: none;">Please enter a valid expiry date.</p>
+            </div>
+            <button type="submit" class="btn btn-primary" onclick="handleSubmit()">Submit</button>
+
+        </form>
+    </div>
+
+   
+
+    <script>
+        function handleSubmit() {
+            event.preventDefault(); // Prevent default form submission
+            validateForm(); // Validate the form
+        }
+
+        function validateForm() {
+            const couponCodeInput = document.getElementById('couponCode');
+            const couponCodeError = document.getElementById('couponCodeError');
+            if (couponCodeInput.value.trim() === '' || couponCodeInput.value.includes(' ')) {
+                couponCodeError.style.display = 'block';
+                return; // Exit the function if there's an error
+            } else {
+                couponCodeError.style.display = 'none';
+            }
+
+            // Discount validation
+            const discountInput = document.getElementById('discount');
+            const discountError = document.getElementById('discountError');
+            if (discountInput.value.trim() === '' || discountInput.value.includes(' ')) {
+                discountError.style.display = 'block';
+                return;
+            } else {
+                discountError.style.display = 'none';
+            }
+
+            // Max Use validation
+            const maxUseInput = document.getElementById('maxUse');
+            const maxUseError = document.getElementById('maxUseError');
+            if (maxUseInput.value.trim() === '' || maxUseInput.value.includes(' ')) {
+                maxUseError.style.display = 'block';
+                return;
+            } else {
+                maxUseError.style.display = 'none';
+            }
+
+            // Max Price validation
+            const maxPriceInput = document.getElementById('maxPrice');
+            const maxPriceError = document.getElementById('maxPriceError');
+            if (maxPriceInput.value.trim() === '' || maxPriceInput.value.includes(' ')) {
+                maxPriceError.style.display = 'block';
+                return;
+            } else {
+                maxPriceError.style.display = 'none';
+            }
+
+            // Expiry Date validation
+            const expiryDateInput = document.getElementById('expiryDate');
+            const expiryDateError = document.getElementById('expiryDateError');
+            if (expiryDateInput.value.trim() === '' || expiryDateInput.value.includes(' ')) {
+                expiryDateError.style.display = 'block';
+                return;
+            } else {
+                expiryDateError.style.display = 'none';
+            }
+
+            // If all validations pass, show SweetAlert
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'New coupon added successfully!',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('couponForm').submit(); // Submit the form
+                }
+            });
+        }
+    </script>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fonekart - Forgot Password</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+
+        form {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btns:hover{
+            background-color: aqua;
+            border-radius: 50px;
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+
+      <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top p-3" >
+    <a style="color: #0F0;" class="navbar-brand" href=""><b><em>Fonekart</em></b></a>
+  </nav>
+
+    <main style="margin-top: 200px; margin-bottom: 50px;">
+        <form action="/api/emailForUpdateProfile" method="post" onsubmit="valid(); return false;" style="background-color: #e3ebe3;"> 
+            <h2>Update account</h2>
+            <p>You can modifie</p>
+            
+            <input type="text" id="email" name="name" placeholder="User name" value="<%= userData.name %>">
+            <br>
+            <p id="err" style="color: red;"></p>
+          
+            <a href="/profile/changePassword"><p style=" color: red; text-decoration: none;">Change Password</p></a>
+            <!-- <input type="text" name="otp" placeholder="Otp" > -->
+            <button class="btns" type="submit">Save</button>
+        </form>
+    </main>
+
+    <footer class="bg-dark text-light pt-5  pb-3 " id="footer" >
+        <div class="container" style="padding: 30px;">
+          <div class="row">
+            <div class="col-md-4">
+              <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>About Us</em></b></a>
+              <p>E-commerce platform</p>
+            </div>
+            <div class="col-md-4">
+              <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>Contact Us</em></b></a>
+              <p>Email: Fonekart@gmail.com<br>Phone: 7558001145</p>
+            </div>
+            <div class="col-md-4">
+              <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>Follow Us</em></b></a>
+              <ul class="list-inline">
+                <li class="list-inline-item"><a class="text-light" href="https://wa.me/qr/QLG7ZQPTHYSDH1">Watsapp</a></li>
+                <br>
+                <li class="list-inline-item"><a class="text-light" href="https://www.facebook.com/siyad.siyu.37?mibextid=ZbWKwL">Facebook</a>
+                </li>
+                <br>
+                <li class="list-inline-item"><a class="text-light"
+                    href="https://instagram.com/siyad___._10?igshid=OGQ5ZDc2ODk2ZA==">Instagram</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+    <script>
+        function valid(){
+            const email = document.getElementById('email').value
+
+            const err = document.getElementById('err')
+
+            const errmsg = []
+
+            if (email.trim() === "") {
+                errmsg.push("This field is required")
+            }
+            err.innerHTML = errmsg.join(", ")
+
+            if (errmsg.length === 0) {
+                document.forms[0].submit();
+            }
+        }
+    </script>
+
+</body>
+
+</html>

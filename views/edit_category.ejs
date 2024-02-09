@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit category</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f65f5f;
+            /* margin: 20px; */
+        }
+
+        #category-form {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-row {
+            /* display: flex; */
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .category-row img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+
+        .delete-button {
+            background-color: #ff6961;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .submit-button {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body style="display: flex; justify-content: center; align-items: center; height: 60vh;">
+
+    <form action="/api/submitEdit_category?id=<%= editCategory._id %>" method="post" enctype="multipart/form-data" onsubmit="edit(); return false;">
+        <div id="category-form">
+            <!-- <a href="/Categary_management"><button>Back</button></a> -->
+            <h2 style="padding: .5rem; margin-left: 140px; color: rgb(153, 255, 0);"><em>Edit Category</em></h2>
+
+            <!-- <form action="/api/editcategory" method="get" > -->
+            <div style="display: flex;">
+                <div class="category-row">
+                    <% if(typeof message !== 'undefined'){ %>
+                        <p style="color: red;"><%= message %></p>
+                        <% } %>
+                    <input style="padding:.5rem;" type="text" value="<%= editCategory.category %>" name="name"
+                        class="category-name" id="name">
+                    <p id="nameErr" style="color: red;"></p>
+
+                </div>
+
+                <div style="margin-left: 80px; display: flex; gap: 20px; align-items: center;">
+                    <img name="image" style="width: 90px; height: 110px; " src="<%= editCategory.image %>" alt=""
+                        id="img">
+
+                    <!-- <div><button class="delete-button">Delete</button></div> -->
+                </div>
+
+            </div>
+            <div>
+                <input type="file" name="file" class="category-image" id="file" multiple>
+                <p id="imgErr" style="color: red;"></p>
+            </div>
+            <div style="display: flex; justify-content: center; margin-top: 3rem;">
+                <button type="submit" class="submit-button">Submit</button>
+            </div>
+
+            <!-- </form> -->
+        </div>
+    </form>
+
+    <script>
+
+       function edit() {
+            const name = document.getElementById('name').value
+            const file = document.getElementById('file').value
+
+            const nameErr = document.getElementById('nameErr')
+            const imgErr = document.getElementById('imgErr') 
+
+            const nameErrmsg = [];
+            const imgErrmsg = [];
+
+            if (name.trim() === "") {
+                nameErrmsg.push("This field is required");
+            }
+            nameErr.innerHTML = nameErrmsg.join(", ");
+
+            if (file.trim === "") {
+                imgErrmsg.push("This field is required");
+            }
+            imgErr.innerHTML = imgErrmsg.join(", ");
+
+            if (nameErrmsg.length === 0 && imgErrmsg.length === 0) {
+                document.forms[0].submit();
+            }
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Your E-Commerce Store</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet"   />
+
+
+    <style>
+        body {
+            /* background-image: url(/images/gray-scale-shot-black-watch.jpg); */
+            color: #000000;
+        }
+
+        .container {}
+
+        h2 {
+            color: #007bff;
+        }
+
+        form {
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        select,
+        .form-control {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        button.btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+
+        .list-group {
+            margin-top: 20px;
+        }
+
+        .list-group-item {
+            background-color: #f8f9fa;
+        }
+
+        .btn-link {
+            color: #007bff;
+        }
+
+        /* Custom styles for the card type section */
+        #cardTypeSection {
+            margin-top: 20px;
+        }
+
+        #cardTypeSection label {
+            margin-right: 10px;
+        }
+
+        /* Custom styles for the order summary section */
+        .order-summary {
+            margin-top: 20px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .order-item img {
+            max-width: 50px;
+            max-height: 50px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top p-3">
+        <a style="color: #0F0;" class="navbar-brand" href="/login"><b><em>Fonekart</em></b></a>
+        <button class="navbar-toggler bg-light" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class=" navbar-collapse" id="navbarNav" style="visibility: visible; justify-content: end;">
+            <ul class="navbar-nav ml-auto" class="navv">
+
+                <li class="nav-item">
+                    <a style="color: white;" class="nav-link" href=" /home"> <i class="ri-home-8-line"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a style="color: white;" class="nav-link" href="/cart"><i class="ri-shopping-cart-line"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a style="color: white;" class="nav-link" href="#"><i class="ri-heart-line"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a style="color: white;" class="nav-link" href="/home/profile"><i
+                            class="ri-account-circle-line"></i></a>
+                </li>
+                <!-- Add more navbar items as needed -->
+            </ul>
+
+        </div>
+    </nav>
+
+    <div>
+        <div class="container pt-5" style="margin-top: 150px; background-color: #ffffff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        border-radius: 10px;
+        margin-top: 50px;">
+            <div class="col-lg-12" style=" margin-top: 20px;">
+                <h3 style="font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; color: #0F0;">
+                    Products</h3>
+                <h6
+                    style="font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif">
+                    " You have selected <span><b>
+                            <%= Checkout.length %>
+                        </b></span> Products "</h6>
+                <% if(typeof Checkout !=='undefined' ){ %>
+                    <% for(let i=0 ; i<Checkout.length ; i++){ %>
+                        <div class="order-summary ">
+                            <div class="order-item pb-1 " style="border: 2px rgb(235, 235, 225) solid; padding: 5px;">
+                                <img src="<%= Checkout[i].productDetails[0].images %>" alt="Product 1">
+                                <span>
+                                    <p style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
+                                        <%= Checkout[i].productDetails[0].Pname %>
+                                    </p>
+                                </span>
+                                <span>
+                                    <p>
+                                        <%= Checkout[i].cartItems.quantity %>
+                                    </p>
+                                </span>
+                                <span class="badge " style="color: black;">
+                                    <p>₹ <%= Checkout[i].productDetails[0].price %>
+                                    </p>
+                                </span>
+                            </div>
+                        </div>
+                        <% } %>
+                            <% } %>
+                                <% if (Checkout && Checkout.length> 0) { %>
+                                    <div style="border: 2px rgb(239, 239, 234) solid; padding: 15px; " class="mt-5">
+                                        <% let Subtotal=Checkout.reduce((total, item)=> {
+                                            return total + (item.productDetails[0].price * item.cartItems.quantity)
+                                            }, 0) %>
+                                            <div class="order-item">
+                                                <strong>
+                                                    <p
+                                                        style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
+                                                        Total:</p>
+                                                </strong>
+                                                <span class="badge">
+                                                    <p>₹ <%= Subtotal.toFixed(2) %>
+                                                    </p>
+                                                </span>
+                                            </div>
+                                            <div class="order-item">
+                                                <strong>
+                                                    <p
+                                                        style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
+                                                        Discount:</p>
+                                                </strong>
+                                                <span class="badge">
+                                                    <p>₹ 0</p>
+                                                </span>
+                                            </div>
+                                            <div class="order-item">
+                                                <strong>
+                                                    <p
+                                                        style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
+                                                        Shipping const:</p>
+                                                </strong>
+                                                <span class="badge " style="color: green;">
+                                                    <p>Free</p>
+                                                </span>
+                                            </div>
+                                            <div class="order-item">
+
+                                                <h4>
+                                                    <p
+                                                        style="color: red; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
+                                                        Total :</p>
+                                                </h4>
+
+                                                <span class="badge ">
+                                                    <h5 class="justify-content-end">
+                                                        <% if(typeof totalUsingCoupon !=='undefined' ){ %>
+                                                            <p
+                                                                style="color: red; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
+
+                                                                <%= totalUsingCoupon %>
+
+                                                            </p>
+                                                            <% }else{ %>
+                                                                <p
+                                                                    style="color: red; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
+                                                                    ₹ <%= Subtotal.toFixed(2) %>
+                                                                </p>
+
+                                                                <% } %>
+
+                                                    </h5>
+                                                    <h5>
+                                                        <% if(typeof success !=='undefined' ){ %>
+                                                            <p
+                                                                style="color: rgb(68, 255, 0); font-family: Verdana, Geneva, Tahoma, sans-serif;">
+                                                                <b>
+                                                                    <%= success %>
+                                                                </b>
+                                                            </p>
+                                                            <% } %>
+                                                    </h5>
+                                                </span>
+                                            </div>
+                                            <div class="pt-4 ">
+                                                <h5 class=""
+                                                    style="color: #721c24; font-family: Georgia, 'Times New Roman', Times, serif">
+                                                    Apply the
+                                                    Coupon code</h5>
+
+                                                <form action="/applyCoupon" method="post">
+                                                    <% if(typeof notAvailable !=='undefined' ){ %>
+                                                        <p style="color: red;">
+                                                            <b>
+                                                                <%= notAvailable %>
+                                                            </b>
+                                                        </p>
+                                                        <% } %>
+                                                            <% if(typeof maxError !=='undefined' ){ %>
+                                                                <p style="color: red;">
+                                                                    <b>
+                                                                        <%= maxError %>
+                                                                    </b>
+                                                                </p>
+                                                                <% } %>
+                                                                    <input class="text-danger" name="couponCode"
+                                                                        style="padding-left: 60px;" type="text"
+                                                                        placeholder="Coupon code">
+                                                                    <br>
+                                                                    <button class="bg-info"
+                                                                        style="margin-top: 10px; padding-right: 100px; padding-left: 105px; border: transparent ;">Apply</button>
+                                                </form>
+                                            </div>
+                                    </div>
+                                    <% } %>
+            </div>
+        </div>
+
+
+        <div class="container " style="background-color: #ffffff;  padding: 30px; margin-top: 50px;">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2></h2>
+                    <div class="form-group" style="border: 1px #ced4da solid; padding: 10px;">
+                        <label for="addressSelect" class="text-danger">Delivery Address</label>
+                        <% for (let i=0; i < addressSelect.address.length; i++) { %>
+                            <% if (addressSelect.address[i].defaultAddress==true) { %>
+                                <div
+                                    style="border: solid rgb(50, 50, 49); border-radius: 6px; width: 290px; padding: 10px;">
+                                    <b><em>Name : </em></b><span>
+                                        <em>
+                                            <%= addressSelect.address[i].name %>
+                                        </em>
+                                    </span><br>
+                                    <b><em>Phone : </em></b><span>
+                                        <em>
+                                            <%= addressSelect.address[i].phone %>
+                                        </em>
+                                    </span><br>
+                                    <b><em>Pin: </em></b><span>
+                                        <em>
+                                            <%= addressSelect.address[i].pin %>
+                                        </em>
+                                    </span><br>
+                                    <b><em>Address : </em></b><span>
+                                        <em>
+                                            <%= addressSelect.address[i].address %>
+                                        </em>
+                                    </span><br>
+                                    <b><em>District : </em></b><span>
+                                        <em>
+                                            <%= addressSelect.address[i].district %>
+                                        </em>
+                                    </span><br>
+                                    <b><em>City : </em></b><span>
+                                        <em>
+                                            <%= addressSelect.address[i].city %>
+                                        </em>
+                                    </span>
+                                </div>
+                                <% } %>
+                                    <% } %>
+
+
+                                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                            data-target="#changeAddressModal"
+                                            style="margin-top: 10px; border-radius: 10px; ">
+                                            Change Address
+                                        </button>
+
+
+                                        <button type="button" class="btn btn-primary"
+                                            style="margin-top: 10px; border-radius: 10px;" data-toggle="modal"
+                                            data-target="#addAddressModal">+Add address</button>
+
+
+                                        <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog"
+                                            aria-labelledby="addAddressModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="addAddressModalLabel">Add Address
+                                                        </h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form id="addressForm" action="/api/add-addressToCheckoutWay"
+                                                            method="post">
+                                                            <div class="form-group">
+                                                                <label for="username">Username</label>
+                                                                <input type="text" class="form-control" id="username"
+                                                                    name="name" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="address">Address</label>
+                                                                <input type="text" class="form-control" id="address"
+                                                                    name="address" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="phone">Phone Number</label>
+                                                                <input type="tel" class="form-control" id="phone"
+                                                                    name="phoneNumber" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="city">City</label>
+                                                                <input type="text" class="form-control" id="city"
+                                                                    name="city" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="district">District</label>
+                                                                <input type="text" class="form-control" id="district"
+                                                                    name="district" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="pincode">Pincode</label>
+                                                                <input type="text" class="form-control" id="pincode"
+                                                                    name="pinCode" required>
+                                                            </div>
+                                                            <button type="submit" class="btn btn-primary">Save
+                                                                Address</button>
+                                                        </form>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+                                        <div class="modal" id="changeAddressModal" tabindex="-1" role="dialog">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header"
+                                                        style="background-color: #f1f1ec; color: rgb(255, 0, 0);">
+                                                        <h5 class="modal-title">Change Address</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="modal-body"
+                                                        style="background-color: #f8d7da; color: #721c24;">
+                                                        <form id="checkoutForm" action="/selectAddressFromCheckout"
+                                                            method="get">
+                                                            <div class="form-group">
+                                                                <label for="newAddress">Available address</label>
+                                                                <% for(let i=0; i < addressSelect?.address.length; i++)
+                                                                    { %>
+                                                                    <div
+                                                                        style="border: solid rgb(194, 194, 205); border-radius: 6px; width: 320px; margin-bottom: 10px; background-color: #fff; padding: 10px;">
+                                                                        <br>
+                                                                        <b style="margin-left: 10px;">Name :</b><span>
+                                                                            <%= addressSelect?.address[i].name %>
+                                                                        </span><br>
+                                                                        <b style="margin-left: 10px;">Phone :</b><span>
+                                                                            <%= addressSelect?.address[i].phone %>
+                                                                        </span><br>
+                                                                        <b style="margin-left: 10px;">Pin :</b><span>
+                                                                            <%= addressSelect?.address[i].pin %>
+                                                                        </span><br>
+                                                                        <b style="margin-left: 10px;">Address
+                                                                            :</b><span>
+                                                                            <%= addressSelect?.address[i].address %>
+                                                                        </span><br>
+                                                                        <b style="margin-left: 10px;">District
+                                                                            :</b><span>
+                                                                            <%= addressSelect?.address[i].district %>
+                                                                        </span><br>
+                                                                        <b style="margin-left: 10px;">City :</b><span>
+                                                                            <%= addressSelect?.address[i].city %>
+                                                                        </span><br>
+                                                                        <input type="checkbox" name="id"
+                                                                            value="<%= addressSelect?.address[i]._id %>"
+                                                                            id="check_<%= i %>"
+                                                                            style="width: 25px; height: 25px; margin-left: 10px;">
+                                                                    </div>
+                                                                    <% } %>
+                                                            </div>
+                                                            <button type="button" onclick="validateForm()"
+                                                                class="btn btn-success">Select</button>
+                                                        </form>
+                                                    </div>
+
+                                                    <div class="modal fade" id="errorMessageModal" tabindex="-1"
+                                                        role="dialog" aria-labelledby="errorMessageModalLabel"
+                                                        aria-hidden="true">
+                                                        <div class="modal-dialog" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="errorMessageModalLabel">
+                                                                        Error</h5>
+                                                                    <button type="button" class="close"
+                                                                        data-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    Please select at least one address.
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary"
+                                                                        data-dismiss="modal">Close</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Error Modal -->
+                                                    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog"
+                                                        aria-labelledby="errorModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="errorModalLabel">Error
+                                                                    </h5>
+                                                                    <button type="button" class="close"
+                                                                        data-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    Please select only one address.
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary"
+                                                                        data-dismiss="modal">Close</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                    </div>
+
+
+                    <hr class="my-4">
+
+                    <h2 style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">SELECT PAYMENT METHOD
+                    </h2>
+                    <form action="/api/orderDataSaveToOrderDb" method="post">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="onlinePayment"
+                                    value="onlinePayment" checked>
+                                <label class="form-check-label" for="onlinePayment">
+                                    <em
+                                        style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif">Online
+                                        Payment</em>
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="cashOnDelivery"
+                                    value="cashOnDelivery">
+                                <label class="form-check-label" for="cashOnDelivery">
+                                    <em
+                                        style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif">Cash
+                                        on Delivery</em>
+                                </label>
+
+                            </div>
+
+                        </div>
+
+
+                        <button type="submit" class="btn btn-warning">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-light pt-5  pb-3" id="footer">
+        <div class="container bg-dark " style="padding: 30px;">
+            <div class="row">
+                <div class="col-md-4">
+                    <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>About Us</em></b></a>
+                    <p>E-commerce platform</p>
+                </div>
+                <div class="col-md-4">
+                    <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>Contact Us</em></b></a>
+                    <p>Email: Fonekart@gmail.com<br>Phone: 7558001145</p>
+                </div>
+                <div class="col-md-4">
+                    <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>Follow Us</em></b></a>
+                    <ul class="list-inline">
+                        <li class="list-inline-item"><a class="text-light"
+                                href="https://wa.me/qr/QLG7ZQPTHYSDH1">Watsapp</a></li>
+                        <br>
+                        <li class="list-inline-item"><a class="text-light"
+                                href="https://www.facebook.com/siyad.siyu.37?mibextid=ZbWKwL">Facebook</a>
+                        </li>
+                        <br>
+                        <li class="list-inline-item"><a class="text-light"
+                                href="https://instagram.com/siyad___._10?igshid=OGQ5ZDc2ODk2ZA==">Instagram</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function validateForm() {
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            var checkedCount = 0;
+
+            checkboxes.forEach(function (checkbox) {
+                if (checkbox.checked) {
+                    checkedCount++;
+                }
+            });
+
+            if (checkedCount !== 1) {
+                alert("Please select exactly one address.");
+                return false; // Prevent form submission
+            }
+
+            document.getElementById("checkoutForm").submit(); // Submit the form
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+</body>
+
+</html>

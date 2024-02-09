@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fonekart - Register</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 3px black solid;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body style="background-color: #ffffff;">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top p-3">
+        <a style="color: #0F0;" class="navbar-brand" href=""><b><em>Fonekart</em></b></a>
+    </nav>
+
+    <main>
+        <form action="/api/register" method="post" onsubmit="registerSubmit(); return false;">
+            <h2>Create an Account</h2>
+            <% if(typeof message !=='undefined' ){ %>
+                <p style="color: red;">
+                    <%= message %>
+                </p>
+                <% } %>
+                    <input type="text" name="name" placeholder="User Name" id="userName">
+                    <p class="text-danger" id="userNameErr"></p>
+                    <input type="email" name="email" placeholder="Email" id="email">
+                    <p class="text-danger" id="emailErr"></p>
+                    <input type="password" name="password" placeholder="Password" id="password">
+                    <p class="text-danger" id="passwordErr"></p>
+                    <input type="password" name="confirmPassword" placeholder="Confirm Password" id="confpass">
+                    <p class="text-danger" id="confpassErr"></p>
+                    <br>
+                    <button type="submit">Register</button>
+
+                    <p style="margin-top: 20px;">have an existing account ? <a href="/login"
+                            style="text-decoration: none; color: rgb(0, 89, 255);">Login</a></p>
+        </form>
+    </main>
+
+    <script>
+        function registerSubmit() {
+            const userName = document.getElementById('userName').value
+            const email = document.getElementById('email').value
+            const password = document.getElementById('password').value
+            const confpass = document.getElementById('confpass').value
+
+            const userNameErr = document.getElementById('userNameErr')
+            const emailErr = document.getElementById('emailErr')
+            const passwordErr = document.getElementById('passwordErr')
+            const confpassErr = document.getElementById('confpassErr')
+
+            const userNameErrorMessage = []
+            const emailErrorMessage = []
+            const passwordErrorMessage = []
+            const confpassErrMessage = []
+
+            if (userName.trim() === "") {
+                userNameErrorMessage.push("This field is required")
+            }
+            userNameErr.innerHTML = userNameErrorMessage.join(", ")
+
+            if (email.trim() === "") {
+                emailErrorMessage.push("This field is required")
+            }
+            emailErr.innerHTML = emailErrorMessage.join(", ")
+
+            if (password.trim() === "") {
+                passwordErrorMessage.push("This field is required")
+            } else if (!/(?=.*[A-Z])(?=.*[@#])(?=.*\d)/.test(password)) {
+                passwordErrorMessage.push("Password must contain at least one capital letter, one @ or # character, and one number")
+            }
+            passwordErr.innerHTML = passwordErrorMessage.join(", ")
+
+            if (confpass.trim() === "") {
+                confpassErrMessage.push("This field is required")
+            } else if (confpass !== password) {
+                confpassErrMessage.push("Passwords do not match")
+            }
+            confpassErr.innerHTML = confpassErrMessage.join(", ")
+
+            if (userNameErrorMessage.length === 0 && emailErrorMessage.length === 0 && passwordErrorMessage.length === 0 && confpassErrMessage.length === 0) {
+                document.forms[0].submit();
+            }
+        }
+    </script>
+
+</body>
+
+
+</html>

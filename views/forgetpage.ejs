@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fonekart - Forgot Password</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body style="background-image: url(/images/First\ full\ pic.jpg);">
+
+    
+
+    <main style="margin-top: 200px;">
+        <form action="/api/emailForResetPassword" method="post" onsubmit="valid(); return false;"> 
+            <h2>Forgot Password</h2>
+            <p>Please enter your email</p>
+            <% if(typeof message !== 'undefined'){ %>
+                <p style="color: red;"><%= message %></p>
+                <% } %>
+            <input type="email" id="email" name="email" placeholder="Email" >
+            <br>
+            <p id="err" style="color: red;"></p>
+            <!-- <input type="text" name="otp" placeholder="Otp" > -->
+            <button type="submit">Reset Password</button>
+        </form>
+    </main>
+
+    <script>
+        function valid(){
+            const email = document.getElementById('email').value
+
+            const err = document.getElementById('err')
+
+            const errmsg = []
+
+            if (email.trim() === "") {
+                errmsg.push("This field is required")
+            }
+            err.innerHTML = errmsg.join(", ")
+
+            if (errmsg.length === 0) {
+                document.forms[0].submit();
+            }
+        }
+    </script>
+
+</body>
+
+</html>
