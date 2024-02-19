@@ -7,11 +7,8 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <title>Your E-commerce Website</title>
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet"   />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-    crossorigin="anonymous"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
   <style>
     body {
       padding-top: 56px;
@@ -59,7 +56,7 @@
           <th scope="col">Product</th>
           <th scope="col">Quantity</th>
           <th scope="col">Price</th>
-          <th scope="col">Ordered Date</th>
+          <th scope="col">Date</th>
           <th scope="col">Status</th>
           <th scope="col">Action</th>
         </tr>
@@ -68,8 +65,9 @@
         <!-- < if(typeof OrderData !=='undefined' ){ %> -->
         <% for(let i=0 ; i<OrderData.length ; i++) {%>
           <tr>
-            <td><img src="<%= OrderData[i].orderItems.Image[0] %>" alt="Product 1" class="img-thumbnail"
-                style="max-width: 100px;"></td>
+            <td>
+              <img src="<%= OrderData[i].orderItems.Image[0] %>" alt="image" class="img-thumbnail" style="max-width: 100px;">
+          </td>
             <td>
               <%= OrderData[i].orderItems.Pname %>
             </td>
@@ -98,7 +96,11 @@
                     <td style="color: rgb(255, 0, 230); ">
                       <%= OrderData[i].orderItems.orderStatus%>
                     </td>
-                    <% } %>
+                    <% }else if(OrderData[i].orderItems.orderStatus == 'returned'){ %>
+                      <td style="color: rgb(255, 0, 230); ">
+                        <%= OrderData[i].orderItems.orderStatus%>
+                      </td>
+                      <% } %>
 
 
                   <% if(OrderData[i].orderItems.orderStatus=='ordered' ){ %>
@@ -107,7 +109,7 @@
                     </td>
                     <% }else if(OrderData[i].orderItems.orderStatus=='delivered' ){ %>
                       <td>
-                        <button class="btn btn-warning" data-toggle="modal" data-target="#confirmationModal<%= i %>">Return</button>
+                        <a href="/returnOrder?id=<%= OrderData[i].orderItems._id %>"><button class="btn btn-warning" >Return</button></a>
                       </td>
                       <% } %>
                     <div class="modal" tabindex="-1" role="dialog" id="confirmationModal<%= i %>">
@@ -142,7 +144,21 @@
     </table>
   </div>
 
-  <footer class="bg-dark text-light pt-5  pb-3" id="footer" style="width: 100%; ">
+  <form>
+        <div class="col-12 pb-1 ">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-3">
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        </div>
+    </form>
+
+  <footer class="bg-dark text-light pt-5  pb-3 " id="footer" style="width: 100%; margin-top: 180px;">
     <div class="container" style="padding: 30px;">
       <div class="row" style="width: 100%;">
         <div class="col-md-4">

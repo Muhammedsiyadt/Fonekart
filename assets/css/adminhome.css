@@ -515,15 +515,104 @@ body {
 #content main .table-data .todo .todo-list li:last-child {
 	margin-bottom: 0;
 }
-/* MAIN */
-/* CONTENT */
+.download-button {
+ position: relative;
+ border-width: 0;
+ color: white;
+ font-size: 15px;
+ font-weight: 600;
+ border-radius: 4px;
+ z-index: 1;
+}
 
+.download-button .docs {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ gap: 10px;
+ min-height: 40px;
+ padding: 0 10px;
+ border-radius: 4px;
+ z-index: 1;
+ background-color: #242a35;
+ border: solid 1px #e8e8e82d;
+ transition: all .5s cubic-bezier(0.77, 0, 0.175, 1);
+}
 
+.download-button:hover {
+ box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
 
+.download {
+ position: absolute;
+ inset: 0;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ max-width: 90%;
+ margin: 0 auto;
+ z-index: -1;
+ border-radius: 4px;
+ transform: translateY(0%);
+ background-color: #01e056;
+ border: solid 1px #01e0572d;
+ transition: all .5s cubic-bezier(0.77, 0, 0.175, 1);
+}
 
+.download-button:hover .download {
+ transform: translateY(100%)
+}
 
+.download svg polyline,.download svg line {
+ animation: docs 1s infinite;
+}
 
+@keyframes docs {
+ 0% {
+  transform: translateY(0%);
+ }
 
+ 50% {
+  transform: translateY(-15%);
+ }
+
+ 100% {
+  transform: translateY(0%);
+ }
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    max-width: 400px;
+    background-color: #fefefe;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+}
 
 
 @media screen and (max-width: 768px) {

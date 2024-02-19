@@ -1,26 +1,23 @@
 
 // user-schema
 const Userdb = require('../../model/userSchema')
-
-// category schema
 const categorydb = require('../../model/categorySchema')
-
-// product schema
 const productdb = require('../../model/productSchema')
-
-// Multer 
 const multer = require('./multer')
-
-// order schema 
 const orderdb = require('../../model/orderSchema')
-
-// coupon schema
 const coupondb = require('../../model/couponSchema')
 const { default: mongoose } = require('mongoose')
+const offerdb = require('../../model/offerSchema')
+const PDFDocument = require("pdfkit-table") 
+const fs = require("fs")
+
+
+
+
 
 
 // admin login
-exports.verifylogin = (req, res) => {
+exports.verifylogin = (req, res) => { 
     const a = {
         name: 'admin',
         password: '123'
@@ -30,8 +27,218 @@ exports.verifylogin = (req, res) => {
         return res.redirect('/adminhome')
 
     }
-
 }
+
+// SALES REPORT =====
+//daily 
+exports.dailyReport = async (req, res) => {
+    try {
+        const today = new Date();
+        const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+
+       
+        const dailyOrders = await orderdb.find({
+            orderDate: {
+                $gte: startOfDay,
+                $lt: endOfDay
+            }
+        });
+
+       
+        const doc = new PDFDocument();
+
+     
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="daily_sales_report.pdf"');
+
+       
+        doc.pipe(res);
+
+       
+        doc.fontSize(12).text('Daily Sales Report', { align: 'center' }).moveDown();
+
+       
+        const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
+
+       
+        const tableData = [];
+
+        dailyOrders.forEach(order => {
+            order.orderItems.forEach(item => {
+                tableData.push([
+                    order.orderDate.toDateString(),
+                    order.address.name,
+                    `${order.address.address}, ${order.address.district}, ${order.address.city}, ${order.address.pin}`,
+                    order.address.phone,
+                    item.Pname || 'N/A',
+                    item.category || 'N/A',
+                    item.orderStatus || 'N/A',
+                    item.price !== undefined ? item.price.toString() : 'N/A'
+                ]);
+            });
+        });
+
+        
+        const tableOptions = {
+            headers: tableHeaders, 
+            rows: tableData 
+        };
+
+        
+        doc.table(tableOptions);
+
+      
+        doc.end();
+
+    } catch (error) {
+        console.error("Error generating daily sales report:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+
+
+// weekly
+exports.weeklyReport = async (req, res) => {
+    try {
+        const startDate = new Date()
+        const endDate = new Date(startDate.getTime() - 7 * 24 * 60 * 60 * 1000)
+
+       
+        const weeklyOrders = await orderdb.find({
+            orderDate: {
+                $gte: endDate,
+                $lt: startDate
+            }
+        });
+
+        const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
+
+        const tableData = [];
+
+        weeklyOrders.forEach(order => {
+            order.orderItems.forEach(item => {
+                tableData.push([
+                    order.orderDate.toDateString(),
+                    order.address.name,
+                    `${order.address.address}, ${order.address.district}, ${order.address.city}, ${order.address.pin}`,
+                    order.address.phone,
+                    item.Pname || 'N/A',
+                    item.category || 'N/A',
+                    item.orderStatus || 'N/A',
+                    item.price !== undefined ? item.price.toString() : 'N/A',
+                   
+                ])
+            })
+        })
+
+        const table = {
+            title: 'Weekly Sales Report',
+            headers: tableHeaders,
+            rows: tableData
+        }
+
+       
+        let doc = new PDFDocument({ margin: 30, size: 'A4' })
+
+        
+        await doc.table(table)
+
+        
+        const pdfChunks = []
+        doc.on('data', chunk => {
+            pdfChunks.push(chunk)
+        });
+        doc.on('end', () => {
+            const pdfBuffer = Buffer.concat(pdfChunks)
+            
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'attachment; filename="weekly_sales_report.pdf"')
+           
+            res.send(pdfBuffer);
+        });
+        doc.end()
+    } catch (error) {
+        console.error("Error generating weekly sales report:", error)
+        res.status(500).json({ error: "Internal server error" })
+    }
+}
+
+// yearly 
+exports.yearlyReport = async (req, res) => {
+    try {
+        const startOfYear = new Date(new Date().getFullYear(), 0, 1)
+        const endOfYear = new Date(new Date().getFullYear() + 1, 0, 1)
+
+      
+        const yearlyOrders = await orderdb.find({
+            orderDate: {
+                $gte: startOfYear,
+                $lt: endOfYear
+            }
+        });
+
+       
+        const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
+
+      
+        const tableData = [];
+
+        yearlyOrders.forEach(order => {
+            order.orderItems.forEach(item => {
+                tableData.push([
+                    order.orderDate.toDateString(),
+                    order.address.name,
+                    `${order.address.address}, ${order.address.district}, ${order.address.city}, ${order.address.pin}`,
+                    order.address.phone,
+                    item.Pname || 'N/A',
+                    item.category || 'N/A',
+                    item.orderStatus || 'N/A',
+                    item.price !== undefined ? item.price.toString() : 'N/A',
+                ]);
+            });
+        });
+
+       
+        const doc = new PDFDocument();
+
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="yearly_sales_report.pdf"');
+
+       
+        doc.pipe(res);
+
+     
+        doc.fontSize(14).text('Fonekart', { align: 'center' }).moveDown();
+
+      
+        const tableOptions = {
+            title: 'Yearly Sales Report',
+            headers: tableHeaders,
+            rows: tableData
+        };
+
+      
+        await doc.table(tableOptions);
+
+       
+        doc.end();
+
+    } catch (error) {
+        console.error("Error generating yearly sales report:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+
+
+
+
+
+
+
 
 // PRODUCT MANAGEMENT...............................................................
 // add product
@@ -49,7 +256,6 @@ exports.add_product = async (req, res) => {
         return res.redirect('/product_management')
     }
     const file = req.files
-    // console.log(file);
     const images = [];
     file.map(files => {
         return images.push(`/images/${files.originalname}`);
@@ -79,10 +285,16 @@ exports.add_product = async (req, res) => {
 
 // edit product 
 exports.submitEdit_product = async (req, res) => {
-    const file = req.files
+    // const file = req.files
     // console.log(file);
-    const images = `/images/${file[0].originalname}`
-    // console.log(images);
+    // const images = `/images/${file[0].originalname}`
+    // console.log(images);.
+    const file = req.files
+    
+    const images = [];
+    file.map(files => {
+        return images.push(`/images/${files.originalname}`);
+    });
     const idpass = await productdb.findOneAndUpdate({ _id: req.query.id }, {
         $set: {
             Pname: req.body.productName, Pcategory: req.body.categoryName,
@@ -174,7 +386,7 @@ exports.submitEdit_category = async (req, res) => {
 
         if (categoryName) {
             req.session.message = 'Category is Unique'
-            return res.redirect('/category/edit-category')
+            
         }
 
         const idPass = await categorydb.updateOne({ _id: req.query.id }, { $set: { category: req.body.name, image: images } })
@@ -278,10 +490,20 @@ exports.updateOrderStatus = async (req, res) => {
 // Save to coupon db
 exports.saveToCouponDb = async (req, res) => {
     try {
-        // Extract data from request body
+       
         const { couponCode, discount, maxUse, maxPrice, expiryDate } = req.body;
+        
+        
+        const existingCoupon = await coupondb.findOne({ Code: couponCode });
 
-        // Create a new instance of the Coupon model
+        if (existingCoupon) {
+            
+            req.session.Existmessage = 'Coupon code already exists';
+            res.redirect('/Coupon_management');
+            return; 
+        }
+
+        
         const newCoupon = new coupondb({
             Code: couponCode,
             Discount: discount,
@@ -290,18 +512,20 @@ exports.saveToCouponDb = async (req, res) => {
             expiryDate: expiryDate
         });
 
-        // Save the new coupon to the database
-        await newCoupon.save()
         
+        await newCoupon.save();
 
-        // redirect
-        res.redirect('/Coupon_management')
+       
+        req.session.message = 'Coupon saved successfully';
+        res.redirect('/Coupon_management');
+
     } catch (error) {
-        // Handle errors
+        
         console.error('Error saving coupon:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+
 
 // Delete coupon
 exports.deleteCoupon = async (req, res) => {
@@ -337,3 +561,79 @@ exports.submitEditedCoupon = async (req, res) => {
         console.log(error);
     }
 }
+
+// === OFFER MANAGEMENT=== // 
+// save the data of category offer
+exports.saveToOfferOfCategory = async (req, res) => {
+    const { category, discount, expiryDate } = req.body;
+
+    const existingOffer = await offerdb.findOne({ name: category });
+
+    if (existingOffer) {
+        req.session.Existmessage = 'Offer for this category already exists';
+        res.redirect('Offer_management');
+        return; 
+    } else {
+        const newOffer = new offerdb({
+            name: category,
+            discount: discount,
+            expirydate: expiryDate
+        });
+
+        await newOffer.save();
+
+        const id = newOffer._id
+        console.log(id) 
+
+        req.session.message = 'Offer saved successfully';
+        res.redirect('Offer_management');
+
+        const categoryFind = await productdb.updateMany({Pcategory : category},{$set:{offerId:id}})
+        
+    }
+}
+
+// save the data of product offer
+exports.saveToOfferOfProduct = async (req, res) => {
+    let { product, discount, expiryDate } = req.body;
+
+    const existingOffer = await offerdb.findOne({ name: product });
+
+    if (existingOffer) {
+        req.session.Existmessage = 'Offer for this product already exists';
+        res.redirect('Offer_management');
+        return; 
+    } else {
+        const newOffer = new offerdb({
+            name : product,
+            discount : discount,
+            expirydate : expiryDate
+        });
+
+        await newOffer.save();
+
+        const id = newOffer._id
+        console.log('dfffffffffff',id)
+
+        req.session.message = 'Offer saved successfully';
+        res.redirect('Offer_management');
+
+        const productFind = await productdb.updateOne({Pname: product},{$set:{offerId:id}})
+        const fff = await productdb.find({Pname:product})
+        console.log(fff);
+    }
+
+}
+
+// Delete offer
+exports.deleteOffer = async(req,res) => {
+    try {
+        const PassId = req.query.id
+        const deleteOffer = await offerdb.deleteOne({ _id: new mongoose.Types.ObjectId(PassId) })
+        res.redirect('/offer_management')
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+// 

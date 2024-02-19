@@ -56,7 +56,7 @@
             event.preventDefault(); // Prevent default form submission
             validateForm(); // Validate the form
         }
-
+    
         function validateForm() {
             const couponCodeInput = document.getElementById('couponCode');
             const couponCodeError = document.getElementById('couponCodeError');
@@ -66,7 +66,7 @@
             } else {
                 couponCodeError.style.display = 'none';
             }
-
+    
             // Discount validation
             const discountInput = document.getElementById('discount');
             const discountError = document.getElementById('discountError');
@@ -76,7 +76,7 @@
             } else {
                 discountError.style.display = 'none';
             }
-
+    
             // Max Use validation
             const maxUseInput = document.getElementById('maxUse');
             const maxUseError = document.getElementById('maxUseError');
@@ -86,7 +86,7 @@
             } else {
                 maxUseError.style.display = 'none';
             }
-
+    
             // Max Price validation
             const maxPriceInput = document.getElementById('maxPrice');
             const maxPriceError = document.getElementById('maxPriceError');
@@ -96,17 +96,19 @@
             } else {
                 maxPriceError.style.display = 'none';
             }
-
+    
             // Expiry Date validation
             const expiryDateInput = document.getElementById('expiryDate');
             const expiryDateError = document.getElementById('expiryDateError');
-            if (expiryDateInput.value.trim() === '' || expiryDateInput.value.includes(' ')) {
+            const currentDate = new Date();
+            const selectedDate = new Date(expiryDateInput.value);
+            if (expiryDateInput.value.trim() === '' || selectedDate <= currentDate) {
                 expiryDateError.style.display = 'block';
                 return;
             } else {
                 expiryDateError.style.display = 'none';
             }
-
+    
             // If all validations pass, show SweetAlert
             Swal.fire({
                 icon: 'success',
@@ -121,6 +123,7 @@
             });
         }
     </script>
+    
 
 
 

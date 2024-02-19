@@ -1,198 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<!-- Boxicons -->
 	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<!-- My CSS -->
 	<link rel="stylesheet" href="css/adminhome.css">
 
 	<title>Fonekart</title>
 	<style>
 		table {
-		  border-collapse: collapse;
-		  width: 78%;
-		  margin-left: 300px;
-		  background-color: #ffffff;
+			border-collapse: collapse;
+			width: 78%;
+			margin-left: 300px;
+			background-color: #ffffff;
 		}
-	
-		th, td {
-		  border: 1px solid #dddddd;
-		  text-align: left;
-		  padding: 8px;
+
+		th,
+		td {
+			border: 1px solid #dddddd;
+			text-align: left;
+			padding: 8px;
+			
 		}
-	
+
 		th {
-		  background-color: #f2f2f2;
+			background-color: #f2f2f2;
 		}
-	
+
 		.action-btn {
-		  display: inline-block;
-		  background-color: #4caf50;
-		  color: white;
-		  padding: 8px 12px;
-		  text-align: center;
-		  text-decoration: none;
-		  border-radius: 4px;
-		  cursor: pointer;
+			display: inline-block;
+			background-color: #4caf50;
+			color: white;
+			padding: 8px 12px;
+			text-align: center;
+			text-decoration: none;
+			border-radius: 4px;
+			cursor: pointer;
 		}
-	  </style>
+	</style>
 </head>
+
 <body>
 
 
 	<!-- SIDEBAR -->
 	<section id="sidebar" style="background-color: white;">
-		
+
 		<h1 style="margin-left: 45px; margin-top: 20px; font-size: 45px;">Fonekart</h1>
 		<ul class="side-menu top">
-			<li >
+			<li>
 				<a href="/adminhome">
-					<i class='bx bxs-dashboard' ></i>
+					<i class='bx bxs-dashboard'></i>
 					<span class="text">Dashboard</span>
 				</a>
 			</li>
 			<li>
 				<a href="/product_management">
-					<i class='bx bxs-shopping-bag-alt' ></i>
+					<i class='bx bxs-shopping-bag-alt'></i>
 					<span class="text">Product Management</span>
 				</a>
 			</li>
-			<li >
+			<li>
 				<a href="/User_management">
-					<i class='bx bxs-doughnut-chart' ></i>
+					<i class='bx bxs-doughnut-chart'></i>
 					<span class="text">User Management</span>
 				</a>
 			</li>
 			<li class="active">
 				<a href="/Order_management">
-					<i class='bx bxs-message-dots' ></i>
+					<i class='bx bxs-message-dots'></i>
 					<span class="text">Order Management</span>
 				</a>
 			</li>
 			<li>
 				<a href="/Categary_management">
-					<i class='bx bxs-group' ></i>
+					<i class='bx bxs-group'></i>
 					<span class="text">Categary Management</span>
 				</a>
 			</li>
 			<li>
 				<a href="/Coupon_management">
-					<i class='bx bxs-group' ></i>
+					<i class='bx bxs-group'></i>
 					<span class="text">Coupon Management</span>
 				</a>
 			</li>
-			<li >
+			<li>
 				<a href="/Offer_management">
 					<i class='bx bxs-group'></i>
 					<span class="text">Offer_Management</span>
 				</a>
 			</li>
+			<li>
+				<a href="/refferalOffer">
+					<i class='bx bxs-group'></i>
+					<span class="text">Refferal_Offer</span>
+				</a>
+			</li>
 		</ul>
 		<ul class="side-menu">
-			<!-- <li>
-				<a href="#">
-					<i class='bx bxs-cog' ></i>
-					<span class="text">Settings</span>
-				</a>
-			</li> -->
+
 			<li>
 				<a href="/adminlogin" class="logout">
-					<i class='bx bxs-log-out-circle' ></i>
+					<i class='bx bxs-log-out-circle'></i>
 					<span class="text">Logout</span>
 				</a>
 			</li>
 		</ul>
 	</section>
 
-	
 
-    <h1>Order</h1>
+
+	<h1>Order</h1>
 	<!-- SIDEBAR -->
-	<h1 style="margin-left: 300px; margin-top: 10px; margin-bottom: 10px;  color: rgb(35, 34, 43);">ORDER MANAGEMENT</h1>
+	<h2 style="margin-left: 300px; margin-top: 10px; margin-bottom: 10px;  color: rgb(35, 34, 43);">ORDER MANAGEMENT
+	</h2>
 
-	<table >
+	<table>
 		<thead>
-		  <tr>
-			<th style="background-color: #ff6666;">Item</th>
-			<th style="background-color: #ff6666;">Product Details</th>
-			<th style="background-color: #ff6666;">User Details</th>
-			
-			<th style="background-color: #ff6666; width: 250px;">Action</th>
-		  </tr>
+			<tr>
+				<th style="background-color: #ff6666;">Item</th>
+				<th style="background-color: #ff6666;">Product Details</th>
+				<th style="background-color: #ff6666;">User Details</th>
+
+				<th style="background-color: #ff6666; width: 250px;">Action</th>
+			</tr>
 		</thead>
-		<tbody>
+		<tbody >
 			<% if(typeof Order !=='undefined' ){ %>
 				<% for (let i=0; i < Order.length; i++){ %>
-		  <tr>
-			<td>
-				<p><img src="<%= Order[i].orderItems[0].Image[0] %>" alt="Product 1" class="img-thumbnail"
-					style="max-width: 100px;"></p>
-			</td>
-			<td>
-			  <% if(Order[i].orderItems[0].orderStatus == 'canceled'){ %>
-				<p style="color: #ff0000;"><b style="color: black;">Status : </b><%= Order[i].orderItems[0].orderStatus %></p>
-				<% }else{ %>
-				<p style="color: #48ff00;"><b style="color: black;">Status : </b><%= Order[i].orderItems[0].orderStatus %></p>	
-				<% } %>
-			  <p><b>Name : </b><%= Order[i].orderItems[0].Pname %></p>
-			  <p><b>Quantity : </b><%= Order[i].orderItems[0].quantity %></p>
-			  <p><b>Price: ₹</b><%= Order[i].orderItems[0].price %></p>
-			  <p><b>Price: </b><%= Order[i].paymentMethod %></p>
-			</td>
-			<td>
-				<p><b>Name  : </b><%= Order[i].address.name %></p>
-				<p><b>Phone : </b><%= Order[i].address.phone %></p>
-				<!-- <p><%#= Order[i].orderItems[0].quantity %></p> -->
-				<p><b>Address : </b><%= Order[i].address.address %></p>
-				<p><b>Date : </b><%= new Date(Order[i].orderDate).toLocaleDateString() %></p>
-			  </td>
-			<td>
-				<form action="/api/updateOrderStatus?id=<%= Order[i]. orderItems[0]._id%>" method="post">
-					<% if( Order[i].orderItems[0].orderStatus != 'delivered' && Order[i].orderItems[0].orderStatus != 'canceled'){ %>
-					<label for="paymentMethod"><h3><b>change status:</b></h3></label>
-					<br>
-					
-					<select id="paymentMethod" name="status" style="padding: 5px; padding-right: 30px;">
-						<option value="<%= Order[i].orderItems[0].orderStatus%>" hidden></option>
-						<option value="pending">pending</option>
-						<option value="shipped">shipped</option>
-						<option value="delivered">delivered</option>
-						<option value="canceled">canceled</option>
-						<option value="ordered">ordered</option>
-					</select>
+					<tr>
+						<td >
+							<p><img src="<%= Order[i].orderItems.Image[0] %>" alt="Product image" class="img-thumbnail"
+									style="max-width: 100px;"></p> 
+						</td>
+						<td>
+							<% if(Order[i].orderItems.orderStatus=='canceled' ){ %>
+								<p style="color: #ff0000;"><b style="color: black;">Status : </b>
+									<%= Order[i].orderItems.orderStatus %>
+								</p>
+								<% }else{ %>
+									<p style="color: #48ff00;"><b style="color: black;">Status : </b>
+										<%= Order[i].orderItems.orderStatus %>
+									</p>
+									<% } %>
+										<p><b>Name : </b>
+											<%= Order[i].orderItems.Pname %>
+										</p>
+										<p><b>Quantity : </b>
+											<%= Order[i].orderItems.quantity %>
+										</p>
+										<p><b>Price: ₹</b>
+											<%= Order[i].orderItems.price %>
+										</p>
+										<p><b>Payment: </b>
+											<%= Order[i].paymentMethod %>
+										</p>
+						</td>
+						<td>
+							<p><b>Name : </b>
+								<%= Order[i].address.name %>
+							</p>
+							<p><b>Phone : </b>
+								<%= Order[i].address.phone %>
+							</p>
+							<!-- <p><%#= Order[i].orderItems[0].quantity %></p> -->
+							<p><b>Address : </b>
+								<%= Order[i].address.address %>
+							</p>
+							<p><b>Date : </b>
+								<%= new Date(Order[i].orderDate).toLocaleDateString() %>
+							</p>
+						</td>
+						<td>
+							<form action="/api/updateOrderStatus?id=<%= Order[i]. orderItems._id%>" method="post">
+								<% if( Order[i].orderItems.orderStatus !=='delivered' && Order[i].orderItems.orderStatus
+									!='canceled' && Order[i].orderItems.orderStatus
+									!='returned' ){ %>
+									<label for="paymentMethod">
+										<h5><b>change status:</b></h5>
+									</label>
+									<br>
 
-					
-					<input type="submit" value="submit" style="width: 100px; height: 30px; background-color: #ffea00;">
-					<% }else if(Order[i].orderItems[0].orderStatus == 'delivered') { %>
-						<p><b><h2><em style="color: #00ff04;"><%= Order[i].orderItems[0].orderStatus%></em></h2></b></p>
-						<% }else if(Order[i].orderItems[0].orderStatus == 'canceled'){ %>
-							<p><b><h2><em style="color: #ff0000;"><%= Order[i].orderItems[0].orderStatus%></em></h2></b></p>
-							<% } %>
-				</form>	
-					
+									<select id="paymentMethod" name="status" style="padding: 5px; padding-right: 30px;">
+										<option value="<%= Order[i].orderItems.orderStatus%>" hidden></option>
+										<option value="pending">pending</option>
+										<option value="shipped">shipped</option>
+										<option value="delivered">delivered</option>
+									</select>
 
-			  
-			</td>
-			
 
-		  </tr>
-		<% } %>
-		<% } %>
+									<input type="submit" value="submit"
+										style="width: 100px; height: 30px; background-color: #ffea00;">
+									<% }else if(Order[i].orderItems.orderStatus=='delivered' ) { %>
+										<p><b>
+												<h2><em style="color: #00ff04;">
+														<%= Order[i].orderItems.orderStatus%>
+													</em></h2>
+											</b></p>
+										<% }else if(Order[i].orderItems.orderStatus=='canceled' ){ %>
+											<p><b>
+													<h2><em style="color: #ff0000;">
+															<%= Order[i].orderItems.orderStatus%>
+														</em></h2>
+												</b></p>
+											<% } %>
+							</form>
+
+
+
+						</td>
+
+
+					</tr>
+					<% } %>
+						<% } %>
 		</tbody>
-	  </table>
+	</table>
 
-	
+	<form>
+        <div style="margin-left: 150px;" class="col-12 pb-1 ">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-3">
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        </div>
+    </form>
 
-
-
-	
-
-			
-	
-
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="js/adminhome.js"></script>
 </body>
+
 </html>

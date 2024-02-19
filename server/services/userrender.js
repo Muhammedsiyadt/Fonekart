@@ -7,7 +7,9 @@ const cartdb = require('../model/cartSchema')
 const mongoose = require('mongoose')
 const orderdb = require('../model/orderSchema')
 const wishlistdb = require('../model/wishlistSchema')
-
+const offerdb = require('../model/offerSchema')
+const refferaldb = require('../model/refferalSchema')
+const walletdb = require('../model/walletSchema')
 
 // Slash page (Only /)
 exports.slashpage = async (req, res) => {
@@ -71,10 +73,32 @@ exports.resetpassword = (req, res) => {
 // Home page
 exports.home = async (req, res) => {
     try {
-        const productDetails = await productdb.find({ delete: false })
-        // console.log(productDetails);
-        const categoryDetails = await categorydb.find({ delete: false })
-        // console.log(productDetails);
+        const productDetails = await productdb.aggregate([
+            { $match: { delete: false } },
+            {
+                $lookup: {
+                    from: 'offers',
+                    localField: 'offerId',
+                    foreignField: '_id',
+                    as: 'offerDetails'
+                }
+            }
+        ])
+
+        const categoryDetails = await categorydb.aggregate([
+            { $match: { delete: false } },
+            {
+                $lookup: {
+                    from: 'offers',
+                    localField: 'offerId',
+                    foreignField: '_id',
+                    as: 'offerDetails'
+                }
+            }
+        ])
+
+        // const categoryDetails = await categorydb.find({ delete: false })
+
         res.render('home', { product: productDetails, category: categoryDetails, isLogged: req.session.isLogged })
     } catch (error) {
         console.log(error);
@@ -87,21 +111,32 @@ exports.home = async (req, res) => {
 // === SINGLE PRODUCT PAGE === //
 exports.singleProduct = async (req, res) => {
     try {
-        // Retrieve wishlist from session
+
         const wishlistFromSession = req.session.wishlist;
+        const query = req.query.id
 
-        // Retrieve product details for the single product
-        const singleProduct = await productdb.findOne({ _id: req.query.id });
+        const [singleProduct] = await productdb.aggregate([
+            { $match: { _id: new mongoose.Types.ObjectId(query) } },
+            {
+                $lookup: {
+                    from: 'offers',
+                    localField: 'offerId',
+                    foreignField: '_id',
+                    as: 'offerDetails'
+                }
+            }
+        ])
 
-        // Pass wishlist and product details to the EJS template
-        res.render('singleProductPage', { single: singleProduct, wishlist: wishlistFromSession });
+
+        res.render('singleProductPage', { single: singleProduct, wishlist: wishlistFromSession })
+
     } catch (error) {
         console.log(error);
         res.status(500).send({
             message: "Internal server error",
         });
     }
-};
+}
 
 // === PRODUCT LIST === //
 // exports.categoryProducts = async (req, res) => {
@@ -120,7 +155,18 @@ exports.categoryProducts = async (req, res) => {
         if (req.query.search) {
             products = await productdb.find({ Pname: { $regex: req.query.search, $options: 'i' } });
         } else {
-            products = await productdb.find({ Pcategory: req.query.category });
+            products = await productdb.aggregate([
+                { $match: { delete: false, Pcategory: req.query.category } },
+                {
+                    $lookup: {
+                        from: 'offers',
+                        localField: 'offerId',
+                        foreignField: '_id',
+                        as: 'offerDetails'
+                    }
+                }
+            ]);
+
         }
 
         res.render('productList', { productList: products });
@@ -239,7 +285,24 @@ exports.cartPage = async (req, res) => {
 
     try {
 
-        let userCart = await cartdb.aggregate([
+        // let userCart = await cartdb.aggregate([
+        //     {
+        //         $match: { user_id: new mongoose.Types.ObjectId(user_Id) }
+        //     },
+        //     {
+        //         $unwind: '$cartItems'
+        //     },
+        //     {
+        //         $lookup: {
+        //             from: 'productdbs',
+        //             localField: 'cartItems.productId',
+        //             foreignField: '_id',
+        //             as: 'productDetails'
+        //         }
+
+        //     }
+        // ])
+        const userCart = await cartdb.aggregate([
             {
                 $match: { user_id: new mongoose.Types.ObjectId(user_Id) }
             },
@@ -253,12 +316,21 @@ exports.cartPage = async (req, res) => {
                     foreignField: '_id',
                     as: 'productDetails'
                 }
+            },
+            {
+                $lookup: {
+                    from: 'offers',
+                    localField: 'productDetails.offerId',
+                    foreignField: '_id',
+                    as: 'offerDetails'
+                }
             }
-        ])
+        ]);
 
-        res.render('cart', { cartData: userCart })
+        res.render('cart', { cartData: userCart });
+
     } catch (error) {
-        console.log(error);
+        console.log(error)
     }
 }
 
@@ -272,6 +344,7 @@ exports.checkout = async (req, res) => {
     const maxError = req.session.maxErr
     const notAvailableCoupon = req.session.notAvailable
     const success = req.session.success
+    const expired = req.session.expiredCoupon
 
     try {
 
@@ -291,12 +364,10 @@ exports.checkout = async (req, res) => {
                 }
             }
         ])
-        // console.log('siyaaad', checkoutData);
 
+        const wallet = await walletdb.findOne({ userId: user_Id }) 
 
         const addressData = await addressdb.findOne({ user_Id: user_Id, 'address.defaultAddress': true })
-
-        // console.log('shahaaaaam',addressData);
 
         res.render('checkout', {
             Checkout: checkoutData,
@@ -304,17 +375,18 @@ exports.checkout = async (req, res) => {
             totalUsingCoupon: TotalPriceChangeUsingCoupon,
             maxError: maxError,
             notAvailable: notAvailableCoupon,
-            success: success
+            success: success,
+            expired: expired,
+            walletInfo: wallet
         }, (err, html) => {
             if (err) {
                 return res.status(500).send(err)
             }
-
-            // Clear session variables
             delete req.session.total;
             delete req.session.maxErr;
             delete req.session.notAvailable;
             delete req.session.success;
+            delete req.session.expiredCoupon
 
             res.status(200).send(html)
         });
@@ -331,24 +403,59 @@ exports.checkout = async (req, res) => {
 // order list page 
 exports.orderList = async (req, res) => {
     try {
+        const user_Id = req.session.userId;
+        const page = req.query.page || 1;
+        const limit = 5;
 
-        const user_Id = req.session.userId
-        // console.log(user_Id);
 
         const orderData = await orderdb.aggregate([
             {
                 $match: { user_id: new mongoose.Types.ObjectId(user_Id) }
             },
             {
+                $sort: { 'orderDate': -1 }
+            },
+            {
                 $unwind: '$orderItems'
+            },
+            {
+                $skip: limit * (page - 1)
+            },
+            {
+                $limit: limit
             }
         ])
-        // console.log(orderData);
-        res.render('orderListPageUser', { OrderData: orderData })
+
+
+
+
+        const totalOrders = await orderdb.aggregate([
+            {
+                $match: { user_id: new mongoose.Types.ObjectId(user_Id) }
+            },
+            {
+                $group: {
+                    _id: null,
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+
+        const totalCount = totalOrders.length > 0 ? totalOrders[0].count : 0;
+
+
+        const totalPages = Math.ceil(totalCount / limit);
+
+
+        res.render('orderListPageUser', { OrderData: orderData, totalPages: totalPages });
     } catch (error) {
 
+        console.error(error);
+        res.status(500).send('Internal Server Error');
     }
 }
+
 
 // ORDER SUCCESS PAGE //
 exports.orderSuccessPage = (req, res) => {
@@ -358,13 +465,13 @@ exports.orderSuccessPage = (req, res) => {
 
 
 // === WISHL LIST === //
-exports.wishlist = async (req,res) => {
+exports.wishlist = async (req, res) => {
+    const user_Id = req.session.userId;
+    const queryid = req.query.id;
+    const page = req.query.page || 1;
+    const limit = 5
 
-    const user_Id = req.session.userId
-    const queryid = req.query.id
-    
     try {
-
         let userWishlist = await wishlistdb.aggregate([
             {
                 $match: { user_id: new mongoose.Types.ObjectId(user_Id) }
@@ -374,23 +481,52 @@ exports.wishlist = async (req,res) => {
             },
             {
                 $lookup: {
-                    from: 'productdbs',  
+                    from: 'productdbs',
                     localField: 'wishlistItems.productId',
                     foreignField: '_id',
                     as: 'WishlistDetails'
                 }
             }
         ]);
-        
-        // console.log('dddddddddddddddddddddddd',userWishlist);
 
-        res.render('wishlist', { wishlistData: userWishlist })
+
+        const totalCount = userWishlist.length;
+
+        const totalPages = Math.ceil(totalCount / limit);
+
+        const currentPage = Math.min(page, totalPages);
+
+        const startIndex = (currentPage - 1) * limit;
+
+        const itemsOnPage = userWishlist.slice(startIndex, startIndex + limit);
+
+        res.render('wishlist', {
+            wishlistData: itemsOnPage,
+            currentPage: currentPage,
+            totalPages: totalPages
+        });
     } catch (error) {
         console.log(error);
     }
 }
 
 
+// WALLET =====//
+exports.wallet = async (req, res) => {
+    try {
+        const userId = req.session.userId
+        const wallet = await walletdb.findOne({ userId: userId })
+        res.render('wallet', { walletInfo: wallet })
+    } catch (error) {
+        console.log(error)
+        res.status(500).send('internal server error')
+    }
+}
+
+
+// exports.razorpay = async(req,res) => {
+//     await res.render('razorpay_payment_page')
+// }
 
 
 

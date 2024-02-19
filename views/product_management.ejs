@@ -57,10 +57,7 @@
 
 	<!-- SIDEBAR -->
 	<section id="sidebar" style="border-radius: 20px; background-color: white;">
-		<!-- <a href="#"  class="brand" style="margin-left: 70px;"> -->
-		<!-- <i class='bx bxs-smile'></i> -->
-		<!-- <span  class="text">Fonekart</span> -->
-		<!-- </a> -->
+		
 		<h1 style="margin-left: 45px; margin-top: 20px; font-size: 45px;">Fonekart</h1>
 		<ul class="side-menu top">
 			<li>
@@ -105,14 +102,15 @@
 					<span class="text">Offer_Management</span>
 				</a>
 			</li>
+			<li >
+				<a href="/refferalOffer">
+					<i class='bx bxs-group'></i>
+					<span class="text">Refferal_Offer</span>
+				</a>
+			</li>
 		</ul>
 		<ul class="side-menu">
-			<!-- <li>
-					<a href="#">
-						<i class='bx bxs-cog' ></i>
-						<span class="text">Settings</span>
-					</a>
-				</li> -->
+			
 			<li>
 				<a href="/adminlogin" class="logout">
 					<i class='bx bxs-log-out-circle'></i>
@@ -125,50 +123,54 @@
 	<!-- SIDEBAR -->
 
 	<h1 style="margin-left: 320px; margin-top: 30px; color: rgb(35, 34, 43);">PRODUCT MANAGEMENT</h1>
-	<!-- <h1 style="margin-left: 300px; margin-top: 25px;  color: blue;"><b><em>PRODUCT MANAGEMENT</em></b></h1> -->
 
-	<div style="margin-top: 10px;">
+    <div style="margin-top: 10px;">
 
-		<a href="/product/add-product" style="margin-left: 305px; "><button style="padding: 10px;  width: 200px;"><b>+
-					Add product</b></button></a>
-		<span><a href="/product/delete-product"><button style="padding: 10px; width: 200px; "><b>Unlisted product</b></button></a></span>
-		<table style="margin-left: 310px;  width: 75%; border-radius: 50px;  margin-top: 0;">
-			<thead>
-				<tr>
-					<th>Image</th>
-					<th>category</th>
-					<th>Name</th>
-					<th>Price</th>
-					<th>Quantity</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				<% if(typeof product !=='undefined' ){ %>
-					<% for (let i=0; i < product.length; i++){ %>
-						<tr>
-							<td><img  src="<%= product[i].images[0] %>" alt="product image"></td>
-							<td><%= product[i].Pcategory %></td>
-							<td><%= product[i].Pname %></td>
-							<td><%= product[i].price %></td>
-							<td><%= product[i].quantity %></td>
-							<td class="action-buttons">
-								<a href="/product/edit-product?id=<%= product[i]._id %>"><button
-										style="background-color: rgb(94, 224, 94); width: 60px; height: 30px; width: 70px; border-radius: 10px;"
-										class="edit">Edit</button></a>
-								<a href="/product/delete-products?id=<%= product[i]._id %>"><button
-										style="background-color: rgb(233, 85, 85); width: 60px; height: 30px; width: 70px; border-radius: 10px;"
-										class="delete">Delete</button></a>
-							</td>
-						</tr>
-					<% } %>
-				<% } %>
-			</tbody>
+        <a href="/product/add-product" style="margin-left: 305px; "><button style="padding: 10px; width: 200px;"><b>+ Add product</b></button></a>
+        <span><a href="/product/delete-product"><button style="padding: 10px; width: 200px; "><b>Unlisted product</b></button></a></span>
+        <table style="margin-left: 310px; width: 75%; border-radius: 50px; margin-top: 0;">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Category</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (typeof product !== 'undefined') { %>
+                    <% for (let i = 0; i < product.length; i++) { %>
+                        <tr>
+                            <td><img src="<%= product[i].images[0] %>" alt="product image"></td>
+                            <td><%= product[i].Pcategory %></td>
+                            <td><%= product[i].Pname %></td>
+                            <td><%= product[i].price %></td>
+                            <td><%= product[i].quantity %></td>
+                            <td class="action-buttons">
+                                <a href="/product/edit-product?id=<%= product[i]._id %>"><button style="background-color: rgb(94, 224, 94); width: 60px; height: 30px; width: 70px; border-radius: 10px;" class="edit">Edit</button></a>
+                                <a href="/product/delete-products?id=<%= product[i]._id %>"><button style="background-color: rgb(233, 85, 85); width: 60px; height: 30px; width: 70px; border-radius: 10px;" class="delete">Delete</button></a>
+                            </td>
+                        </tr>
+                    <% } %>
+                <% } %>
+            </tbody>
+        </table>
 
-		</table>
-	</div>
+        <!-- Pagination -->
+        <div style="margin-top: 20px; margin-left: 200px; text-align: center;">
+            <% if (totalPages > 1) { %>
+                <% for (let page = 1; page <= totalPages; page++) { %>
+                    <a  href="/product_management?page=<%= page %>" style="margin-right: 5px; background-color: #ffffff; padding: 8px; border:rgb(255, 0, 51) 1px solid;"><%= page %></a>
+                <% } %>
+            <% } %>
+        </div>
+        <!-- End Pagination -->
 
-	<script src="/js/adminhome.js"></script>
+    </div>
+
+    <script src="/js/adminhome.js"></script>
 
 </body>
 

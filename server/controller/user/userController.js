@@ -9,9 +9,17 @@ const cartdb = require('../../model/cartSchema');
 const productdb = require('../../model/productSchema')
 const orderdb = require('../../model/orderSchema')
 var object = require('mongoose').ObjectId
-const Razorpay = require('razorpay')
 const coupondb = require('../../model/couponSchema')
 const wishlistdb = require('../../model/wishlistSchema')
+const walletdb = require('../../model/walletSchema')
+
+const Razorpay = require('razorpay');
+
+
+
+
+
+
 
 
 
@@ -165,7 +173,7 @@ exports.register = async (req, res) => {
     req.session.userData = req.body
 
     req.session.userEmail = req.body.email
-    req.session.user_id = req.body._id
+    // req.session.user_id = req.body._id
     req.session.pass = req.body.password
     // console.log(req.body._id);
 
@@ -617,160 +625,168 @@ exports.updateCartQuantity = async (req, res, next) => {
 }
 
 
+
+
+
 // === ORDERDB SAVING === // 
-exports.saveToOrderdb = async (req, res) => {
+
+exports.postingOrder = async (req, res) => {
+
+
+    const userId = req.session.userId;
 
     try {
-        const user_Id = req.session.userId
-        const paymentMethod = req.body.paymentMethod
 
-
-        if (paymentMethod === 'cashOnDelivery') {
-            const address = await addressdb.aggregate([{
-                $unwind: "$address"
-            }, { $match: { user_Id: new mongoose.Types.ObjectId(user_Id), 'address.defaultAddress': true } }])
-            console.log('addresssss', address)
-
-            if (address.length == 0) {
-                return res.status(405).send('Add Address') 
-            }
-
-            if (!req.body.paymentMethod) {
-
-                return res.status(404).send('Choose Any Payment Method')
-            }
-
-
-            const data1 = await cartdb.findOne({ user_id: user_Id })
-
-
-            for (const product of data1.cartItems) {
-
-                const qty = Number(product.quantity);
-
-                const products = await productdb.findOne(
-                    { _id: product.productId }
-                )
-
-                if (products.quantity < qty) {
-
-                    return res.status(400).send('out of Stock')
-
+        const [data] = await addressdb.aggregate([
+            { $match: { user_Id: new mongoose.Types.ObjectId(userId) } },
+            { $unwind: "$address" },
+            { $match: { "address.defaultAddress": true } },
+            {
+                $project: {
+                    _id: "$address._id",
+                    name: "$address.name",
+                    address: "$address.address",
+                    district: "$address.district",
+                    city: "$address.city",
+                    phone: "$address.phone",
+                    pin: "$address.pin",
+                    userId: "$userId"
                 }
+            },
+        ]);
 
-            }
 
 
-            // Orderdb Data Creation
-            let userCart = await cartdb.aggregate([
-                {
-                    $match: { user_id: new mongoose.Types.ObjectId(user_Id) }
-                },
-                {
-                    $unwind: "$cartItems"
-                },
-                {
-                    $lookup: {
-                        from: "productdbs",
-                        localField: "cartItems.productId",
-                        foreignField: "_id",
-                        as: "productDetails"
-
-                    }
+        const cartProducts = await cartdb.aggregate([
+            { $match: { user_id: new mongoose.Types.ObjectId(userId) } },
+            { $unwind: '$cartItems' },
+            {
+                $lookup: {
+                    from: 'productdbs',
+                    localField: 'cartItems.productId',
+                    foreignField: '_id',
+                    as: 'productDetails'
                 }
-            ])
+            },
+            { $unwind: '$productDetails' }
+        ])
 
-            // console.log("After lookup", userCart)
+        console.log(cartProducts);
 
-            let products = []
 
-            userCart.forEach((data) => {
+        let subtotal = cartProducts.reduce((total, item) => {
+            return total + parseInt(item.productDetails.price * item.cartItems.quantity);
+        }, 0)
 
-                products.push({
-                    productId: data.cartItems.productId,
-                    quantity: data.cartItems.quantity,
-                    Pname: data.productDetails[0].Pname,
-                    category: data.productDetails[0].Pcategory,
-                    color: data.productDetails[0].color,
-                    Image: data.productDetails[0].images,
-                    price: data.productDetails[0].price,
+        const orderItems = cartProducts.map((element) => {
+            return {
+                productId: element.cartItems.productId,
+                Image: element.productDetails.images[0],
+                Pname: element.productDetails.Pname,
+                category: element.productDetails.Pcategory,
+                price: element.productDetails.price,
+                quantity: element.cartItems.quantity,
+                color: element.productDetails.color,
+                Pmodel: element.productDetails.Pmodel,
+            }
+        })
 
-                })
 
+
+        orderItems.forEach(async (element) => {
+            await productdb.updateOne(
+                { _id: element.productId },
+                { $inc: { quantity: -element.quantity } }
+            );
+        })
+
+        const newOrder = new orderdb({
+            user_id: userId,
+            orderItems: orderItems,
+            address: data,
+            paymentMethod: req.body.paymentMethod === "cod" ? "cod" : req.body.paymentMethod === "onlinePayment"
+        });
+
+        if (req.body.paymentMethod === "cod") {
+            await newOrder.save();
+            req.session.newOrder = newOrder;
+
+            await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
+
+            req.session.orderSuccessPage = true;
+            return res.status(200).json({
+                success: true,
+                url: "/orderSuccessPage",
+                paymentMethod: "cod",
             })
-
-            const ValueAddress = {
-                name: address[0].address.name,
-                phone: address[0].address.phone,
-                address: address[0].address.address,
-                city: address[0].address.city,
-                pin: address[0].address.pin,
-                district: address[0].address.district,
-            }
-
-
-
-
-
-            let order = new orderdb({
-                user_id: user_Id,
-                orderItems: products,
-                paymentMethod: req.body.paymentMethod,
-                address: ValueAddress,
-
-
-            });
-
-            // console.log(order);
-
-            // DATA SAVE TO ORDERDB
-            await order.save()
-
-
-            // stockManagment  
-            const orderId = order._id
-            console.log('1111111111', orderId);
-            const data = await orderdb.aggregate(
-                [
-                    {
-                        '$match': {
-                            '_id': new mongoose.Types.ObjectId(orderId)
-                        }
-                    }
-                ]
-            )
-
-
-            // Decreasing The Quantity From The Product Db
-            for (const product of data[0].orderItems) {
-
-                const update = Number(product.quantity);
-                await productdb.findOneAndUpdate(
-                    { _id: product.productId },
-                    { $inc: { quantity: -update } }
-                )
-
-            }
-
-
-
-
-            // CARTDB CLEAR
-            await cartdb.updateMany({ user_id: user_Id }, { $set: { cartItems: [] } })
-
-            res.redirect('/orderSuccessPage')
-        } else {
-
         }
 
 
+        if (req.body.paymentMethod === "onlinePayment") {
 
+            const razorpayInstance = new Razorpay({
+                key_id: process.env.key_id || "rzp_test_inNDLEzjcNEB4V",
+                key_secret: process.env.key_secret || "zLiACER7KwWbTAVg8XcylyjE"
+            })
+
+
+            const amount = subtotal * 100;
+
+            const options = {
+                amount,
+                currency: "INR",
+                receipt: "" + newOrder._id,
+            };
+
+            const order = await razorpayInstance.orders.create(options);
+
+            req.session.newOrder = newOrder;
+            console.log(order);
+
+
+            return res.status(200).json({
+                success: true,
+                msg: 'order created',
+                key_id: process.env.key_id,
+                order: order,
+                paymentMethod: "onlinePayment"
+            });
+        }
 
     } catch (error) {
+        console.log(error);
+        return res.status(500).send("Error in Payment")
+    }
+};
 
-        res.send(error)
+exports.orderSuccessful = async (req, res) => {
+    try {
+
+        const userId = req.session.userId;
+        const crypto = require("crypto");
+
+        const hmac = crypto.createHmac("sha256", process.env.key_secret);
+        hmac.update(
+            req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id
+        );
+
+        if (hmac.digest("hex") === req.body.razorpay_signature) {
+            const newOrder = new orderdb(req.session.newOrder)
+            await newOrder.save()
+
+            await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
+
+            req.session.orderSucessPage = true;
+            return res.status(200).redirect("/orderSuccessPage");
+        } else {
+            return res.send("Order Failed");
+        }
+    } catch (err) {
+        console.error("order razorpay err", err);
+        res.status(500).send("internal server error");
     }
 }
+
 
 // COUPON //
 // appy coupon 
@@ -781,10 +797,17 @@ exports.applyCoupon = async (req, res) => {
     try {
 
         const userCode = req.body.couponCode
-        // console.log(userCode);
+
         const coupon = await coupondb.findOne({ Code: userCode });
 
         if (coupon) {
+
+            if (coupon.status === false) {
+                req.session.expiredCoupon = 'Coupon is expired';
+                res.redirect('/cart/checkout');
+                return;
+            }
+
             const result = await cartdb.aggregate([
                 { $match: { user_id: new mongoose.Types.ObjectId(user_Id) } },
                 { $unwind: { path: "$cartItems" } },
@@ -817,18 +840,13 @@ exports.applyCoupon = async (req, res) => {
 
             } else {
 
-                req.session.maxErr = 'Total amount exceeds maximum price allowed by the coupon.';
+                req.session.maxErr = 'Total price is below the Maximum price';
                 res.redirect('/cart/checkout');
             }
         } else {
             req.session.notAvailable = 'Coupon Not Available';
             res.redirect('/cart/checkout');
         }
-
-
-
-
-
 
 
     } catch (error) {
@@ -853,16 +871,54 @@ exports.cancelOrder = async (req, res) => {
                 $set: { 'orderItems.$.orderStatus': 'canceled' }
             },
             {
-                new: true // Return the modified document
+                new: true
             }
-        );
+        )
 
         res.redirect('/orderList')
-        // console.log(findAndUpdate);
+
     } catch (error) {
         console.log(error);
     }
 }
+
+// Return
+exports.return = async (req, res) => {
+    const query = req.query.id;
+    const user_Id = req.session.userId;
+
+    try {
+        // Find the order and update the order status to 'returned'
+        const findAndUpdate = await orderdb.findOneAndUpdate(
+            {
+                user_id: user_Id,
+                'orderItems._id': query
+            },
+            {
+                $set: { 'orderItems.$.orderStatus': 'returned' }
+            },
+            {
+                new: true
+            }
+        );
+
+        const returnedProduct = findAndUpdate.orderItems.find(item => item._id.toString() === query);
+        const returnedProductPrice = returnedProduct.price;
+
+        const userWallet = await walletdb.findOne({ userId: user_Id });
+
+        userWallet.balance += returnedProductPrice;
+
+        userWallet.transactions.push({ amount: returnedProductPrice });
+
+        await userWallet.save();
+
+        res.redirect('/orderList')
+    } catch (error) {
+        console.error("Error returning product:", error);
+        res.status(500).send("Internal Server Error");
+    }
+};
 
 
 // Wish list ( Home - Whish list)
@@ -874,25 +930,24 @@ exports.homeProductToWishlist = async (req, res) => {
         let whishlist = await wishlistdb.findOne({ user_id: userId });
 
         if (!whishlist) {
-            // If the user does not have a cart, create a new one
+
             whishlist = new wishlistdb({
                 user_id: userId,
                 wishlistItems: [{ productId: queryId }],
             });
         } else {
-            // Check if the product is already in the cart
+
             const isProductInWishList = whishlist.wishlistItems.some(item => item.productId.equals(queryId));
 
             if (!isProductInWishList) {
-                // If the product is not in the cart, add it
+
                 whishlist.wishlistItems.push({ productId: queryId });
             }
         }
 
-        // Save the updated cart
         await whishlist.save()
 
-        // button change
+
         req.session.wishlist = whishlist
 
         res.redirect('/home')
@@ -914,25 +969,25 @@ exports.addToWishlistFromSingleProduct = async (req, res) => {
         let whishlist = await wishlistdb.findOne({ user_id: userId });
 
         if (!whishlist) {
-            // If the user does not have a cart, create a new one
+
             whishlist = new wishlistdb({
                 user_id: userId,
                 wishlistItems: [{ productId: queryId }],
             });
         } else {
-            // Check if the product is already in the cart
+
             const isProductInWishList = whishlist.wishlistItems.some(item => item.productId.equals(queryId));
 
             if (!isProductInWishList) {
-                // If the product is not in the cart, add it
+
                 whishlist.wishlistItems.push({ productId: queryId });
             }
         }
 
-        // Save the updated cart
+
         await whishlist.save()
 
-        // button change
+
         req.session.wishlist = whishlist
 
         res.redirect(`/home/singleProduct?id=${queryId}`)
@@ -958,9 +1013,9 @@ exports.deleteWishListFromWishlistPage = async (req, res) => {
 
         res.redirect('/wishlist')
     } catch (error) {
-        // Handle any errors
+
         console.error('Error deleting wishlist item:', error);
-        // Send a response indicating failure if needed
+
         res.status(500).send('Error deleting wishlist item');
     }
 }
@@ -974,22 +1029,22 @@ exports.wishlistAddToCartdb = async (req, res) => {
         let cart = await cartdb.findOne({ user_id: userId });
 
         if (!cart) {
-            // If the user does not have a cart, create a new one
+
             cart = new cartdb({
                 user_id: userId,
                 cartItems: [{ productId: queryId }],
             });
         } else {
-            // Check if the product is already in the cart
+
             const isProductInCart = cart.cartItems.some(item => item.productId.equals(queryId));
 
             if (!isProductInCart) {
-                // If the product is not in the cart, add it
+
                 cart.cartItems.push({ productId: queryId });
             }
         }
 
-        // Save the updated cart
+
         await cart.save()
         res.redirect('/cart')
     } catch (err) {
@@ -997,6 +1052,71 @@ exports.wishlistAddToCartdb = async (req, res) => {
         res.status(500).send({
             message: "Internal server error",
         })
+    }
+}
+
+
+// WALLET MONEY //
+// add money to wallet
+exports.addWalletMoney = async (req, res) => {
+    console.log(req.body.amount);
+    const razorpayInstance = new Razorpay({
+        key_id: process.env.key_id || "rzp_test_inNDLEzjcNEB4V",
+        key_secret: process.env.key_secret || "zLiACER7KwWbTAVg8XcylyjE"
+    })
+
+    try {
+        req.session.walletAmount = req.body.amount;
+        const amount = Number(req.body.amount) * 100
+        const options = {
+            amount: amount,
+            currency: "INR",
+            receipt: "wallet",
+        };
+
+        const wallet = await razorpayInstance.orders.create(options);
+
+        return res.status(200).json({
+            success: true,
+            msg: 'money sucessfully added',
+            key_id: razorpayInstance.key_id,
+            wallet: wallet
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("internal server error")
+    }
+}
+
+exports.addWalletMoneySuccessful = async (req, res) => {
+    const userId = req.session.userId
+    try {
+        const crypto = require("crypto")
+
+        const hmac = crypto.createHmac("sha256", process.env.key_secret);
+        hmac.update(
+            req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id
+        );
+
+        if (hmac.digest("hex") === req.body.razorpay_signature) {
+            await walletdb.updateOne({ userId: req.session.userId }, { $inc: { balance: req.session.walletAmount } }, { upsert: true })
+            const w = await walletdb.findOneAndUpdate({ userId: req.session.userId },
+                {
+                    $push: {
+                        'transactions': {
+                            amount: req.session.walletAmount,
+                        }
+                    }
+                })
+            req.session.orderSucessPage = true;
+            return res.status(200).redirect("/wallet");
+        } else {
+            return res.send("adding Failed");
+        }
+    } catch (err) {
+        console.error("add razorpay err", err);
+        res.status(500).send("Internal Server Error");
     }
 }
 

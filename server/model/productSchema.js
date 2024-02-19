@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
 
 var productSchema = new mongoose.Schema({
@@ -33,6 +34,9 @@ var productSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
+    offerId:{
+        type:ObjectId
+    }
     
 }) 
 

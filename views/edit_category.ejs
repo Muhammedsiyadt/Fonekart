@@ -57,7 +57,7 @@
 
 <body style="display: flex; justify-content: center; align-items: center; height: 60vh;">
 
-    <form action="/api/submitEdit_category?id=<%= editCategory._id %>" method="post" enctype="multipart/form-data" onsubmit="edit(); return false;">
+    <form action="/api/submitEdit_category?id=<%= editCategory?._id %>" method="post" enctype="multipart/form-data" onsubmit="edit(); return false;">
         <div id="category-form">
             <!-- <a href="/Categary_management"><button>Back</button></a> -->
             <h2 style="padding: .5rem; margin-left: 140px; color: rgb(153, 255, 0);"><em>Edit Category</em></h2>
@@ -68,14 +68,14 @@
                     <% if(typeof message !== 'undefined'){ %>
                         <p style="color: red;"><%= message %></p>
                         <% } %>
-                    <input style="padding:.5rem;" type="text" value="<%= editCategory.category %>" name="name"
+                    <input style="padding:.5rem;" type="text" value="<%= editCategory?.category %>" name="name"
                         class="category-name" id="name">
                     <p id="nameErr" style="color: red;"></p>
 
                 </div>
 
                 <div style="margin-left: 80px; display: flex; gap: 20px; align-items: center;">
-                    <img name="image" style="width: 90px; height: 110px; " src="<%= editCategory.image %>" alt=""
+                    <img name="image" style="width: 90px; height: 110px; " src="<%= editCategory?.image %>" alt=""
                         id="img">
 
                     <!-- <div><button class="delete-button">Delete</button></div> -->
@@ -95,32 +95,37 @@
     </form>
 
     <script>
-
-       function edit() {
-            const name = document.getElementById('name').value
-            const file = document.getElementById('file').value
-
-            const nameErr = document.getElementById('nameErr')
-            const imgErr = document.getElementById('imgErr') 
-
+        function edit() {
+            const name = document.getElementById('name').value;
+            const fileInput = document.getElementById('file');
+            const file = fileInput.value;
+    
+            const nameErr = document.getElementById('nameErr');
+            const imgErr = document.getElementById('imgErr'); 
+    
             const nameErrmsg = [];
             const imgErrmsg = [];
-
+    
             if (name.trim() === "") {
                 nameErrmsg.push("This field is required");
             }
             nameErr.innerHTML = nameErrmsg.join(", ");
-
-            if (file.trim === "") {
-                imgErrmsg.push("This field is required");
+    
+            // Check if a new file is selected
+            const isNewFileSelected = fileInput.files && fileInput.files.length > 0;
+    
+            if (!isNewFileSelected && file.trim() === "") {
+                imgErrmsg.push("Please select an image");
             }
             imgErr.innerHTML = imgErrmsg.join(", ");
-
+    
             if (nameErrmsg.length === 0 && imgErrmsg.length === 0) {
+                // If no errors, submit the form
                 document.forms[0].submit();
             }
         }
     </script>
+    
 
 </body>
 

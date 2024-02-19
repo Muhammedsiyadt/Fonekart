@@ -42,7 +42,7 @@
         </div>
     </nav>
 
-    <div class="container mt-5 mb-5">
+    <div class="container-fluid mt-5 mb-5">
         <div class="row d-flex justify-content-center" style="margin-top: 100px;">
             <div class="col-md-10">
                 <div class="card">
@@ -50,10 +50,11 @@
                         <div class="col-md-6">
                             <div class="images p-3">
                                 <div class="text-center p-4"> <img id="main-image" src="<%= single.images[0] %>"
-                                        width="250" /> </div>
+                                        width="250" /></div>
                                 <div class="thumbnail text-center"> <img onclick="change_image(this)"
-                                        src="<%= single.images[0] %>" width="70"> <img onclick="change_image(this)"
-                                        src="<%= single.images[0] %>" width="70">
+                                        src="<%= single.images[1] %>" width="70"> <img onclick="change_image(this)"
+                                        src="<%= single.images[2] %>" width="70"> <img onclick="change_image(this)"
+                                        src="<%= single.images[3] %>" width="70">
                                 </div>
                             </div>
                         </div>
@@ -69,19 +70,36 @@
                                     <h5 class="text-uppercase">
                                         <%= single.Pname %>
                                     </h5>
-                                    <div class="price  align-items-center"> <b>Price:</b>
-                                        <b>₹ <%= single.price %>
-                                            </b>
-                                        <div class=""> <label for="quantity"><b>Quantity:</b>
-                                            <% if(single.quantity == 0){ %>
-                                                <b style="color: red;"><%= single.quantity %></b>
-                                                <% }else{ %>
-                                                    <b><%= single.quantity %></b>
-                                                    <% } %>
+                                    <div class="price  align-items-center"> 
+                                      
+                                        <b>Price:</b>
+                                        <% if (single.offerDetails && single.offerDetails[0] != null) { %>
+                                            <del>₹ <%= single.price %></del><% if (single.offerDetails && single.offerDetails[0] != null) { %>
+                                                <p class="text-success">Offer<%= single.offerDetails[0]?.discount %>%</p> 
+                                        <% } %>
+                                            <b>Offer Price:</b>
+                                            <b class="text-dark">₹ <%= single.price - (single.price * single.offerDetails[0]?.discount / 100) %></b>
                                             
-                                            </label> 
+                                        <% }else{ %>
+                                            <b>₹ <%= single.price %></b>
+                                            <% } %>
+                                        <div class=""> <label for="quantity"><b>Quantity:</b>
+                                                <% if(single.quantity==0){ %>
+                                                    <b style="color: red;">
+                                                        <%= single.quantity %>
+                                                    </b>
+                                                    <% }else{ %>
+                                                        <b>
+                                                            <%= single.quantity %>
+                                                        </b>
+                                                        <% } %>
+
+                                            </label>
                                         </div>
                                     </div>
+                                    
+                                    
+                                    
                                 </div>
                                 <p class="about">Explore a diverse range of cutting-edge gadgets for your everyday
                                     needs. Pair them effortlessly with stylish mobiles to complete your look. Elevate
@@ -99,8 +117,10 @@
                                         </a>
                                         <% } %>
 
-                                        <!-- Wish List Button -->
-                                        <a href="/addToWishlistFromSingleProduct?id=<%= single._id %>"><button style="border-radius: 5px; background: #ffffff; height: 35px;"><i   class="ri-heart-line text-danger h-5"></i></button></a>
+                                            <!-- Wish List Button -->
+                                            <a href="/addToWishlistFromSingleProduct?id=<%= single._id %>"><button
+                                                    style="border-radius: 5px; background: #ffffff; height: 35px;"><i
+                                                        class="ri-heart-line text-danger h-5"></i></button></a>
                             </div>
                         </div>
                     </div>
@@ -141,11 +161,53 @@
     </footer>
 
     <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="js/single.js"></script>
 
-    <script src="js/single.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Change main image when clicking on thumbnail images
+            $(".thumbnail img").click(function () {
+                var newSrc = $(this).attr('src');
+                $("#main-image").attr('src', newSrc);
+            });
+
+            // Image zooming on mouse move over the main image
+            $("#main-image").on({
+                mousemove: function (event) {
+                    var offsetX = event.offsetX;
+                    var offsetY = event.offsetY;
+                    var imgWidth = $(this).width();
+                    var imgHeight = $(this).height();
+                    var mouseXPercent = offsetX / imgWidth * 100;
+                    var mouseYPercent = offsetY / imgHeight * 100;
+                    var scaleAmount = 1.5;
+                    var scaledWidth = imgWidth * scaleAmount;
+                    var scaledHeight = imgHeight * scaleAmount;
+                    var offsetXPercent = (scaledWidth - imgWidth) / 2 / scaledWidth * 100;
+                    var offsetYPercent = (scaledHeight - imgHeight) / 2 / scaledHeight * 100;
+                    $(this).css({
+                        "transform-origin": (mouseXPercent - offsetXPercent) + "% " + (mouseYPercent - offsetYPercent) + "%",
+                        "transform": "scale(" + scaleAmount + ")",
+                        "transition": "transform 0.3s ease"
+                    });
+                },
+                mouseleave: function () {
+                    $(this).css({
+                        "transform": "scale(1)",
+                        "transition": "transform 0.3s ease"
+                    });
+                }
+            });
+        });
+    </script>
+
+
+ 
+
 </body>
 
 </html>

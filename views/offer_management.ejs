@@ -68,14 +68,15 @@
                     <span class="text">Offer Management</span>
                 </a>
             </li>
+            <li >
+				<a href="/refferalOffer">
+					<i class='bx bxs-group'></i>
+					<span class="text">Refferal_Offer</span>
+				</a>
+			</li>
         </ul>
         <ul class="side-menu">
-            <!-- <li>
-                    <a href="#">
-                        <i class='bx bxs-cog' ></i>
-                        <span class="text">Settings</span>
-                    </a>
-                </li> -->
+           
             <li>
                 <a href="/adminlogin" class="logout">
                     <i class='bx bxs-log-out-circle'></i>
@@ -88,29 +89,34 @@
     <h1 style="margin-left: 310px;margin-top: 20px; margin-bottom: 20px; color: rgb(35, 34, 43);">OFFER MANAGEMENT</h1>
 
     <div style="margin-left: 300px;">
-        <button class="btn1"   style="margin-right: 10px; height: 35px; width: 150px; background-color: yellow; border: black 1px solid; border-radius: 5px;">Add Category Offer</button>
-        <button class="btn2"   style="margin-right: 10px; height: 35px; width: 150px; background-color: yellow; border: black 1px solid; border-radius: 5px;">Add Product Offer</button>
+        <a href="/addCategoryOffer"><button class="btn1"   style="margin-right: 10px; height: 35px; width: 150px; background-color: yellow; border: black 1px solid; border-radius: 5px;">Add Category Offer</button></a>
+        <a href="/addProductOffer"><button class="btn2"   style="margin-right: 10px; height: 35px; width: 150px; background-color: yellow; border: black 1px solid; border-radius: 5px;">Add Product Offer</button></a>
     </div>
 
     <table style="width: 77%; margin-left: 300px; margin-top: 20px; border-collapse: collapse;">
-        <thead style="background-color: coral;">
+        <thead style="background-color: rgb(255, 0, 0);">
             <tr style="border-bottom: 1px solid black;">
-                <th style="padding: 10px; text-align: left;">Offer</th>
+                <th style="padding: 10px; text-align: left;">Category/Product</th>
                 <th style="padding: 10px; text-align: left;">Discount</th>
                 <th style="padding: 10px; text-align: left;">Expiry Date</th>
                 <th style="padding: 10px; text-align: left;">Action</th>
             </tr>
         </thead>
         <tbody>
-            <!-- Populate this section dynamically with data from your backend -->
-            <tr style="border-bottom: 1px solid black;">
-                <td style="padding: 10px;">Offer Name</td>
-                <td style="padding: 10px;">10%</td>
-                <td style="padding: 10px;">2024-12-31</td>
-                <td style="padding: 10px;"><button style="height: 30px; width: 50px;">Delete</button></td>
-            </tr>
-            <!-- Repeat this structure for each offer -->
+            <% if (offerData.length !== 0) { %>
+                <% for (let i = 0; i < offerData.length; i++) { %>
+                    <tr style="border-bottom: 1px solid black; background-color: white;">
+                        <td style="padding: 10px;"><%= offerData[i].name %></td>
+                        <td style="padding: 10px;"><%= offerData[i].discount %>%</td>
+                        <td style="padding: 10px;"> <%= new Date(offerData[i].expirydate).toLocaleDateString() %></td>
+                        <td style="padding: 10px;"><a href="/deleteOffer?id=<%= offerData[i]._id %>"><button style="height: 30px; background-color: red; border-radius: 5px; width: 50px;">Delete</button></a></td>
+
+                        
+                    </tr>
+                <% } %>
+            <% } %>
         </tbody>
+        
     </table>
 
     <script src="js/adminhome.js"></script>

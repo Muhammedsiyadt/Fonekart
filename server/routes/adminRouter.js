@@ -13,6 +13,14 @@ adminRouter.get('/adminlogin',services.login)
 // home page 
 adminRouter.get('/adminhome',services.home)
 
+// SALES REPORT
+// daily
+adminRouter.get('/dailyReportDownload',controller.dailyReport)
+// weekly
+adminRouter.get('/weeklyReportDownload',controller.weeklyReport)
+// yearly 
+adminRouter.get('/yearlyReportDownload',controller.yearlyReport)
+
 
 // PRODUCT MANAGEMENT--------------------------------------------------------------------
 // Product management page
@@ -23,7 +31,15 @@ adminRouter.get('/product/add-product',services.add_product)
 adminRouter.get('/product/edit-product',services.edit_product)
 // delete products 
 adminRouter.get('/product/delete-product',services.deleteToUnlist) 
-
+// PRODUCT API
+// add product
+adminRouter.post('/api/addproduct',store.array('file',4),controller.add_product) 
+// submit edited product details
+adminRouter.post('/api/submitEdit_product',store.array('file',4),controller.submitEdit_product)
+// delete product
+adminRouter.get('/product/delete-products',controller.deleteproduct)
+// Unlist to product
+adminRouter.get('/unlistToProduct',controller.unlistToProduct)
 
 
 // User_management page
@@ -63,6 +79,21 @@ adminRouter.post('/api/EditCoupon',controller.submitEditedCoupon)
 
 // OFFER MANAGEMENT ----------------------------------------------------------------------
 adminRouter.get('/Offer_management',services.Offer_management)
+// add category offer
+adminRouter.get('/addCategoryOffer',services.addCategoryOffer) 
+// Save category offer 
+adminRouter.post('/saveToOfferOfCategory',controller.saveToOfferOfCategory)
+// Add product offer
+adminRouter.get('/addProductOffer',services.productOffer)
+// save product offer
+adminRouter.post('/saveProductOffer',controller.saveToOfferOfProduct)
+// Delete offer
+adminRouter.get('/deleteOffer',controller.deleteOffer)
+
+// === REFFEREL OFFER === //
+// refferal offer page admin
+adminRouter.get('/refferalOffer',services.refferalOffer)
+
 
 
 // api 
@@ -82,15 +113,7 @@ adminRouter.get('/category/delete-category',controller.deletecategory)
 // Unlist to category
 adminRouter.get('/unlistToCategory',controller.unlistToCategory)
 
-// PRODUCT API
-// add product
-adminRouter.post('/api/addproduct',store.array('file',4),controller.add_product) 
-// submit edited product details
-adminRouter.post('/api/submitEdit_product',store.array('file',4),controller.submitEdit_product)
-// delete product
-adminRouter.get('/product/delete-products',controller.deleteproduct)
-// Unlist to product
-adminRouter.get('/unlistToProduct',controller.unlistToProduct)
+
 
 
 // ORDER STATUS UPDATION

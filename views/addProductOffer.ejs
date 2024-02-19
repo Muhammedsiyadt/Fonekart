@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Category Offer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f7f7f7;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+
+    <form id="addOfferForm" action="/saveProductOffer" method="post">
+        <label for="productName">product Name</label>
+        <select style="width: 300px; height: 30px;" class="form-control" name="product" id="categoryName">
+            <% for(let i=0; i<productData.length; i++) { %>
+                <option>
+                    <%= productData[i].Pname %>
+                </option>
+                <% } %>
+        </select>
+        <p id="categoryError" style="color: red;"></p>
+
+        <label for="discount">Discount (%)</label>
+        <input type="number" id="discount" name="discount" min="0">
+        <p id="discountError" style="color: red;"></p>
+
+        <label for="expiryDate">Expiry Date</label>
+        <input type="date" id="expiryDate" name="expiryDate">
+        <p id="expiryDateError" style="color: red;"></p>
+
+        <button type="submit">Add</button>
+    </form>
+
+
+    <script>
+        document.getElementById("addOfferForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent the form from submitting by default
+
+            // Validate the form fields
+            const product = document.getElementById("categoryName").value.trim();
+            const discount = document.getElementById("discount").value.trim();
+            const expiryDate = document.getElementById("expiryDate").value.trim();
+
+            let isValid = true;
+
+            // Clear previous error messages
+            document.getElementById("categoryError").innerText = "";
+            document.getElementById("discountError").innerText = "";
+            document.getElementById("expiryDateError").innerText = "";
+
+            // Validate Product Name
+            if (product === "") {
+                document.getElementById("categoryError").innerText = "Please select a product.";
+                isValid = false;
+            }
+
+            // Validate Discount
+            if (discount === "") {
+                document.getElementById("discountError").innerText = "Please enter a discount.";
+                isValid = false;
+            } else if (parseInt(discount) < 0) {
+                document.getElementById("discountError").innerText = "Discount must be a positive number.";
+                isValid = false;
+            }
+
+            // Validate Expiry Date
+            if (expiryDate === "") {
+                document.getElementById("expiryDateError").innerText = "Please select an expiry date.";
+                isValid = false;
+            } else {
+                const currentDate = new Date();
+                const selectedDate = new Date(expiryDate);
+                if (selectedDate < currentDate) {
+                    document.getElementById("expiryDateError").innerText = "Expiry Date must be in the future.";
+                    isValid = false;
+                }
+            }
+
+            // If the form is valid, submit it
+            if (isValid) {
+                this.submit();
+            }
+        });
+    </script>
+
+
+</body>
+
+</html>

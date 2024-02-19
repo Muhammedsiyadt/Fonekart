@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Referral Offer Administration</title>
+<link rel="stylesheet" href="css/adminhome.css">
+<style>
+    
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    table {
+        width: 1120px;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: center;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    .delete-btn {
+        background-color: #ff4d4d;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        
+        transition: background-color 0.3s;
+    }
+    .delete-btn:hover {
+        background-color: #ff6666;
+    }
+</style>
+</head>
+<body>
+
+	<section id="sidebar" style="background-color: white;">
+        <!-- <a href="#" class="brand" style="margin-left: 70px;"> -->
+        <!-- <i class='bx bxs-smile'></i> -->
+        <!-- <span class="text">Fonekart</span> -->
+        <!-- </a> -->
+        <h1 style="margin-left: 45px; margin-top: 20px; font-size: 45px;">Fonekart</h1>
+        <ul class="side-menu top">
+            <li>
+                <a href="/adminhome">
+                    <i class='bx bxs-dashboard'></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/product_management">
+                    <i class='bx bxs-shopping-bag-alt'></i>
+                    <span class="text">Product Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="/User_management">
+                    <i class='bx bxs-doughnut-chart'></i>
+                    <span class="text">User Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="/Order_management">
+                    <i class='bx bxs-message-dots'></i>
+                    <span class="text">Order Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="/Categary_management">
+                    <i class='bx bxs-group'></i>
+                    <span class="text">Categary Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="/Coupon_management">
+                    <i class='bx bxs-group'></i>
+                    <span class="text">Coupon Management</span>
+                </a>
+            </li>
+            <li >
+                <a href="/Offer_management">
+                    <i class='bx bxs-group'></i>
+                    <span class="text">Offer Management</span>
+                </a>
+            </li>
+            <li class="active">
+				<a href="/refferalOffer">
+					<i class='bx bxs-group'></i>
+					<span class="text">Refferal_Offer</span>
+				</a>
+			</li>
+        </ul>
+        <ul class="side-menu">
+           
+            <li>
+                <a href="/adminlogin" class="logout">
+                    <i class='bx bxs-log-out-circle'></i>
+                    <span class="text">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+
+	<h1 style="margin-right: 600px; margin-top: 50px; color: rgb(35, 34, 43);">Refferal offer</h1>
+    <div class="container-fluid" style="margin-left: 300px;">
+        <table>
+            <thead >
+                <tr>
+                    <th style="background-color: #ff4d4d;">Expiry Date</th>
+                    <th style="background-color: #ff4d4d;">Referral Amount</th>
+                    <th style="background-color: #ff4d4d;">Referred Offer Amount</th>
+                    <th style="background-color: #ff4d4d;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+               
+                <tr >
+                    <td>2024-03-31</td>
+                    <td>$10</td>
+                    <td>$5</td>
+                    <td><button class="delete-btn">Delete</button></td>
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+    
+    <script src="js/adminhome.js"></script>
+</body>
+
+</html>

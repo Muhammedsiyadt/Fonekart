@@ -4,6 +4,7 @@ const router = express()
 const services = require('../services/userrender')
 const controller = require('../controller/user/userController')
 const middleman = require('../../middleware/middleman')
+const { route } = require('./adminRouter')
 
 // Home page No route Only /
 router.get('/',services.slashpage)
@@ -94,14 +95,21 @@ router.post('/password/updatePasswordAfterChanged',controller.updatePasswordAfte
 
 
 // === ORDER LIST === //
-// save Order Data To OrderDb
-router.post('/api/orderDataSaveToOrderDb',controller.saveToOrderdb)
+
 // Order Page
 router.get('/orderList',services.orderList)
 // order success page
 router.get('/orderSuccessPage',services.orderSuccessPage)
 // cancel Order
 router.get('/api/cancelOrder',controller.cancelOrder)
+// return
+router.get('/returnOrder',controller.return)
+
+
+// Shubham route
+router.post('/postingOrder',controller.postingOrder)
+
+router.post('/ordersuccefull',controller.orderSuccessful)
 
 
 // === WISH LIST === //
@@ -115,6 +123,13 @@ router.get('/deleteWishlistItem',controller.deleteWishListFromWishlistPage)
 // Add to cart from wishlist
 router.get('/wishlistAddToCartdb',controller.wishlistAddToCartdb)
 
+
+// ===== WALLET ===== // 
+router.get('/wallet',services.wallet)
+// Add money
+router.post('/addWalletMoney',controller.addWalletMoney)
+// successful 
+router.post('/addedMoney',controller.addWalletMoneySuccessful)
 
 
 
@@ -140,7 +155,7 @@ router.post('/api/submitEdit_address',controller.updateAddress)
 router.post('/api/emailForUpdateProfile',controller.updateProfile)
 
 
-module.exports = router
+module.exports = router 
 
 
-// router.get('/homey',services.homey)
+// router.get('/homey',services.homey) 

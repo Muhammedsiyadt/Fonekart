@@ -18,7 +18,7 @@
 
     /* Customize the product card styles */
     .product-card {
-      border: 1px solid #b3bac1;
+      border: 3px solid #000000;
       margin-bottom: 20px;
       padding: 15px;
       border-radius: 10px;
@@ -51,7 +51,7 @@
   <title>Product Listing</title>
 </head>
 
-<body>
+<body class="">
 
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top">
@@ -136,37 +136,50 @@
 </div>
 
 
-  <div class="container-fluid" style="  padding-bottom: 100px;">
-    <div class="row">
+<div class="container-fluid" style="padding-bottom: 100px;">
+  <div class="row">
       <!-- Product Listing -->
       <div class="col-md-12">
-        <div class="row" style="margin-top: 30px; ">
+          <div class="row" style="margin-top: 30px;">
 
-          <!-- Product Cards -->
-          <% for(let i=0 ; i<productList.length ; i++ ){ %>
-            <div class="col-md-4 col-sm-6 col-xl-3">
-              <a style="text-decoration: none;" href="/home/singleProduct?id=<%= productList[i]._id %>">
-                <div class="product-card text-dark" style="justify-content: center; text-align: center;">
-                  <img style="width: 130px; height: 130px; margin-bottom: 20px;" src="<%= productList[i].images[0] %>"
-                    alt="Product 1" class="img-fluid">
-                  <h4>
-                    <%= productList[i].Pname %>
-                  </h4>
-                  <p>Price: $<%= productList[i].price %>
-                  </p>
-                  <p><b>Rating:</b><s style="color: yellow;">★★★★</s>★</p>
-                  <button class="btn btn-success">Buy Now</button>
-                </div>
-              </a>
-            </div>
-            <% } %>
-        </div>
+              <% if(typeof message !=='undefined' ){ %>
+              <p style="color: red;">
+                  <%= message %>
+              </p>
+              <% } %>
+
+              <!-- Product Cards -->
+              <% for(let i=0 ; i<productList.length ; i++ ){ %>
+              <div class="col-md-4 col-sm-6 col-xl-3 ">
+                  <a style="text-decoration: none;" href="/home/singleProduct?id=<%= productList[i]._id %>">
+                      <div class="product-card text-dark" style="justify-content: center; text-align: center; height: 430px; background-color: rgb(255, 255, 255);">
+                        <% if (productList[i]?.offerDetails && productList[i]?.offerDetails[0] != null) { %>
+                          <div class="offer bg-danger text-light" style="border: rgb(184, 192, 185) 1px solid; width: 100px; border-radius: 10px;">
+                              <h5>Offer<%= productList[i]?.offerDetails[0]?.discount %>%</h5> 
+                          </div>
+                      <% } %>
+                      
+                          <img style="height: 250px; width: 250px; margin-bottom: 20px;" src="<%= productList[i].images[0] %>"
+                              alt="Product 1" class="img-fluid">
+                          <h4>
+                              <%= productList[i].Pname %>
+                          </h4>
+                          <p>₹ <%= productList[i].price %>
+                          </p>
+                          
+                          <!-- <button class="btn btn-success">Buy Now</button> -->
+                      </div>
+                  </a>
+              </div>
+              <% } %>
+          </div>
       </div>
 
-    </div>
   </div>
+</div>
 
-  <footer class="bg-dark text-light pt-5  pb-3" id="footer">
+
+  <footer class="bg-dark text-light pt-5  pb-3" id="footer" style="margin-top: 225px;">
     <div class="container" style="padding: 30px;">
       <div class="row">
         <div class="col-md-4">

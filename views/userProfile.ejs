@@ -1,102 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
-    <!-- icons cdn -->
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet" />
+  <!-- icons cdn -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet"   />
 
-    <!-- Custom CSS -->
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-            
-        }
+  <!-- Custom CSS -->
+  <style>
+    body {
+      background-color: #ffffff;
+      font-family: 'Arial', sans-serif;
 
-        .profile-container {
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            max-width: 600px;
-            margin: auto;
-            padding: 30px;
-        }
+    }
 
-        .profile-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+    .profile-container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+      overflow: hidden;
 
-        .profile-icon {
-            font-size: 24px;
-        }
+      margin: auto;
+      padding: 30px;
+    }
 
-        .logout-btn {
-            margin-top: 20px;
-        }
+    .profile-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
 
-        /* Personal Information on Left, Buttons on Right */
-        .personal-info {
-            border-right: 2px solid #dee2e6;
-            padding-right: 20px;
-            margin-right: 20px;
-        }
+    .profile-icon {
+      font-size: 24px;
+    }
 
-        .personal-info p {
-            margin-bottom: 15px;
-            color: #495057;
-        }
+    .logout-btn {
+      margin-top: 20px;
+    }
 
-        .button-container {
-            text-align: left;
-            margin-top: 20px;
-        }
+    /* Personal Information on Left, Buttons on Right */
+    .personal-info {
+      border-right: 2px solid #dee2e6;
+      padding-right: 20px;
+      margin-right: 20px;
+    }
 
-        .button-container a {
-            margin-right: 15px;
-            margin-bottom: 15px;
-        }
+    .personal-info p {
+      margin-bottom: 15px;
+      color: #495057;
+    }
 
-        /* Responsive Styling */
-        @media (max-width: 767px) {
-            .personal-info {
-                border-right: none;
-                padding-right: 0;
-                margin-right: 0;
-                margin-bottom: 20px;
-            }
-            .button-container {
-                text-align: center;
-            }
-            .button-container a {
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
-        }
-    </style>
+    .button-container {
+      text-align: left;
+      margin-top: 20px;
+    }
+
+    .button-container a {
+      margin-right: 15px;
+      margin-bottom: 15px;
+    }
+
+    .Btn {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: 45px;
+      height: 45px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition-duration: .3s;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.199);
+      background-color: rgb(255, 65, 65);
+    }
+
+    /* plus sign */
+    .sign {
+      width: 100%;
+      transition-duration: .3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sign svg {
+      width: 17px;
+    }
+
+    .sign svg path {
+      fill: white;
+    }
+
+    /* text */
+    .text {
+      position: absolute;
+      right: 0%;
+      width: 0%;
+      opacity: 0;
+      color: white;
+      font-size: 1.2em;
+      font-weight: 600;
+      transition-duration: .3s;
+    }
+
+    /* hover effect on button width */
+    .Btn:hover {
+      width: 125px;
+      border-radius: 40px;
+      transition-duration: .3s;
+    }
+
+    .Btn:hover .sign {
+      width: 30%;
+      transition-duration: .3s;
+      padding-left: 20px;
+    }
+
+    /* hover effect button's text */
+    .Btn:hover .text {
+      opacity: 1;
+      width: 70%;
+      transition-duration: .3s;
+      padding-right: 10px;
+    }
+
+    /* button click effect*/
+    .Btn:active {
+      transform: translate(2px, 2px);
+    }
+
+    /* Responsive Styling */
+    @media (max-width: 767px) {
+      .personal-info {
+        border-right: none;
+        padding-right: 0;
+        margin-right: 0;
+        margin-bottom: 20px;
+      }
+
+      .button-container {
+        text-align: center;
+      }
+
+      .button-container a {
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top" >
+  <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top">
     <a style="color: #0F0;" class="navbar-brand" href=""><b><em>Fonekart</em></b></a>
     <button class="navbar-toggler bg-light" type="button" data-toggle="collapse" data-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class=" navbar-collapse" id="navbarNav" style="visibility: visible;" >
+    <div class=" navbar-collapse" id="navbarNav" style="visibility: visible;">
       <ul class="navbar-nav ml-auto" class="navv">
-        
+
         <li class="nav-item">
           <a style="color: white;" class="nav-link" href=" /home"> <i class="ri-home-8-line"></i></a>
         </li>
@@ -116,66 +191,93 @@
   </nav>
 
 
-    <div class="profile-container" style="margin-top: 100px;">
-        <div class="profile-header">
-            <h2 style="color: #343a40;">User Profile</h2>
-        </div>
-
-        <!-- Personal Information on Left -->
-        <div class="personal-info">
-            <p><strong>Name:</strong> <%= userData.name %></p>
-            <p><strong>Email:</strong> <%= userData.email %></p>
-            <!-- <p><strong>Address:</strong> 123 Main St, Cityville</p> -->
-        </div>
-
-        <!-- Buttons on Right -->
-        <div class="button-container">
-            <a href="/orderList" class="btn btn-primary"><i class="fas fa-shopping-cart profile-icon"></i> My Orders</a>
-            <a href="/wishlist" class="btn btn-info"><i class="fas fa-heart profile-icon"></i> Wishlist</a>
-            <a href="/profile/address_management" class="btn btn-success"><i class="fas fa-map-marker-alt profile-icon"></i> Address</a>
-            <a href="/profile/updateProfile" class="btn btn-warning"><i class="fas fa-user-edit profile-icon"></i> Update Account</a>
-            <a href="" class="btn btn-secondary"><i class="fas fa-wallet profile-icon"></i> Wallet</a>
-        </div>
-
-        <!-- Logout Button at the Bottom -->
-        <div class="row">
-            <div class="col-md-12 text-center logout-btn">
-                <a href="/home"><button class="btn btn-danger">Logout</button></a>
-            </div>
-        </div>
+  <div class="profile-container" style="margin-top: 100px;">
+    <div class="profile-header">
+      <h2 style="color: #343a40;">Profile</h2>
     </div>
 
-    <footer class="bg-dark text-light pt-5  pb-3" id="footer" style=" margin-top: 100px;">
-        <div class="container"  style="padding: 30px;">
-          <div class="row">
-            <div class="col-md-4">
-              <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>About Us</em></b></a>
-              <p>E-commerce platform</p>
-            </div>
-            <div class="col-md-4">
-              <a  class="navbar-brand" href="#"><b style="color: #0F0;"><em>Contact Us</em></b></a>
-              <p>Email: Fonekart@gmail.com<br>Phone: 7558001145</p>
-            </div>
-            <div class="col-md-4">
-              <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>Follow Us</em></b></a>
-              <ul class="list-inline">
-                <li class="list-inline-item"><a class="text-light" href="https://wa.me/qr/QLG7ZQPTHYSDH1">Watsapp</a></li>
-                <br>
-                <li class="list-inline-item"><a class="text-light" href="https://www.facebook.com/siyad.siyu.37?mibextid=ZbWKwL">Facebook</a>
-                </li>
-                <br>
-                <li class="list-inline-item"><a class="text-light"
-                    href="https://instagram.com/siyad___._10?igshid=OGQ5ZDc2ODk2ZA==">Instagram</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </footer>
+    <!-- Personal Information on Left -->
+    <div class="personal-info p-4" style="border: #0F0 2px solid; border-radius: 5px; ">
+      <h1 class="text-danger"><i class="ri-hand"></i>
+        <%= userData.name %>
+      </h1>
+      <p><strong>Name:</strong>
+        <%= userData.name %>
+      </p>
+      <p><strong>Email:</strong>
+        <%= userData.email %>
+      </p>
+      
+      <!-- <p><strong>Address:</strong> 123 Main St, Cityville</p> -->
+    </div>
 
-    <!-- Bootstrap JS and Popper.js -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Buttons on Right -->
+    <div class="button-container mt-5">
+      <a href="/profile/updateProfile" class="btn btn-warning p-2"><i class="fas fa-user-edit profile-icon"></i> Update
+        Account</a>
+
+         <a href="/profile/address_management" class="btn btn-success  p-2"><i class="fas fa-map-marker-alt profile-icon"></i>
+        Address</a>
+
+      <a href="/orderList" class="btn btn-primary   p-2"><i class="fas fa-shopping-cart profile-icon"></i> Orders</a>
+
+      <a href="/wishlist" class="btn btn-info  p-2"><i class="fas fa-heart profile-icon"></i> Wishlist</a>
+
+      <a href="/wallet" class="btn btn-secondary  p-2"><i class="fas fa-wallet profile-icon"></i> Wallet</a>
+    </div>
+
+    <!-- Logout Button at the Bottom -->
+    <div class="row">
+      <div class="col-md-12 mt-5 text-center logout-btn">
+        <a href="/home"><button class="Btn">
+
+            <div class="sign"><svg viewBox="0 0 512 512">
+                <path
+                  d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z">
+                </path>
+              </svg></div>
+
+            <div class="text">Logout</div>
+          </button></a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-dark text-light pt-5  pb-3" id="footer" style=" margin-top: 30px;">
+    <div class="container" style="padding: 30px;">
+      <div class="row">
+        <div class="col-md-4">
+          <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>About Us</em></b></a>
+          <p>E-commerce platform</p>
+        </div>
+        <div class="col-md-4">
+          <a class="navbar-brand" href="#"><b style="color: #0F0;"><em>Contact Us</em></b></a>
+          <p>Email: Fonekart@gmail.com<br>Phone: 7558001145</p>
+        </div>
+        <div class="col-md-4">
+          <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>Follow Us</em></b></a>
+          <ul class="list-inline">
+            <li class="list-inline-item"><a class="text-light" href="https://wa.me/qr/QLG7ZQPTHYSDH1">Watsapp</a></li>
+            <br>
+            <li class="list-inline-item"><a class="text-light"
+                href="https://www.facebook.com/siyad.siyu.37?mibextid=ZbWKwL">Facebook</a>
+            </li>
+            <br>
+            <li class="list-inline-item"><a class="text-light"
+                href="https://instagram.com/siyad___._10?igshid=OGQ5ZDc2ODk2ZA==">Instagram</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS and Popper.js -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  
 
 </body>
+
 </html>

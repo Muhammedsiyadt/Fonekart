@@ -14,16 +14,44 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
+            
+        }
+
+        .box {
+            width: 290px;
+            height: 50px;
+            float: left;
+            transition: .5s linear;
+            position: relative;
+            display: block;
+            overflow: hidden;
+            padding: 15px;
+            text-align: center;
+            margin: 0 5px;
+            background: transparent;
+            text-transform: uppercase;
+            font-weight: 900;
+            
+           
+        }
+
+       
+        button {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+            outline: none;
+            border: none;
+            background: transparent;
         }
 
         .login-container {
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
-            border: 3px black solid;
-            box-shadow: 0 0 10px rgba(163, 98, 98, 0.1);
             width: 350px;
             text-align: center;
+            box-shadow: 0 0 20px #0909099d ;
         }
 
         .login-container input {
@@ -34,22 +62,18 @@
         }
 
         .login-container button {
-            width: 100%;
-            padding: 10px;
-            background-color: #00ff08;
+            background-color: #4caf50;
             color: #fff;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
         }
-
-        .login-container button:hover {
-            background-color: aqua;
-            border-radius: 20px;
-            border-color: black;
-            color: #cd0707;
-
+        .login-container button:HOVER{
+            background-color: #2b802e;
         }
+
+        
+
+        
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
@@ -62,35 +86,35 @@
 
 </head>
 
-<body>
+<body style="background-color: rgba(255, 243, 113, 0.348);">
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top p-3">
         <a style="color: #0F0;" class="navbar-brand" href=""><b><em>Fonekart</em></b></a>
     </nav>
 
 
-
-    <div class="login-container" >
-        <h2 style="color: white;">Login</h2>
+    <div class="login-container">
+        <h2 style="color: rgb(0, 0, 0);">Login</h2>
         <form action="/api/h" method="post" onsubmit="loginSubmit(); return false;">
 
             <% if(typeof message !=='undefined' ){ %>
-                <p style="color: red;">
+                <span style="color: red;">
                     <%= message %>
-                </p>
+                </span>
                 <% } %>
 
 
 
                     <input type="email" name="email" id="email" placeholder="Email">
-                    <p class="text-danger" id="emailErr"></p>
+                    <span class="text-danger " id="emailErr"></span>
 
                     <input type="password" name="password" id="password" placeholder="Password">
-                    <p class="text-danger" id="passwordErr"></p>
+                    <span class="text-danger" id="passwordErr"></span>
 
                     <p style=" text-align: end; margin-top: 0;"><a href="/forgetpage"
-                            style="text-decoration: none;">Forget password</a></p>
-                    <button type="submit">Login</button>
+                            style="text-decoration: none;">Forget password ?</a></p>
+
+                    <button type="submit"><span class="box"> Login</span> </button>
         </form>
 
         <p style="color: rgb(255, 0, 0); margin-top: 20px;">Don't have an account? </p>
