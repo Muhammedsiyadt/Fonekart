@@ -20,7 +20,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
-      
+
     }
 
     .card {
@@ -39,7 +39,7 @@
       object-fit: cover;
       border-radius: 8px;
       margin-bottom: 10px;
-      
+
     }
 
     .card h2 {
@@ -120,6 +120,7 @@
 
     .category-card:hover {
       transform: scale(1.05);
+      box-shadow: 0 10px 20px rgba(27, 27, 27, .5);
     }
 
     .category-card-img {
@@ -184,13 +185,14 @@
       width: 3vw;
       height: 2rem;
       border-radius: 0rem 0.25rem 0.25rem 0rem;
-      background: rgb(44, 228, 44);;
+      background: rgb(44, 228, 44);
+      ;
       border: none;
     }
   </style>
 </head>
 
-<body style="background-color: #ffffff;">
+<body>
 
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top">
@@ -291,20 +293,18 @@
     </a>
   </div>
 
+
+
   <h2 style="padding: 10px; text-align: center; margin-top: 20px; "><b><em>New <b>Arrival</b></em></b></h2>
-
-  <div style="display: flex;flex-wrap:wrap;gap: 12px;  justify-content: center; margin-top: 30px; ">
-
+  <div class="p-5" style="display: flex;flex-wrap:wrap;gap: 12px;  justify-content: center; margin-top: 10px;">
     <% for (let i=6; i < 9; i++) { %>
-
       <a>
-
-        <div style=""
-          class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mb-4"
-          id="fullcards">
+        <div
+          class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mb-4 "
+          id="fullcards" style="height: 650px;">
           <% if(product[i].offerDetails[0] !=null){ %>
-            <div class="offer  bg-danger text-light" style="width: 70px; ">
-              <h3>Offer<%= product[i].offerDetails[0]?.discount %>%</h3>
+            <div class="offer" style="width: 90px; padding: 5px; color: rgb(41, 137, 0); ">
+              <h3>Offer <%= product[i].offerDetails[0]?.discount %>%</h3>
             </div>
             <% } %>
               <a href="/home/singleProduct?id=<%= product[i]._id %>" style="display: flex;justify-content: center;">
@@ -361,7 +361,9 @@
                 </div>
                 <div class="category-card-body">
                   <h5 class="category-title">
-                    <b><%= category[i].category %></b>
+                    <b>
+                      <%= category[i].category %>
+                    </b>
                   </h5>
                 </div>
 

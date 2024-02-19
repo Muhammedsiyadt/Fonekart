@@ -18,12 +18,16 @@
 
     /* Customize the product card styles */
     .product-card {
-      border: 3px solid #000000;
-      margin-bottom: 20px;
+      border: 1px solid #000000;
       padding: 15px;
-      border-radius: 10px;
-      /* border-color: black; */
     }
+    
+    .product-card:hover{
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(27, 27, 27, .5);
+      border-radius: 5px;
+    }
+    
     .compact-filter-btn {
     background-color: #007bff;
     color: white;
@@ -83,7 +87,7 @@
 
 
  <!-- Compact Filter Toggle Button -->
-<div class="container-fluid mt-5">
+<div class="container-fluid mt-3">
   <div class="row">
     <div class="col-md-12 text-center">
       <button class="compact-filter-btn mt-5" id="toggleFiltersBtn">
@@ -136,7 +140,7 @@
 </div>
 
 
-<div class="container-fluid" style="padding-bottom: 100px;">
+<div class="container" style="padding-bottom: 100px;">
   <div class="row">
       <!-- Product Listing -->
       <div class="col-md-12">
@@ -150,12 +154,12 @@
 
               <!-- Product Cards -->
               <% for(let i=0 ; i<productList.length ; i++ ){ %>
-              <div class="col-md-4 col-sm-6 col-xl-3 ">
+              <div class="col-md-4 col-sm-6 col-xl-3 p-2">
                   <a style="text-decoration: none;" href="/home/singleProduct?id=<%= productList[i]._id %>">
                       <div class="product-card text-dark" style="justify-content: center; text-align: center; height: 430px; background-color: rgb(255, 255, 255);">
                         <% if (productList[i]?.offerDetails && productList[i]?.offerDetails[0] != null) { %>
-                          <div class="offer bg-danger text-light" style="border: rgb(184, 192, 185) 1px solid; width: 100px; border-radius: 10px;">
-                              <h5>Offer<%= productList[i]?.offerDetails[0]?.discount %>%</h5> 
+                          <div class="offer  text-success" style=" width: 100px; border-radius: 10px;">
+                              <h6><b>Offer<%= productList[i]?.offerDetails[0]?.discount %>%</b></h6> 
                           </div>
                       <% } %>
                       
@@ -179,7 +183,7 @@
 </div>
 
 
-  <footer class="bg-dark text-light pt-5  pb-3" id="footer" style="margin-top: 225px;">
+  <footer class="bg-dark text-light pt-5  pb-3" id="footer" style="margin-top: 10px;">
     <div class="container" style="padding: 30px;">
       <div class="row">
         <div class="col-md-4">

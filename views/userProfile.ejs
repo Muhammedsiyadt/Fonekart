@@ -18,13 +18,13 @@
   <!-- Custom CSS -->
   <style>
     body {
-      background-color: #ffffff;
+      background-color: rgba(255, 243, 113, 0.348);
       font-family: 'Arial', sans-serif;
 
     }
 
     .profile-container {
-      background-color: #ffffff;
+      background-color: #ffffff80;
       border-radius: 10px;
       /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
       overflow: hidden;
@@ -66,6 +66,12 @@
     .button-container a {
       margin-right: 15px;
       margin-bottom: 15px;
+    }
+
+    #batt:hover{
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(27, 27, 27, .5);
+      
     }
 
     .Btn {
@@ -197,7 +203,7 @@
     </div>
 
     <!-- Personal Information on Left -->
-    <div class="personal-info p-4" style="border: #0F0 2px solid; border-radius: 5px; ">
+    <div class="personal-info p-4" style="border: rgb(0, 0, 0) 2px solid; border-radius: 5px; ">
       <h1 class="text-danger"><i class="ri-hand"></i>
         <%= userData.name %>
       </h1>
@@ -213,17 +219,17 @@
 
     <!-- Buttons on Right -->
     <div class="button-container mt-5">
-      <a href="/profile/updateProfile" class="btn btn-warning p-2"><i class="fas fa-user-edit profile-icon"></i> Update
+      <a href="/profile/updateProfile" id="batt" class="btn btn-warning p-2"><i class="fas fa-user-edit profile-icon"></i> Update
         Account</a>
 
-         <a href="/profile/address_management" class="btn btn-success  p-2"><i class="fas fa-map-marker-alt profile-icon"></i>
+         <a href="/profile/address_management" id="batt" class="btn btn-success  p-2"><i class="fas fa-map-marker-alt profile-icon"></i>
         Address</a>
 
-      <a href="/orderList" class="btn btn-primary   p-2"><i class="fas fa-shopping-cart profile-icon"></i> Orders</a>
+      <a href="/orderList" id="batt" class="btn btn-primary   p-2"><i class="fas fa-shopping-cart profile-icon"></i> Orders</a>
 
-      <a href="/wishlist" class="btn btn-info  p-2"><i class="fas fa-heart profile-icon"></i> Wishlist</a>
+      <a href="/wishlist" id="batt" class="btn btn-info  p-2"><i class="fas fa-heart profile-icon"></i> Wishlist</a>
 
-      <a href="/wallet" class="btn btn-secondary  p-2"><i class="fas fa-wallet profile-icon"></i> Wallet</a>
+      <a href="/wallet" id="batt" class="btn btn-secondary  p-2"><i class="fas fa-wallet profile-icon"></i> Wallet</a>
     </div>
 
     <!-- Logout Button at the Bottom -->
