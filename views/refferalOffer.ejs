@@ -111,7 +111,12 @@
         </ul>
     </section>
 
-	<h1 style="margin-right: 600px; margin-top: 50px; color: rgb(35, 34, 43);">Refferal offer</h1>
+	<h1 style="margin-right: 450px; margin-top: 20px; margin-bottom: 20px; color: rgb(35, 34, 43);">REFFERAL MANAGEMENT</h1>
+
+    <% if(refferal.length == 0){ %>
+    <a href="/adddRefferalOffer"><button  style="margin-left: 300px;" class="delete-btn">Add</button></a>
+    <% } %>
+
     <div class="container-fluid" style="margin-left: 300px;">
         <table>
             <thead >
@@ -123,15 +128,16 @@
                 </tr>
             </thead>
             <tbody>
-               
-                <tr >
-                    <td>2024-03-31</td>
-                    <td>$10</td>
-                    <td>$5</td>
-                    <td><button class="delete-btn">Delete</button></td>
-                </tr>
-                
+                <% for(let i=0; i<refferal.length; i++) { %>
+                    <tr>
+                        <td><%= new Date(refferal[i].expiredate).toLocaleDateString() %></td>
+                        <td><%= refferal[i].referralAmount %></td>
+                        <td><%= refferal[i].referredAmount %></td>
+                        <td><a href="/deleteRefferal?id=<%= refferal[i]._id %>"><button class="delete-btn">Delete</button></a></td>
+                    </tr>
+                <% } %>
             </tbody>
+            
         </table>
     </div>
     

@@ -8,6 +8,7 @@ const orderdb = require('../../model/orderSchema')
 const coupondb = require('../../model/couponSchema')
 const { default: mongoose } = require('mongoose')
 const offerdb = require('../../model/offerSchema')
+const refferaldb = require('../../model/refferalSchema')
 const PDFDocument = require("pdfkit-table") 
 const fs = require("fs")
 
@@ -61,7 +62,7 @@ exports.dailyReport = async (req, res) => {
        
         const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
 
-       
+        let totalPrice = 0;
         const tableData = [];
 
         dailyOrders.forEach(order => {
@@ -75,9 +76,14 @@ exports.dailyReport = async (req, res) => {
                     item.category || 'N/A',
                     item.orderStatus || 'N/A',
                     item.price !== undefined ? item.price.toString() : 'N/A'
-                ]);
+                ])
+                if (item.price !== undefined) {
+                    totalPrice += item.price;
+                }
             });
-        });
+        })
+
+        tableData.push(['Total Price', '', '', '', '', '', '', totalPrice.toString()]);
 
         
         const tableOptions = {
@@ -105,7 +111,8 @@ exports.weeklyReport = async (req, res) => {
         const startDate = new Date()
         const endDate = new Date(startDate.getTime() - 7 * 24 * 60 * 60 * 1000)
 
-       
+        let doc = new PDFDocument({ margin: 10, size: 'A4' }) // Move this line up
+
         const weeklyOrders = await orderdb.find({
             orderDate: {
                 $gte: endDate,
@@ -114,6 +121,8 @@ exports.weeklyReport = async (req, res) => {
         });
 
         const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
+
+        let totalPrice = 0;
 
         const tableData = [];
 
@@ -128,24 +137,23 @@ exports.weeklyReport = async (req, res) => {
                     item.category || 'N/A',
                     item.orderStatus || 'N/A',
                     item.price !== undefined ? item.price.toString() : 'N/A',
-                   
                 ])
+                if (item.price !== undefined) {
+                    totalPrice += item.price;
+                }
             })
         })
+        tableData.push(['Total Price', '', '', '', '', '', '', totalPrice.toString()]);
 
+        doc.fontSize(14).text('Fonekart', { align: 'center' }).moveDown();
         const table = {
             title: 'Weekly Sales Report',
             headers: tableHeaders,
             rows: tableData
         }
 
-       
-        let doc = new PDFDocument({ margin: 30, size: 'A4' })
-
-        
         await doc.table(table)
 
-        
         const pdfChunks = []
         doc.on('data', chunk => {
             pdfChunks.push(chunk)
@@ -165,6 +173,7 @@ exports.weeklyReport = async (req, res) => {
     }
 }
 
+
 // yearly 
 exports.yearlyReport = async (req, res) => {
     try {
@@ -177,12 +186,14 @@ exports.yearlyReport = async (req, res) => {
                 $gte: startOfYear,
                 $lt: endOfYear
             }
-        });
+        }) 
 
        
         const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
 
       
+        let totalPrice = 0;
+
         const tableData = [];
 
         yearlyOrders.forEach(order => {
@@ -196,9 +207,15 @@ exports.yearlyReport = async (req, res) => {
                     item.category || 'N/A',
                     item.orderStatus || 'N/A',
                     item.price !== undefined ? item.price.toString() : 'N/A',
-                ]);
+                ])
+
+                if (item.price !== undefined) {
+                    totalPrice += item.price;
+                }
             });
         });
+
+        tableData.push(['Total Price', '', '', '', '', '', '', totalPrice.toString()]);
 
        
         const doc = new PDFDocument();
@@ -232,11 +249,72 @@ exports.yearlyReport = async (req, res) => {
     }
 }
 
+// custome date 
+exports.customDateSales = async (req, res) => {
+    try {
+        const from = new Date(req.body.fromDate);
+        const to = new Date(req.body.toDate);
 
+        const sales = await orderdb.find({
+            orderDate: {
+                $gte: from,
+                $lt: to
+            }
+        });
 
+        const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
 
+        let totalPrice = 0; // Initialize total price
 
+        const tableData = [];
 
+        sales.forEach(order => {
+            order.orderItems.forEach(item => {
+                tableData.push([
+                    order.orderDate.toDateString(),
+                    order.address.name,
+                    `${order.address.address}, ${order.address.district}, ${order.address.city}, ${order.address.pin}`,
+                    order.address.phone,
+                    item.Pname || 'N/A',
+                    item.category || 'N/A',
+                    item.orderStatus || 'N/A',
+                    item.price !== undefined ? item.price.toString() : 'N/A',
+                ]);
+
+               
+                if (item.price !== undefined) {
+                    totalPrice += item.price;
+                }
+            });
+        });
+
+        // Add total price as the last row
+        tableData.push(['Total Price', '', '', '', '', '', '', totalPrice.toString()]);
+
+        const doc = new PDFDocument();
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="custom_date_sales_report.pdf"');
+
+        doc.pipe(res);
+
+        doc.fontSize(14).text('Custom Date Sales Report', { align: 'center' }).moveDown();
+
+        const tableOptions = {
+            title: 'Custom Date Sales Report',
+            headers: tableHeaders,
+            rows: tableData
+        };
+
+        await doc.table(tableOptions);
+
+        doc.end();
+
+    } catch (error) {
+        console.error("Error generating custom date sales report:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
 
 
 
@@ -284,28 +362,56 @@ exports.add_product = async (req, res) => {
 }
 
 // edit product 
-exports.submitEdit_product = async (req, res) => {
-    // const file = req.files
-    // console.log(file);
-    // const images = `/images/${file[0].originalname}`
-    // console.log(images);.
-    const file = req.files
+// exports.submitEdit_product = async (req, res) => {
+   
+//     const file = req.files
     
-    const images = [];
-    file.map(files => {
-        return images.push(`/images/${files.originalname}`);
-    });
+//     const images = [];
+//     file.map(files => {
+//         return images.push(`/images/${files.originalname}`);
+//     });
+//     const idpass = await productdb.findOneAndUpdate({ _id: req.query.id }, {
+//         $set: {
+//             Pname: req.body.productName, Pcategory: req.body.categoryName,
+//             Pmodel: req.body.productModel, price: req.body.price, color: req.body.color, quantity: req.body.Quantity, images: images
+//         }
+//     })
+
+
+
+//     res.redirect('/product_management')
+// }
+
+exports.submitEdit_product = async (req, res) => {
+    const file = req.files;
+
+  
+    let images = [];
+    if (file && file.length > 0) {
+
+        images = file.map(file => `/images/${file.originalname}`);
+    } else {
+       
+        const existingProduct = await productdb.findById(req.query.id);
+        images = existingProduct.images;
+    }
+
+    
     const idpass = await productdb.findOneAndUpdate({ _id: req.query.id }, {
         $set: {
-            Pname: req.body.productName, Pcategory: req.body.categoryName,
-            Pmodel: req.body.productModel, price: req.body.price, color: req.body.color, quantity: req.body.Quantity, images: images
+            Pname: req.body.productName,
+            Pcategory: req.body.categoryName,
+            Pmodel: req.body.productModel,
+            price: req.body.price,
+            color: req.body.color,
+            quantity: req.body.Quantity,
+            images: images
         }
-    })
+    });
 
-
-
-    res.redirect('/product_management')
+    res.redirect('/product_management');
 }
+
 
 // delete product
 exports.deleteproduct = async (req, res) => {
@@ -331,6 +437,31 @@ exports.unlistToProduct = async (req, res) => {
         console.log(error);
     }
 }
+
+// image delete while editing
+exports.imageDeleteSeperate = async (req, res) => {
+
+    const img = req.query.image;
+
+    try {
+        
+        const product = await productdb.findOne({ images: img });
+
+        await productdb.findOneAndUpdate(
+            { images: img },
+            { $pull: { images: img } }
+        );
+
+        
+        res.redirect(`/product/edit-product?id=${product._id}`);
+
+    } catch (error) {
+        console.error("Error deleting image:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
 
 
 // CATEGORY MANAGEMENT .........................................................................
@@ -490,41 +621,34 @@ exports.updateOrderStatus = async (req, res) => {
 // Save to coupon db
 exports.saveToCouponDb = async (req, res) => {
     try {
-       
         const { couponCode, discount, maxUse, maxPrice, expiryDate } = req.body;
-        
         
         const existingCoupon = await coupondb.findOne({ Code: couponCode });
 
         if (existingCoupon) {
-            
             req.session.Existmessage = 'Coupon code already exists';
-            res.redirect('/Coupon_management');
-            return; 
-        }
+            return res.redirect('/addCoupon');
+        } else {
+            const newCoupon = new coupondb({
+                Code: couponCode,
+                Discount: discount,
+                Maxuse: maxUse,
+                MaxPrice: maxPrice,
+                expiryDate: expiryDate
+            });
 
-        
-        const newCoupon = new coupondb({
-            Code: couponCode,
-            Discount: discount,
-            Maxuse: maxUse,
-            MaxPrice: maxPrice,
-            expiryDate: expiryDate
-        });
+            await newCoupon.save();
+        } 
 
-        
-        await newCoupon.save();
-
-       
         req.session.message = 'Coupon saved successfully';
-        res.redirect('/Coupon_management');
+        return res.redirect('/Coupon_management'); // Change here to return
 
     } catch (error) {
-        
         console.error('Error saving coupon:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'Internal server error' }); // Change here to return
     }
-}
+};
+
 
 
 // Delete coupon
@@ -613,7 +737,7 @@ exports.saveToOfferOfProduct = async (req, res) => {
         await newOffer.save();
 
         const id = newOffer._id
-        console.log('dfffffffffff',id)
+       
 
         req.session.message = 'Offer saved successfully';
         res.redirect('Offer_management');
@@ -636,4 +760,48 @@ exports.deleteOffer = async(req,res) => {
     }
 }
 
-// 
+
+// REFERAL OFFER //
+// add refferal offer
+exports.saveRefferal = async (req, res) => {
+    try {
+        
+
+        const { referralAmount, referredAmount, expireDate } = req.body
+
+       
+        const referral = new refferaldb({
+            referralAmount: referralAmount,
+            referredAmount: referredAmount,
+            expiredate: expireDate
+        })
+
+        await referral.save()
+
+        res.redirect('/refferalOffer')
+
+    } catch (error) {
+      
+        console.error("Error saving referral offer:", error);
+        return res.status(500).json({ error: "An error occurred while saving referral offer" })
+    }
+}
+
+// Delete refferel offer 
+exports.deleteRefferal = async (req, res) => {
+    try {
+        
+        const deleteRefferalId = req.query.id
+
+       
+        await refferaldb.deleteOne({ _id: deleteRefferalId })
+
+       
+        res.redirect('/refferalOffer')
+
+    } catch (error) {
+    
+        console.error("Error deleting referral offer:", error)
+        res.status(500).send("An error occurred while deleting referral offer.")
+    }
+}

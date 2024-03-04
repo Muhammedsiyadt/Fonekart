@@ -51,10 +51,10 @@ const schema = new mongoose.Schema({
             default: "ordered",
             required: true
         }
-        // ,
-        // returnReason: {
-        //     type: String
-        // }
+        ,
+        returnReason: {
+            type: String
+        }
         // ,
         // cancelReason: {
         //     type: String

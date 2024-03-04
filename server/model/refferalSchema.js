@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 
     
 const schema = new mongoose.Schema({
-    referralRewards:{
+    referralAmount:{
         type:Number,
         required:true
         
     },
-    referralUserRewards:{
+    referredAmount:{
         type:Number,
         required:true
        

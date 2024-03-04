@@ -138,9 +138,9 @@
                 for(let i=0; i<user.length; i++){
                     %>
                     <tr>
-                        <td> <%= user[i].name %> </td>
-                        <td> <%= user[i].email %> </td>
-                        <td> <%= user[i].status %> </td>
+                        <td style="color: rgb(124, 46, 0);"> <%= user[i].name %> </td>
+                        <td style="color: rgb(122, 0, 136);"> <%= user[i].email %> </td>
+                        <td style="color: blue;"> <%= user[i].status %> </td>
                     <% if(user[i].block === false){ %>
                         <td class="action-button">
                             <form   action="/adminUserStatus/block?id=<%= user[i]._id %>" method="post" >

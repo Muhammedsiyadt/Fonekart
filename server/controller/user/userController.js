@@ -12,13 +12,9 @@ var object = require('mongoose').ObjectId
 const coupondb = require('../../model/couponSchema')
 const wishlistdb = require('../../model/wishlistSchema')
 const walletdb = require('../../model/walletSchema')
-
-const Razorpay = require('razorpay');
-
-
-
-
-
+const Razorpay = require('razorpay')
+const shortid = require('shortid')
+const refferaldb = require('../../model/refferalSchema');
 
 
 
@@ -31,9 +27,9 @@ const otpGenerator = () => {
 
 // send mail
 const sendOtpMail = async (req, res) => {
-    // console.log('ziyad');
-    const otp = otpGenerator();
-    console.log(otp);
+    
+    const otp = otpGenerator() 
+    console.log(otp) 
 
     const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -67,14 +63,14 @@ const sendOtpMail = async (req, res) => {
         },
     };
 
-    const mail = MailGenerator.generate(response);
+    const mail = MailGenerator.generate(response)
 
     const message = {
         from: process.env.AUTH_EMAIL,
         to: req.session.userEmail,
         subject: 'Fonekart',
         html: mail,
-    };
+    }
 
     try {
         const newOtp = new Otpdb({
@@ -90,97 +86,180 @@ const sendOtpMail = async (req, res) => {
     } catch (err) {
         console.log(err);
     }
-};
-
-// OTP VERIFY //
-exports.otpverify = async (req, res) => {
-
-    const otp = await Otpdb.findOne({ _id: req.session.otpId })
-    // console.log(otp);
-    if (req.body.otp === otp.otp) {
-
-
-        const userData = req.session.userData
-
-        // console.log(userData);
-
-
-        const data = new Userdb({
-            name: userData.name,
-            email: userData.email,
-            password: userData.password
-
-
-        })
-
-        await data.save()
-
-
-
-        res.redirect('/login')
-    }
-}
-
-// LOGIN VERIFICATION //
-exports.loginverification = async (req, res) => {
-    const email = await Userdb.findOne({ email: req.body.email })
-    // console.log(email);
-    if (email && email.password === req.body.password) {
-        if (email.block === true) {
-
-            req.session.message = 'You are blocked'
-
-            // return res.send('You are blocked') 
-            return res.redirect('/login')
-        }
-        req.session.isLogged = true
-        req.session.email = email;
-        req.session.userId = email._id
-        // console.log(req.session.userId);
-        res.redirect('/home')
-    } else if (req.body.password === email.password) {
-        req.session.NotPass = 'Please check your password'
-        return res.redirect('/login')
-    } else {
-        res.redirect('/login')
-    }
-
-    // if(req.body.password === email.password){
-    //     req.session.NotPass = 'Please check your password'
-    //     return res.redirect('/home')
-    // }else{
-    //     res.redirect('/login')
-    // }
 }
 
 
 // Register // 
 exports.register = async (req, res) => {
 
+    try {
+        req.session.userData = req.body
 
-    const userData = await Userdb.findOne({ email: req.body.email });
+        const userData = await Userdb.findOne({ email: req.body.email });
 
     if (userData) {
 
         req.session.message = 'Email already taken, Please enter a different email'
 
+        if (req.query.refferalCode) {
+            return res.redirect(`/register?referralCode=${req.query.refferalCode}`)
+          }
+
         return res.redirect('/regiter')
-
-        //   return  res.render('register', { message:req.session.message});
-
     }
 
-    req.session.userData = req.body
+    let code = req.query.refferalCode
+
+    req.session.refferalCode = code;
+    
+
+    if (req.query.refferalCode) {
+        const userReferral = await Userdb.findOne({ refferalCode: code });
+  
+        if (!userReferral) {
+          return res.redirect("/register");
+        }
+        const refferal = await refferaldb.findOne({
+            expiredate: { $gte: Date.now() },
+        });
+  
+        if (!refferal) {
+          return res.redirect("/register");
+        }
+  
+        req.session.user = req.body.Email;
+  
+        await sendOtpMail(req, res);
+  
+        return res.redirect("/register");
+      }
 
     req.session.userEmail = req.body.email
-    // req.session.user_id = req.body._id
+
     req.session.pass = req.body.password
-    // console.log(req.body._id);
 
     await sendOtpMail(req, res)
 
+    } catch (error) {
+        res.send(err) 
+    }
+
 
 }
+
+// OTP VERIFY //
+exports.otpverify = async (req, res) => {
+    try {
+        if (!req.body) {
+            return res.status(400).send({ message: "Enter something" });
+        }
+
+        const otp = await Otpdb.findOne({ _id: req.session.otpId });
+        if (!otp) {
+            req.session.message = 'OTP Not found'
+        }
+
+        if (req.body.otp === otp.otp) {
+            const userData = req.session.userData;
+
+            
+            let referralCode = req.body.referralCode;
+            if (!referralCode && req.session.referalCode) {
+                referralCode = req.session.referalCode;
+            }
+
+            if (referralCode) {
+                
+                const existingUser = await Userdb.findOne({ referralCode });
+                if (!existingUser) {
+                    return res.status(400).json({ message: "Invalid referral code" });
+                }
+
+                
+                const refferalAmount = await refferaldb.findOne({});
+                await walletdb.findOneAndUpdate(
+                    { userId: existingUser._id },
+                    {
+                        $inc: { balance: refferalAmount.referralAmount },
+                        $push: {
+                            transactions: {
+                                amount: refferalAmount.referralAmount,
+                                PaymentType: "Credit",
+                            },
+                        },
+                    }
+                );
+            }
+
+            
+            const user = new Userdb({
+                name: userData.name,
+                email: userData.email,
+                password: userData.password,
+                referralCode: referralCode || shortid.generate(),
+            });
+
+            await user.save();
+
+            const walletData = new walletdb({
+                userId: user._id,
+            });
+
+            await walletData.save();
+
+            res.redirect("/login");
+        } else {
+            req.session.otpValidation = "Your OTP is wrong";
+            res.redirect("/register");
+        }
+    } catch (error) {
+        console.error('Error verifying OTP:', error);
+        res.status(500).send('Internal Server Error');
+    }
+}
+
+
+// LOGIN VERIFICATION //
+exports.loginverification = async (req, res) => {
+
+    const email = await Userdb.findOne({ email: req.body.email })
+
+    if (email && email.password === req.body.password) {
+        if (email.block === true) {
+
+            req.session.blockmessage = 'You are blocked'
+            return res.redirect('/login')
+        }
+        req.session.isLogged  = true
+        req.session.email = email
+        req.session.userId = email._id
+
+        await Userdb.findOneAndUpdate({ email: req.session.email.email }, { $set: { status: "Active" } })
+
+        res.redirect('/home')
+    } else if (req.body.password != email.password) {
+        req.session.NotPass = 'Please check your password'
+        return res.redirect('/login')
+    } else {
+        res.redirect('/login')
+    }
+
+
+}
+
+// logout
+exports.logout = async (req, res) => {
+    try {
+
+        await Userdb.findOneAndUpdate({ email: req.session.email.email }, { $set: { status: "Inactive" } });
+        req.session.destroy();
+        res.status(200).redirect("/home");
+    } catch (error) {
+        console.log(error)
+    }
+
+}
+
 
 // === RESET PASSWORD FROM LOGIN PAGE === //
 // Reset Password //
@@ -453,8 +532,7 @@ exports.oldPasswordChecking = async (req, res) => {
 exports.updatePasswordAfterChanged = async (req, res) => {
     try {
         const userId = req.session.email._id
-        // console.log('user id 1',userId)
-        // console.log(req.body.newPassword)
+
         const findid = await Userdb.updateOne({ _id: userId }, { $set: { password: req.body.newPassword } })
         // console.log('user id 2',findid) 
         res.redirect('/profile/updateProfile')
@@ -470,9 +548,15 @@ exports.updatePasswordAfterChanged = async (req, res) => {
 // === CART === //
 // Save to add to cart // 
 exports.productAddToCartdb = async (req, res) => {
-    const queryId = req.query.id;
-    const userId = req.session.userId;
 
+
+    const userId = req.session.userId
+    if (typeof userId == 'undefined') {
+        return res.redirect('/login')
+    }
+
+
+    const queryId = req.query.id;
     try {
         let cart = await cartdb.findOne({ user_id: userId });
 
@@ -483,11 +567,11 @@ exports.productAddToCartdb = async (req, res) => {
                 cartItems: [{ productId: queryId }],
             });
         } else {
-            // Check if the product is already in the cart
+          
             const isProductInCart = cart.cartItems.some(item => item.productId.equals(queryId));
 
             if (!isProductInCart) {
-                // If the product is not in the cart, add it
+              
                 cart.cartItems.push({ productId: queryId });
             }
         }
@@ -515,18 +599,18 @@ exports.deleteCartItem = async (req, res) => {
             { $pull: { cartItems: { productId: productId } } }
         );
 
-        // Check if any document was modified
+        
         if (deleteCartItem.nModified > 0) {
-            // console.log("Product removed from cart successfully")
+           
         } else {
-            // console.log("Product not found in the cart")
+            
         }
 
-        // You might want to redirect to the cart page or send a response to the client
+        
         res.redirect('/cart');
     } catch (error) {
         console.error(error);
-        // Handle the error, e.g., send an error response to the client
+        
         res.status(500).send({ message: "Internal server error" });
     }
 }
@@ -588,9 +672,9 @@ exports.addaddressFromCheckout = async (req, res) => {
         console.error("Error adding address:", error);
         let errorMessage = "An error occurred while adding the address.";
 
-        // Check if the error is a validation error
+        
         if (error.name === 'ValidationError') {
-            // Construct a detailed error message based on the validation errors
+            
             errorMessage = Object.values(error.errors).map(err => err.message).join(' ');
         }
 
@@ -606,7 +690,7 @@ exports.updateCartQuantity = async (req, res, next) => {
     const userId = req.session.userId;
     const productId = req.query.pid;
     const qty = req.query.qty;
-    // console.log(userId,productId,qty);
+      
     try {
         const product = await productdb.findOne({ _id: productId });
 
@@ -614,12 +698,10 @@ exports.updateCartQuantity = async (req, res, next) => {
             { user_id: userId, "cartItems.productId": productId },
             { $set: { "cartItems.$.quantity": qty } }
         )
-        //   console.log(updateResult);
-
-        // Send a success response
+        
         res.send(true);
     } catch (err) {
-        // Handle errors
+       
         next(err);
     }
 }
@@ -635,7 +717,10 @@ exports.postingOrder = async (req, res) => {
 
     const userId = req.session.userId;
 
+
     try {
+
+        const walletInfo = await walletdb.findOne({ userId: userId })
 
         const [data] = await addressdb.aggregate([
             { $match: { user_Id: new mongoose.Types.ObjectId(userId) } },
@@ -653,7 +738,12 @@ exports.postingOrder = async (req, res) => {
                     userId: "$userId"
                 }
             },
-        ]);
+        ])
+
+        if (!data) {
+            req.session.addressErrorMessage = "Please add an address before placing an order."
+            return res.redirect("/addAddressPage")
+        }
 
 
 
@@ -671,12 +761,16 @@ exports.postingOrder = async (req, res) => {
             { $unwind: '$productDetails' }
         ])
 
-        console.log(cartProducts);
+        // console.log(cartProducts);
 
 
         let subtotal = cartProducts.reduce((total, item) => {
             return total + parseInt(item.productDetails.price * item.cartItems.quantity);
         }, 0)
+
+        if(req.session.afterCouponApply){
+            subtotal = req.session.afterCouponApply
+        }
 
         const orderItems = cartProducts.map((element) => {
             return {
@@ -704,7 +798,9 @@ exports.postingOrder = async (req, res) => {
             user_id: userId,
             orderItems: orderItems,
             address: data,
-            paymentMethod: req.body.paymentMethod === "cod" ? "cod" : req.body.paymentMethod === "onlinePayment"
+            paymentMethod: req.body.paymentMethod === "cod" ?
+                "cod" : req.body.paymentMethod === "onlinePayment" ?
+                    "onlinePayment" : "wallet" ?? "wallet"
         });
 
         if (req.body.paymentMethod === "cod") {
@@ -719,6 +815,28 @@ exports.postingOrder = async (req, res) => {
                 url: "/orderSuccessPage",
                 paymentMethod: "cod",
             })
+        }
+
+        if (req.body.paymentMethod == "wallet") {
+            if (walletInfo && walletInfo.balance >= subtotal) {
+                await newOrder.save()
+                req.session.newOrder = newOrder;
+
+                await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
+
+                await walletdb.updateOne({ userId: userId },
+                    { $inc: { balance: -(subtotal) },
+                $push: {transactions: {amount: -(subtotal)}} },
+                    { upsert: true }
+                )
+
+                req.session.orderSuccessPage = true;
+                return res.status(200).json({
+                    success: true,
+                    url: "/orderSuccessPage",
+                    paymentMethod: "wallet",
+                })
+            }
         }
 
 
@@ -829,13 +947,16 @@ exports.applyCoupon = async (req, res) => {
                 return accumulator + totalPrice;
             }, 0);
 
+            
+
             // Check if the total amount before discount exceeds the maximum price allowed by the coupon
             if (total >= coupon.MaxPrice) {
 
                 // Apply discount
-                const discountedTotal = total - (total * (coupon.Discount / 100))
+                const discountedTotal = Math.round(total - (total * (coupon.Discount / 100)))
                 req.session.success = 'Coupon applied'
-                req.session.total = discountedTotal;
+                req.session.afterCouponApply = discountedTotal;
+                console.log(discountedTotal);
                 res.redirect('/cart/checkout');
 
             } else {
@@ -859,10 +980,11 @@ exports.applyCoupon = async (req, res) => {
 // cancel order 
 exports.cancelOrder = async (req, res) => {
     try {
-        const user_Id = req.session.userId
-        const query = req.query.id
+        const user_Id = req.session.userId;
+        const query = req.query.id;
 
-        const findAndUpdate = await orderdb.findOneAndUpdate(
+        // Find and update the order status to 'canceled'
+        const updatedOrder = await orderdb.findOneAndUpdate(
             {
                 user_id: user_Id,
                 'orderItems._id': query
@@ -873,19 +995,48 @@ exports.cancelOrder = async (req, res) => {
             {
                 new: true
             }
-        )
+        );
 
-        res.redirect('/orderList')
+
+        if (!updatedOrder || !updatedOrder.orderItems) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+
+        const canceledOrderItem = updatedOrder.orderItems.find(item => item._id.toString() === query);
+        const productId = canceledOrderItem.productId;
+
+        const returnedProductPrice = canceledOrderItem.price;
+
+        const userWallet = await walletdb.findOne({ userId: user_Id });
+
+        userWallet.balance += returnedProductPrice;
+
+        userWallet.transactions.push({ amount: returnedProductPrice });
+
+        await userWallet.save();
+
+
+        await productdb.findOneAndUpdate(
+            { _id: productId },
+            { $inc: { quantity: canceledOrderItem.quantity } },
+            { new: true }
+        );
+
+        res.redirect('/orderList');
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
     }
-}
+};
+
 
 // Return
 exports.return = async (req, res) => {
     const query = req.query.id;
     const user_Id = req.session.userId;
+    const reason = req.body.reason;
 
     try {
         // Find the order and update the order status to 'returned'
@@ -895,15 +1046,23 @@ exports.return = async (req, res) => {
                 'orderItems._id': query
             },
             {
-                $set: { 'orderItems.$.orderStatus': 'returned' }
+                $set: {
+                    "orderItems.$.returnReason": reason,
+                    "orderItems.$.orderStatus": "returned"
+                }
             },
-            {
-                new: true
-            }
+            { new: true }
         );
 
         const returnedProduct = findAndUpdate.orderItems.find(item => item._id.toString() === query);
         const returnedProductPrice = returnedProduct.price;
+        const productId = returnedProduct.productId;
+
+        await productdb.findOneAndUpdate(
+            { _id: productId },
+            { $inc: { quantity: returnedProduct.quantity } },
+            { new: true }
+        );
 
         const userWallet = await walletdb.findOne({ userId: user_Id });
 
@@ -918,13 +1077,57 @@ exports.return = async (req, res) => {
         console.error("Error returning product:", error);
         res.status(500).send("Internal Server Error");
     }
-};
+}
+
+// Return reason
+// exports.returnReasonSave = async (req, res) => {
+//     try {
+//         const orderId = req.query.id;
+//         const reason = req.body.reason;
+
+//         const updatedOrder = await orderdb.findOneAndUpdate(
+//             { "orderItems._id": orderId },
+//             {
+//                 $set: {
+//                     "orderItems.$.returnReason": reason,
+//                     "orderItems.$.orderStatus": "returned"
+//                 }
+//             },
+//             { new: true }
+//         )
 
 
+//         const returnedOrderItem = updatedOrder.orderItems.find(item => item._id.toString() === orderId);
+//         const productId = returnedOrderItem.productId;
+
+
+//         await productdb.findOneAndUpdate(
+//             { _id: productId },
+//             { $inc: { quantity: returnedOrderItem.quantity } },
+//             { new: true }
+//         );
+
+
+//         res.redirect('/orderList');
+//     } catch (error) {
+//         console.error('Error saving return reason:', error);
+//         res.status(500).json({ message: 'Internal server error' });
+//     }
+// };
+
+
+
+
+// WISHLIST // 
 // Wish list ( Home - Whish list)
 exports.homeProductToWishlist = async (req, res) => {
+
+    const userId = req.session.userId
+    if (typeof userId == 'undefined') {
+        return res.redirect('/login')
+    }
+
     const queryId = req.query.id;
-    const userId = req.session.userId;
 
     try {
         let whishlist = await wishlistdb.findOne({ user_id: userId });
@@ -961,9 +1164,13 @@ exports.homeProductToWishlist = async (req, res) => {
 
 // add To Wishlist From Single Product Page
 exports.addToWishlistFromSingleProduct = async (req, res) => {
-    const queryId = req.query.id;
 
-    const userId = req.session.userId;
+    const userId = req.session.userId
+    if (typeof userId == 'undefined') {
+        return res.redirect('/login')
+    }
+
+    const queryId = req.query.id;
 
     try {
         let whishlist = await wishlistdb.findOne({ user_id: userId });
@@ -1022,6 +1229,7 @@ exports.deleteWishListFromWishlistPage = async (req, res) => {
 
 // Wish list to add to cart
 exports.wishlistAddToCartdb = async (req, res) => {
+
     const queryId = req.query.id;
     const userId = req.session.userId;
 
@@ -1121,4 +1329,5 @@ exports.addWalletMoneySuccessful = async (req, res) => {
 }
 
 
+// Filter 
 

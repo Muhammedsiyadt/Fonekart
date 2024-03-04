@@ -9,6 +9,8 @@ const store = require('../controller/admin/multer')
 
 // login page 
 adminRouter.get('/adminlogin',services.login)
+// login page verification
+adminRouter.post('/api/adminlogin',controller.verifylogin)
 
 // home page 
 adminRouter.get('/adminhome',services.home)
@@ -21,6 +23,9 @@ adminRouter.get('/weeklyReportDownload',controller.weeklyReport)
 // yearly 
 adminRouter.get('/yearlyReportDownload',controller.yearlyReport)
 
+// costome date sales report
+adminRouter.post('/costomeDateSalesReport',controller.customDateSales)
+
 
 // PRODUCT MANAGEMENT--------------------------------------------------------------------
 // Product management page
@@ -31,7 +36,8 @@ adminRouter.get('/product/add-product',services.add_product)
 adminRouter.get('/product/edit-product',services.edit_product)
 // delete products 
 adminRouter.get('/product/delete-product',services.deleteToUnlist) 
-// PRODUCT API
+
+// Peoduct  API
 // add product
 adminRouter.post('/api/addproduct',store.array('file',4),controller.add_product) 
 // submit edited product details
@@ -40,15 +46,22 @@ adminRouter.post('/api/submitEdit_product',store.array('file',4),controller.subm
 adminRouter.get('/product/delete-products',controller.deleteproduct)
 // Unlist to product
 adminRouter.get('/unlistToProduct',controller.unlistToProduct)
+// image seperate delete while editing
+adminRouter.get('/imageDeleteSeperate',controller.imageDeleteSeperate)
 
 
-// User_management page
+// USER_MANAGEMENT -------------------------------------------------------------------------
+// user management page 
 adminRouter.get('/User_management',services.User_management)
-
+// block and unblock 
+adminRouter.post('/adminUserStatus/block',controller.blockUser)
+adminRouter.post('/adminUserStatus/unblock',controller.unblockUser)
 
 
 // Order_management page
 adminRouter.get('/Order_management',services.Order_management)
+// update order status 
+adminRouter.post('/api/updateOrderStatus',controller.updateOrderStatus)
 
 
 // CATEGORY MANAGEMENT------------------------------------------------------------------
@@ -90,18 +103,8 @@ adminRouter.post('/saveProductOffer',controller.saveToOfferOfProduct)
 // Delete offer
 adminRouter.get('/deleteOffer',controller.deleteOffer)
 
-// === REFFEREL OFFER === //
-// refferal offer page admin
-adminRouter.get('/refferalOffer',services.refferalOffer)
 
-
-
-// api 
-
-// login page verification
-adminRouter.post('/api/adminlogin',controller.verifylogin)
-
-// CATEGORY
+// CATEGORY MANAGEMENT ----------------------------------------------------------------------
 // Add category file upload
 adminRouter.post('/api/addcategory',store.array('file',1),controller.categoryAdd)
 // edit category
@@ -115,21 +118,15 @@ adminRouter.get('/unlistToCategory',controller.unlistToCategory)
 
 
 
-
-// ORDER STATUS UPDATION
-adminRouter.post('/api/updateOrderStatus',controller.updateOrderStatus)
-
-
-
-
-//  BLOCK UNBLOCK ===============
-
-// adminRouter.post('/adminlogin',services.login)
-
-adminRouter.post('/adminUserStatus/block',controller.blockUser)
-adminRouter.post('/adminUserStatus/unblock',controller.unblockUser)  
-
-
+// REFFEREL OFFER ---------------------------------------------------------------------------
+// refferal offer page admin
+adminRouter.get('/refferalOffer',services.refferalOffer)
+// Add refferal offer
+adminRouter.get('/adddRefferalOffer',services.addRefferalOffer)
+// save refferel
+adminRouter.post('/saveRefferal',controller.saveRefferal)
+// Delete Refferal 
+adminRouter.get('/deleteRefferal',controller.deleteRefferal)
 
 
 // axios

@@ -27,6 +27,30 @@
 		.btn-info:hover {
 			background-color: #117a8b;
 		}
+
+		.pagination-container {
+			margin-top: 20px;
+			text-align: center;
+		}
+
+		.pagination-link {
+			display: inline-block;
+			margin-right: 5px;
+			padding: 8px;
+			background-color: #d7c2c2;
+			border: 1px solid rgb(255, 0, 51);
+			color: #000;
+			/* Change text color to improve readability */
+			text-decoration: none;
+			/* Remove underline from links */
+		}
+
+		.pagination-link:hover {
+			background-color: #ffffff;
+			/* Change background color on hover */
+			color: #000000;
+			/* Change text color on hover */
+		}
 	</style>
 
 	<title>AdminHub</title>
@@ -84,7 +108,7 @@
 					<span class="text">Offer_Management</span>
 				</a>
 			</li>
-			<li >
+			<li>
 				<a href="/refferalOffer">
 					<i class='bx bxs-group'></i>
 					<span class="text">Refferal_Offer</span>
@@ -92,7 +116,7 @@
 			</li>
 		</ul>
 		<ul class="side-menu">
-			
+
 			<li>
 				<a href="/adminlogin" class="logout">
 					<i class='bx bxs-log-out-circle'></i>
@@ -219,14 +243,29 @@
 												transition: background-color 0.3s;" class="btn btn-danger">
 												<i class="bx bxs-trash"></i>
 											</button>
-											
+
 										</td>
 						</tr>
 						<% } %>
 							<% } %>
 			</tbody>
 		</table>
+
 	</section>
+	<!-- Pagination -->
+	<div class="pagination-container" style="margin-top: 20px; margin-left: 400px; text-align: center;">
+		<% if (totalPages) { %>
+			<% for (let page=1; page <=totalPages; page++) { %>
+				<a style="margin-right: 5px; background-color: #d7c2c2; padding: 8px; border:rgb(255, 0, 51) 1px solid;"
+					href="/Coupon_management?page=<%= page %>" class="pagination-link">
+					<%= page %>
+				</a>
+				<% } %>
+					<% } %>
+	</div>
+	<!-- End Pagination -->
+
+
 
 
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

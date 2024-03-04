@@ -81,13 +81,26 @@
             max-height: 50px;
             margin-right: 10px;
         }
+
+        #cpn:hover {
+            border-radius: 10px;
+            border: #000000 2px solid;
+        }
+
+        #cpnbtn:hover {
+            border-radius: 10px;
+        }
+        #placeOrderBtn:hover{
+            background-color: #5eff00;
+            color: #000000;
+        }
     </style>
 </head>
 
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top p-3">
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top p-3 ">
         <a style="color: #0F0;" class="navbar-brand" href="/login"><b><em>Fonekart</em></b></a>
         <button class="navbar-toggler bg-light" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,58 +116,81 @@
                     <a style="color: white;" class="nav-link" href="/cart"><i class="ri-shopping-cart-line"></i></a>
                 </li>
                 <li class="nav-item">
-                    <a style="color: white;" class="nav-link" href="#"><i class="ri-heart-line"></i></a>
+                    <a style="color: white;" class="nav-link" href="/wishlist"><i class="ri-heart-line"></i></a>
                 </li>
                 <li class="nav-item">
                     <a style="color: white;" class="nav-link" href="/home/profile"><i
                             class="ri-account-circle-line"></i></a>
                 </li>
-                <!-- Add more navbar items as needed -->
+
             </ul>
 
         </div>
     </nav>
 
 
-    <div class="container-fluid pt-5"
-        style="margin-top: 150px; background-color: #ffffff; padding: 30px;  margin-top: 50px;">
-        <div class="col-lg-12" style=" margin-top: 20px;">
-            <h3 style="font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; color: #0F0;">
-                Products</h3>
-            <h6
-                style="font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif">
-                " You have selected <span><b>
-                        <%= Checkout.length %>
-                    </b></span> Products "</h6>
-            <% if(typeof Checkout !=='undefined' ){ %>
-                <% for(let i=0 ; i<Checkout.length ; i++){ %>
-                    <div class="order-summary ">
-                        <div class="order-item pb-1 "
-                            style="border: 1px rgb(0, 0, 0) solid; padding: 5px; height: 80px;">
-                            <img src="<%= Checkout[i].productDetails[0].images[0] %>" alt="Product 1">
-                            <span>
-                                <p style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
-                                    <%= Checkout[i].productDetails[0].Pname %>
-                                </p>
-                            </span>
-                            <span>
-                                <p>
-                                    <%= Checkout[i].cartItems.quantity %>
-                                </p>
-                            </span>
-                            <span class="badge " style="color: black;">
-                                <p>₹ <%= Checkout[i].productDetails[0].price %>
-                                </p>
-                            </span>
+    <div class="container-fluid  "
+        style="background-color: rgb(255, 255, 255);  margin-top: 70px; border: rgba(0, 0, 0, 0.321) 3px solid;">
+        <dv class="row">
+            <div class="col-lg-8 col-12 " style=" margin-top: 20px;">
+                <h3
+                    style="font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; color: rgb(0, 0, 0);">
+                    Products</h3>
+                <h6
+                    style="font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; color: rgb(255, 145, 0);">
+                    " You have selected <span><b>
+                            <%= Checkout.length %>
+                        </b></span> Products "</h6>
+                <% if(typeof Checkout !=='undefined' ) { %>
+                    <% for(let i=0; i < Checkout.length; i++) { %>
+                        <div class="order-summary">
+                            <div class="order-item pb-1"
+                                style="border: 1px rgb(0, 0, 0) solid; color: rgb(0, 0, 0); padding: 5px; height: 80px;">
+                                <img src="<%= Checkout[i].productDetails[0].images[0] %>" alt="Product 1">
+                                <span>
+                                    <p style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
+                                        <%= Checkout[i].productDetails[0].Pname %>
+                                    </p>
+                                </span>
+                                <span>
+                                    <p>
+                                        <%= Checkout[i].cartItems.quantity %>
+                                    </p>
+                                </span>
+                                <% let totalPrice=Checkout[i].productDetails[0].price * Checkout[i].cartItems.quantity
+                                    %>
+                                    <% if (Checkout[i].offerDetails && Checkout[i].offerDetails[0]) { %>
+                                        <% let discountPrice=totalPrice * (Checkout[i].offerDetails[0].discount / 100)
+                                            %>
+                                            <% totalPrice -=discountPrice %>
+                                                <% } %>
+                                                    <span class="badge" style="color: rgb(0, 0, 0);">
+                                                        <p>₹ <%= totalPrice.toFixed(2) %>
+                                                        </p>
+                                                    </span>
+                            </div>
                         </div>
-                    </div>
-                    <% } %>
                         <% } %>
-                            <% if (Checkout && Checkout.length> 0) { %>
-                                <div style="border: 1px rgb(0, 0, 0) solid; padding: 15px; " class="mt-5">
-                                    <% let Subtotal=Checkout.reduce((total, item)=> {
-                                        return total + (item.productDetails[0].price * item.cartItems.quantity)
-                                        }, 0) %>
+                            <% } %>
+
+
+            </div>
+
+            <div class="col-lg-4  col-12 mt-5 mb-4 ">
+                <% let Subtotal=0 %>
+                    <% if (Checkout && Checkout.length> 0) { %>
+                        <div
+                            style="background-color: rgba(23, 23, 23, 0.084); border-radius: 5px; border: 1px #000000 solid; padding: 10px; text-align: center; justify-content: end;">
+                            <% Subtotal=Checkout.reduce((total, item)=> {
+                                return total + (item.productDetails[0].price * item.cartItems.quantity)
+                                }, 0) %>
+                                <% let Discount=0 %>
+                                    <% Checkout.forEach(item=> {
+                                        if (item.offerDetails && item.offerDetails[0]) {
+                                        Discount += (item.productDetails[0].price * item.cartItems.quantity *
+                                        item.offerDetails[0].discount / 100)
+                                        }
+                                        }) %>
                                         <div class="order-item">
                                             <strong>
                                                 <p
@@ -173,7 +209,8 @@
                                                     Discount:</p>
                                             </strong>
                                             <span class="badge">
-                                                <p>₹ 0</p>
+                                                <p>₹ <%= Discount.toFixed(2) %>
+                                                </p>
                                             </span>
                                         </div>
                                         <div class="order-item">
@@ -187,185 +224,207 @@
                                             </span>
                                         </div>
                                         <div class="order-item">
-
                                             <h4>
                                                 <p
                                                     style="color: red; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
                                                     Total :</p>
                                             </h4>
-
                                             <span class="badge ">
                                                 <h5 class="justify-content-end">
-                                                    <% if(typeof totalUsingCoupon !=='undefined' ){ %>
+                                                    <% if (typeof totalUsingCoupon !=='undefined' ) { %>
                                                         <p
                                                             style="color: red; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
-
                                                             <%= totalUsingCoupon %>
-
                                                         </p>
-                                                        <% }else{ %>
+                                                        <% } else { %>
                                                             <p
                                                                 style="color: red; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
-                                                                ₹ <%= Subtotal.toFixed(2) %>
+                                                                ₹ <%= Math.floor((Subtotal - Discount).toFixed(2)) %>
                                                             </p>
-
                                                             <% } %>
-
-                                                </h5>
-                                                <h5>
-                                                    <% if(typeof success !=='undefined' ){ %>
-                                                        <p
-                                                            style="color: rgb(68, 255, 0); font-family: Verdana, Geneva, Tahoma, sans-serif;">
-                                                            <b>
-                                                                <%= success %>
-                                                            </b>
-                                                        </p>
-                                                        <% } %>
                                                 </h5>
                                             </span>
                                         </div>
+                                        <div class="pt-4"
+                                            style="border: 1px #ffffff31 solid; padding: 10px; text-align: center; justify-content: end;">
+                                            <h5
+                                                style="color: #000000; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">
+                                                Apply the Coupon</h5>
+                                            <form action="/applyCoupon" method="post">
+                                                <% if (typeof notAvailable !=='undefined' ) { %>
+                                                    <p style="color: red;"><b>
+                                                            <%= notAvailable %>
+                                                        </b></p>
+                                                    <% } %>
+                                                        <h5>
+                                                            <% if (typeof success !=='undefined' ) { %>
+                                                                <p
+                                                                    style="color: rgb(68, 255, 0); font-family: Verdana, Geneva, Tahoma, sans-serif;">
+                                                                    <b>
+                                                                        <%= success %>
+                                                                    </b>
+                                                                </p>
+                                                                <% } %>
+                                                        </h5>
+                                                        <% if (typeof expired !=='undefined' ) { %>
+                                                            <p style="color: red;"><b>
+                                                                    <%= expired %>
+                                                                </b></p>
+                                                            <% } %>
+                                                                <% if (typeof maxError !=='undefined' ) { %>
+                                                                    <p style="color: red;"><b>
+                                                                            <%= maxError %>
+                                                                        </b></p>
+                                                                    <% } %>
+                                                                        <input class="text-dark" id="cpn"
+                                                                            name="couponCode" style="padding: 4px;"
+                                                                            type="text" placeholder="Coupon code">
+                                                                        <button class="" id="cpnbtn"
+                                                                            style="background: #2d2821c6; color: white; padding: 4px;">Apply</button>
+                                            </form>
+                                        </div>
+                        </div>
+                        <% } %>
 
-                                </div>
-                                <% } %>
-        </div>
+
+            </div>
+        </dv>
     </div>
 
-    <div class="container-fluid" style="background-color: #ffffff; padding: 30px; ">
+    <div class="container-fluid " style="background-color: #fff5f5; padding: 30px; background: #fffffff8;">
         <div class="row">
-            <!-- Delivery Address -->
-            <div class="col-lg-6 ">
-                <div class="form-group" style="border: 1px #003a71 solid; padding: 10px; ">
+
+            <div class="col-md-12 col-sm-12 p-2" style="border: #000000 1px solid;">
+                <div class="form-group">
                     <h5 style="font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">Delivery Address
                     </h5>
-                    <% for (let i=0; i < addressSelect.address.length; i++) { %>
-                        <% if (addressSelect.address[i].defaultAddress==true) { %>
-                            <div
-                                style="border: solid rgb(50, 50, 49); border-radius: 6px; width: 290px; padding: 10px;">
-                                <b><em>Name : </em></b><span><em>
-                                        <%= addressSelect.address[i].name %>
-                                    </em></span><br>
-                                <b><em>Phone : </em></b><span><em>
-                                        <%= addressSelect.address[i].phone %>
-                                    </em></span><br>
-                                <b><em>Pin: </em></b><span><em>
-                                        <%= addressSelect.address[i].pin %>
-                                    </em></span><br>
-                                <b><em>Address : </em></b><span><em>
-                                        <%= addressSelect.address[i].address %>
-                                    </em></span><br>
-                                <b><em>District : </em></b><span><em>
-                                        <%= addressSelect.address[i].district %>
-                                    </em></span><br>
-                                <b><em>City : </em></b><span><em>
-                                        <%= addressSelect.address[i].city %>
-                                    </em></span>
-                            </div>
-                            <% } %>
-                                <% } %>
-                                    <button type="button" class="btn btn-primary" data-toggle="modal"
-                                        data-target="#changeAddressModal"
-                                        style="margin-top: 10px; border-radius: 10px;">Change Address</button>
-                                    <button type="button" class="btn btn-primary"
-                                        style="margin-top: 10px; border-radius: 10px;" data-toggle="modal"
-                                        data-target="#addAddressModal">+Add address</button>
-                </div>
-            </div>
 
-            <!-- Coupon Form -->
-            <div class="col-lg-6">
-                <div class="pt-4"
-                    style="border: 1px #003a71 solid; padding: 10px;  text-align: center; justify-content: end;">
-                    <h5 style="color: #000000; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">
-                        Apply the Coupon
-                    </h5>
-                    <form action="/applyCoupon" method="post">
-                        <% if(typeof notAvailable !=='undefined' ){ %>
+                    <% if (addressSelect?.address.length===0) { %> <!-- Check if the address array is empty -->
+                        <% if (typeof address !=='undefined' ) { %>
                             <p style="color: red;"><b>
-                                    <%= notAvailable %>
+                                    <%= address %>
                                 </b></p>
                             <% } %>
-                                <% if(typeof expired !=='undefined' ){ %>
-                                    <p style="color: red;"><b>
-                                            <%= expired %>
-                                        </b></p>
-                                    <% } %>
-                                        <% if(typeof maxError !=='undefined' ){ %>
-                                            <p style="color: red;"><b>
-                                                    <%= maxError %>
-                                                </b></p>
+                                <% } else { %>
+                                    <% for (let i=0; i < addressSelect?.address.length; i++) { %>
+                                        <!-- Iterate over each address -->
+                                        <% if (addressSelect.address[i].defaultAddress==true) { %>
+                                            <!-- Check if the address is the default address -->
+                                            <div
+                                                style="border: solid rgb(50, 50, 49); border-radius: 6px; width: 290px; padding: 10px;">
+                                                <b>Name :</b><span>
+                                                        <%= addressSelect.address[i].name %>
+                                                    </span><br>
+                                                <b>Phone :</b><span>
+                                                        <%= addressSelect.address[i].phone %>
+                                                    </span><br>
+                                                <b>Pin:</b><span>
+                                                        <%= addressSelect.address[i].pin %>
+                                                    </span><br>
+                                                <b>Address :</b><span>
+                                                        <%= addressSelect.address[i].address %>
+                                                    </span><br>
+                                                <b>District :</b><span>
+                                                        <%= addressSelect.address[i].district %>
+                                                    </span><br>
+                                                <b>City :</b><span>
+                                                        <%= addressSelect.address[i].city %>
+                                                    </span>
+                                            </div>
                                             <% } %>
-                                                <input class="text-danger" name="couponCode" style="padding-left: 60px;"
-                                                    type="text" placeholder="Coupon code">
-                                                <br>
-                                                <button class="btn"
-                                                    style="background: #0800ff; color: white; margin-top: 10px; padding-right: 100px; padding-left: 105px; border: transparent;">Apply</button>
-                    </form>
+                                                <% } %>
+                                                    <% } %>
+
+                                                        <button type="button" class="btn btn-primary bg-dark"
+                                                            data-toggle="modal" data-target="#changeAddressModal"
+                                                            style="margin-top: 10px; border-radius: 10px;">Change
+                                                            Address</button>
+                                                        <button type="button" class="btn bg-warning"
+                                                            style="margin-top: 10px; border-radius: 10px;"
+                                                            data-toggle="modal" data-target="#addAddressModal">+Add
+                                                            address</button>
                 </div>
             </div>
+
         </div>
     </div>
+    <div class="container-fluid bg-light pb-3 pt-3 text-center ">
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <section class="banner-bottom-wthreelayouts ">
+                    <div class="container">
+                        <div class="inner-sec-shop px-lg-4 px-3"
+                            style="border: #0000003c 1px solid;  border-radius: 5px;">
+                            <h3 class="tittle-w3layouts my-lg-4 mt-3 "
+                                style="background: #1499ff;  ">
+                                PAYMENT OPTIONS</h3>
 
+                            <div class="responsive_tabs">
+                                <div id="horizontalTab">
 
+                                    <div class="resp-tabs-container ">
 
-    <section class="banner-bottom-wthreelayouts py-lg-5 py-3 ">
-        <div class="container">
-            <div class="inner-sec-shop px-lg-4 px-3"
-                style="border: #007bff 3px solid; background: #f5dede; padding: 4px;">
-                <h3 class="tittle-w3layouts my-lg-4 mt-3">Payment </h3>
+                                        <div class="tab1 ">
+                                            <div class="pay_info ">
+                                                <div class="vertical_post check_box_agile">
+                                                    <div class="checkbox ">
+                                                        <div class="check_box_one cashon_delivery ">
+                                                            <label class="anim ">
 
-                <div class="responsive_tabs">
-                    <div id="horizontalTab">
+                                                                <input type="radio" class="radio " name="paymentMethod"
+                                                                    value="cod" id="cod">
+                                                                <label for="cod">COD</label>
+                                                                <br>
 
-                        <div class="resp-tabs-container">
+                                                                <input type="radio" class="radio" name="paymentMethod"
+                                                                    value="onlinePayment" id="online">
+                                                                <label for="online">ONLINE PAYMANT</label>
+                                                                <br>
 
-                            <div class="tab1">
-                                <div class="pay_info">
-                                    <div class="vertical_post check_box_agile">
-                                        <div class="checkbox">
-                                            <div class="check_box_one cashon_delivery">
-                                                <label class="anim">
-                                                    <input type="radio" class="radio" name="paymentMethod" value="cod"
-                                                        id="cod">
-                                                    <label for="cod">COD</label><br><br>
+                                                                <% if (walletInfo?.balance>= Subtotal.toFixed(2)) { %>
+                                                                    <input type="radio" class="radio"
+                                                                        name="paymentMethod" value="wallet" id="cod">
+                                                                    <label for="cod">WALLET</label>
+                                                                    <% } else { %>
+                                                                        <p class="text-primary">Insufficient balance in
+                                                                            wallet</p>
+                                                                        <% } %>
 
-                                                    <input type="radio" class="radio" name="paymentMethod"
-                                                        value="onlinePayment" id="online">
-                                                    <label for="online">Online Payment</label><br><br>
+                                                                            <p id="errorMessage" style="color: red;"></p>
 
-                                                    <%# if (walletInfo.balance >= Subtotal.toFixed(2)) { %>
-                                                        <input type="radio" class="radio" name="paymentMethod"
-                                                            value="wallet" id="cod">
-                                                        <label for="cod">Wallet</label>
-                                                        <%# } else { %>
-                                                            <p class="text-primary">Insufficient balance in wallet</p>
-                                                            <%# } %>
+                                                            </label>
 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-center mb-3">
+                                                <input type="text" style="display: none;" name="totalAmount" value="">
+                                                <button   type="button" id="placeOrderBtn"
+                                                    class="btn btn-info ">
+                                                    ORDER</button>
 
-                                                </label>
-                                                <p id="errorMessage" style="color: red;"></p>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="text-center">
-                                    <input type="text" style="display: none;" name="totalAmount" value="">
-                                    <button type="button" id="placeOrderBtn" class="btn btn-success mt-3">PLACE
-                                        ORDER</button>
 
                                 </div>
+
+
                             </div>
-                        </div>
 
+
+                        </div>
                     </div>
 
-
-                </div>
-
-
+                </section>
             </div>
         </div>
+    </div>
 
-    </section>
+
+
+
 
     <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel"
         aria-hidden="true">
@@ -392,7 +451,7 @@
                         </div>
                         <div class="form-group">
                             <label for="phone">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" name="phoneNumber">
+                            <input type="number" class="form-control" id="phone" name="phoneNumber">
                             <p id="phoneError" class="error-message text-danger"></p>
                         </div>
                         <div class="form-group">
@@ -407,7 +466,7 @@
                         </div>
                         <div class="form-group">
                             <label for="pincode">Pincode</label>
-                            <input type="text" class="form-control" id="pincode" name="pinCode">
+                            <input type="number" class="form-control" id="pincode" name="pinCode">
                             <p id="pincodeError" class="error-message text-danger"></p>
                         </div>
                         <button type="submit" class="btn btn-primary">Save
@@ -420,18 +479,17 @@
     </div>
     <div class="modal" id="changeAddressModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header" style="background-color: #f1f1ec; color: rgb(255, 0, 0);">
-                    <h5 class="modal-title">Change Address</h5>
+            <div class="modal-content" style="width: 350px;">
+                <div class="modal-header" style="background-color: #ffffff; color: rgb(0, 0, 0);">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
 
-                <div class="modal-body" style="background-color: #f8d7da; color: #721c24;">
+                <div class="modal-body" style="background-color: #ffffff; color: #721c24;">
                     <form id="checkoutForm" action="/selectAddressFromCheckout" method="get">
                         <div class="form-group">
-                            <label for="newAddress">Available address</label>
+
                             <% for(let i=0; i < addressSelect?.address.length; i++) { %>
                                 <div
                                     style="border: solid rgb(194, 194, 205); border-radius: 6px; width: 320px; margin-bottom: 10px; background-color: #fff; padding: 10px;">
@@ -579,7 +637,7 @@
 
                         } else if (res.paymentMethod === "wallet") {
                             if (res.success === true) {
-                                window.url.href = res.url
+                                window.location.href = res.url
                             }
                         } else if (res.paymentMethod === "onlinePayment") {
                             if (res.success === true) {
@@ -608,13 +666,13 @@
                                 const rzp1 = new Razorpay(options)
                                 rzp1.open();
                             } else {
-                                // Handle error case
+
                                 console.error("Order creation failed:", res.error);
                             }
                         }
                     },
                     error: function (xhr, status, error) {
-                        // Handle error response, e.g., display error message
+
                         console.error(error);
                     }
                 });

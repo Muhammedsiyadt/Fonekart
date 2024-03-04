@@ -24,10 +24,9 @@ var schema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
-    // confPass:{
-    //     type:String,
-    //     required:true
-    // }  
+    refferalCode: {
+        type: String
+    }   
 
 })
 

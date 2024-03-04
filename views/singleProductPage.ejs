@@ -70,36 +70,39 @@
                                     <h5 class="text-uppercase">
                                         <%= single.Pname %>
                                     </h5>
-                                    <div class="price  align-items-center"> 
-                                      
-                                        <b>Price:</b>
-                                        <% if (single.offerDetails && single.offerDetails[0] != null) { %>
-                                            <del>₹ <%= single.price %></del><% if (single.offerDetails && single.offerDetails[0] != null) { %>
-                                                <p class="text-success">Offer<%= single.offerDetails[0]?.discount %>%</p> 
-                                        <% } %>
-                                            <b>Offer Price:</b>
-                                            <b class="text-dark">₹ <%= single.price - (single.price * single.offerDetails[0]?.discount / 100) %></b>
-                                            
-                                        <% }else{ %>
-                                            <b>₹ <%= single.price %></b>
-                                            <% } %>
-                                        <div class=""> <label for="quantity"><b>Quantity:</b>
-                                                <% if(single.quantity==0){ %>
-                                                    <b style="color: red;">
-                                                        <%= single.quantity %>
-                                                    </b>
-                                                    <% }else{ %>
-                                                        <b>
-                                                            <%= single.quantity %>
-                                                        </b>
-                                                        <% } %>
+                                    <div class="price  align-items-center">
 
-                                            </label>
-                                        </div>
+                                        <b>Price:</b>
+                                        <% if (single.offerDetails && single.offerDetails[0] !=null) { %>
+                                            <del style="color: rgba(0, 0, 0, 0.553);">₹ <%= single.price %></del>
+                                            <% if (single.offerDetails && single.offerDetails[0] !=null) { %>
+                                                <p class="text-success">Offer<%= single.offerDetails[0]?.discount %>%
+                                                </p>
+                                                <% } %>
+                                                    <b>Offer Price:</b>
+                                                    <b class="text-info">₹ <%= Math.floor(single.price - (single.price * (single.offerDetails[0]?.discount || 0) / 100)) %></b>
+
+
+                                                    <% }else{ %>
+                                                        <b>₹ <%= single.price %></b>
+                                                        <% } %>
+                                                            <div class=""> <label for="quantity"><b>Quantity:</b>
+                                                                    <% if(single.quantity==0){ %>
+                                                                        <b style="color: red;">
+                                                                            <%= single.quantity %>
+                                                                        </b>
+                                                                        <% }else{ %>
+                                                                            <b class="text-info">
+                                                                                <%= single.quantity %>
+                                                                            </b>
+                                                                            <% } %>
+
+                                                                </label>
+                                                            </div>
                                     </div>
-                                    
-                                    
-                                    
+
+
+
                                 </div>
                                 <p class="about">Explore a diverse range of cutting-edge gadgets for your everyday
                                     needs. Pair them effortlessly with stylish mobiles to complete your look. Elevate
@@ -120,7 +123,7 @@
                                             <!-- Wish List Button -->
                                             <a href="/addToWishlistFromSingleProduct?id=<%= single._id %>"><button
                                                     style="border-radius: 5px; background: #ffffff; height: 35px;"><i
-                                                        class="ri-heart-line text-danger h-5"></i></button></a>
+                                                        class="ri-heart-line text-danger "></i></button></a>
                             </div>
                         </div>
                     </div>
@@ -165,7 +168,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <script src="js/single.js"></script>
+    <script src="js/single.js"></script>
 
     <script>
         $(document).ready(function () {
@@ -206,7 +209,7 @@
     </script>
 
 
- 
+
 
 </body>
 

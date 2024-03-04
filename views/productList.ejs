@@ -7,55 +7,83 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet"   />
   <!-- Font Awesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <style>
-    /* Add your custom styles here */
-    /* Customize the sidebar styles */
     .sidebar {
       background-color: #ffffff;
       /* padding-right: 20px; */
     }
 
-    /* Customize the product card styles */
+
     .product-card {
       border: 1px solid #000000;
       padding: 15px;
     }
-    
-    .product-card:hover{
+
+    .product-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 10px 20px rgba(27, 27, 27, .5);
       border-radius: 5px;
     }
-    
+
     .compact-filter-btn {
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
-    padding: 10px 15px;
-    font-size: 12px;
-    border: none;
-    cursor: pointer;
-    height: 40px;
-    width: 150px;
-  }
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      font-size: 12px;
+      border: none;
+      cursor: pointer;
+      height: 30px;
+      width: 100px;
 
-  /* Custom styles for filter options */
-  .filter-options {
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 10px;
-    display: none;
-  }
+    }
 
-  .filter-options.show {
-    display: block;
-  }
+    /* Custom styles for filter options */
+    .filter-options {
+      background-color: #f8f9fa47;
+      padding: 5px;
+      border-radius: 10px;
+      display: none;
+
+
+    }
+
+    .filter-options.show {
+      display: block;
+    }
+
+    #category:hover {
+      border: #000000 2px solid;
+    }
+
+    .pagination-icons {
+      margin-top: 20px;
+    }
+
+    .pagination-icon {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 20px;
+      margin: 0 5px;
+    }
+
+    .pagination-number {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 18px;
+      margin: 0 5px;
+    }
+
+    .pagination-icon:hover,
+    .pagination-number:hover {
+      text-decoration: none;
+      color: #0056b3;
+    }
   </style>
   <title>Product Listing</title>
 </head>
 
-<body class="">
+<body style="background-color: rgb(255, 255, 255);">
 
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top">
@@ -74,7 +102,7 @@
           <a style="color: white;" class="nav-link" href="/cart"><i class="ri-shopping-cart-line"></i></a>
         </li>
         <li class="nav-item">
-          <a style="color: white;" class="nav-link" href="#"><i class="ri-heart-line"></i></a>
+          <a style="color: white;" class="nav-link" href="/wishlist"><i class="ri-heart-line"></i></a>
         </li>
         <li class="nav-item">
           <a style="color: white;" class="nav-link" href="/home/profile"><i class="ri-account-circle-line"></i></a>
@@ -86,101 +114,124 @@
   </nav>
 
 
- <!-- Compact Filter Toggle Button -->
-<div class="container-fluid mt-3">
-  <div class="row">
-    <div class="col-md-12 text-center">
-      <button class="compact-filter-btn mt-5" id="toggleFiltersBtn">
-        <i class="fas fa-sliders-h mr-2"></i> Filter
-      </button>
+  <!-- Compact Filter Toggle Button -->
+  <div class="container-fluid mt-3">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <button class="compact-filter-btn mt-5" id="toggleFiltersBtn">
+          <i class="fas fa-sliders-h mr-2"></i> Filter
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Filter Options Section (Initially hidden) -->
-<div class="container filter-options mt-4">
-  <div class="row">
-    <div class="col-md-3">
-      <div class="form-group">
-        <label for="category">Category:</label>
-        <select class="form-control" id="category">
-          <option value="All">All</option>
-          <option value="Mobile">Mobile</option>
-          <option value="Laptop">Laptop</option>
-          <option value="Earbuds">Earbuds</option>
-          <option value="Watches">Watches</option>
-        </select>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="form-group">
-        <label for="minPrice">Min Price:</label>
-        <input type="number" class="form-control" id="minPrice" placeholder="Min Price">
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="form-group">
-        <label for="maxPrice">Max Price:</label>
-        <input type="number" class="form-control" id="maxPrice" placeholder="Max Price">
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="form-group">
-        <label for="sort">Sort Price:</label>
-        <select class="form-control" id="sort">
-          <option value="highToLow">High to Low</option>
-          <option value="lowToHigh">Low to High</option>
-        </select>
-      </div>
-    </div>
-    <div class="col-md-12 text-center">
-      <button class="btn btn-primary btn-block">Apply Filters</button>
-    </div>
-  </div>
-</div>
+  <!-- Filter Options Section (Initially hidden) -->
+  <form action="/home/category/products" method="get">
+    <div class="container filter-options mt-4">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="form-group">
+            <label for="category">Category:</label>
+
+            <select class="form-control" name="cat" id="category">
+              <option>Allproducts</option>
+              <% for(let i=0;i<categoryData.length;i++) {%>
+
+                <option>
+                  <%= categoryData[i].category %>
+                </option>
+
+                <% } %>
 
 
-<div class="container" style="padding-bottom: 100px;">
-  <div class="row">
+            </select>
+
+          </div>
+        </div>
+        <!-- <div class="col-md-3">
+          <div class="form-group">
+            <label  for="minPrice">Price filter:</label>
+            <input name="minPrice" type="number" class="form-control" id="minPrice" placeholder="Min Price">
+            <br>
+            <input name="maxPrice" type="number" class="form-control" id="maxPrice" placeholder="Max Price">
+          </div>
+        </div> -->
+        <!-- <div class="col-md-3">
+          <div class="form-group">
+            <label for="maxPrice">Max Price:</label>
+            <input name="maxPrice" type="number" class="form-control" id="maxPrice" placeholder="Max Price">
+          </div>
+        </div> -->
+        <div class="col-md-3">
+          <div class="form-group">
+            <label for="sort">Sort Price:</label>
+            <select name="sort" class="form-control" id="category">
+              <option value="highToLow">High to Low</option>
+              <option value="lowToHigh">Low to High</option>
+            </select>
+          </div>
+        </div>
+        <div class=" text-center mt-4 pt-2">
+          <button class="btn btn-primary btn-block">Apply Filters</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+
+  <div class="container" style="padding-bottom: 100px;">
+    <div class="row">
       <!-- Product Listing -->
       <div class="col-md-12">
-          <div class="row" style="margin-top: 30px;">
+        <div class="row" style="margin-top: 30px;">
 
-              <% if(typeof message !=='undefined' ){ %>
-              <p style="color: red;">
-                  <%= message %>
-              </p>
-              <% } %>
+          <% if(typeof message !=='undefined' ){ %>
+            <p style="color: red;">
+              <%= message %>
+            </p>
+            <% } %>
 
               <!-- Product Cards -->
               <% for(let i=0 ; i<productList.length ; i++ ){ %>
-              <div class="col-md-4 col-sm-6 col-xl-3 p-2">
+                <div class="col-md-4 col-sm-6 col-xl-3 p-2">
                   <a style="text-decoration: none;" href="/home/singleProduct?id=<%= productList[i]._id %>">
-                      <div class="product-card text-dark" style="justify-content: center; text-align: center; height: 430px; background-color: rgb(255, 255, 255);">
-                        <% if (productList[i]?.offerDetails && productList[i]?.offerDetails[0] != null) { %>
-                          <div class="offer  text-success" style=" width: 100px; border-radius: 10px;">
-                              <h6><b>Offer<%= productList[i]?.offerDetails[0]?.discount %>%</b></h6> 
-                          </div>
-                      <% } %>
-                      
-                          <img style="height: 250px; width: 250px; margin-bottom: 20px;" src="<%= productList[i].images[0] %>"
-                              alt="Product 1" class="img-fluid">
+                    <div class="product-card text-dark"
+                      style="justify-content: center; text-align: center; height: 430px; background-color: rgb(255, 255, 255); border-radius: 10px; box-shadow: 0 10px 20px rgba(10, 10, 10, .5);">
+                      <% if (productList[i]?.offerDetails && productList[i]?.offerDetails[0] !=null) { %>
+                        <div class="offer  text-success" style=" width: 100px; border-radius: 10px;">
+                          <h6><b>Offer<%= productList[i]?.offerDetails[0]?.discount %>%</b></h6>
+                        </div>
+                        <% } %>
+
+                          <img style="height: 250px; width: 250px; margin-bottom: 20px;"
+                            src="<%= productList[i].images[0] %>" alt="Product 1" class="img-fluid">
                           <h4>
-                              <%= productList[i].Pname %>
+                            <%= productList[i].Pname %>
                           </h4>
                           <p>₹ <%= productList[i].price %>
                           </p>
-                          
+
                           <!-- <button class="btn btn-success">Buy Now</button> -->
-                      </div>
+                    </div>
                   </a>
-              </div>
-              <% } %>
-          </div>
+                </div>
+                <% } %>
+        </div>
       </div>
 
+    </div>
+    <!-- Pagination Icons -->
+    <!-- <div class="pagination-icons text-center mt-3">
+      <a href="#" class="pagination-icon"><i class="fas fa-chevron-left"></i></a>
+      <%# pageNumbers.forEach(pageNumber=> { %>
+        <a href="/home/category/products?page=<%#= pageNumber %>" class="pagination-number">
+          <%#= pageNumber %>
+        </a>
+        <%#}); %>
+          <a href="#" class="pagination-icon"><i class="fas fa-chevron-right"></i></a>
+    </div> -->
   </div>
-</div>
+
 
 
   <footer class="bg-dark text-light pt-5  pb-3" id="footer" style="margin-top: 10px;">
@@ -213,12 +264,12 @@
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script>
-  $(document).ready(function(){
-    // Toggle filter options on button click
-    $("#toggleFiltersBtn").click(function(){
-      $(".filter-options").toggle();
+    $(document).ready(function () {
+      // Toggle filter options on button click
+      $("#toggleFiltersBtn").click(function () {
+        $(".filter-options").toggle();
+      });
     });
-  });
   </script>
 
 

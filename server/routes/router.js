@@ -7,14 +7,17 @@ const middleman = require('../../middleware/middleman')
 const { route } = require('./adminRouter')
 
 // Home page No route Only /
-router.get('/',services.slashpage)
+router.get('/',middleman.isBlocked,services.slashpage)
 
 // Login page router
-router.get('/login',services.login)
-router.post('/login',services.login)
+router.get('/login',middleman.isBlocked,services.login)
+router.post('/login',middleman.isBlocked,services.login)
+
+// Logout 
+router.get('/logout',controller.logout)
 
 // Home page router
-router.get('/home',services.home)
+router.get('/home',middleman.isBlocked,services.home)
 // SEARCH // 
 // router.post('/search',controller.search)
 
@@ -44,15 +47,15 @@ router.get('/home/singleProduct',services.singleProduct)
 router.get('/home/category/products',services.categoryProducts)
 
 // === USER PROFILE === //
-router.get('/home/profile',services.userProfile)
+router.get('/home/profile',middleman.isBlocked,services.userProfile)
 
 
 // === ADDRESS MANAGEMENT === //
-router.get('/profile/address_management',services.address_management)
+router.get('/profile/address_management',middleman.isBlocked,services.address_management)
 // add address 
-router.get('/address/add_address',services.add_address)
+router.get('/address/add_address',middleman.isBlocked,services.add_address)
 // Edit address
-router.get('/address/edit-address',services.editAddress)
+router.get('/address/edit-address',middleman.isBlocked,services.editAddress)
 // Delete address
 router.get('/address/delete-address',controller.deleteAddress)
 // Select one address 
@@ -62,7 +65,7 @@ router.get('/address/Unselectselect-address',controller.selectedToUnselect)
 
 
 // === CART ==== // 
-router.get('/cart',services.cartPage)
+router.get('/cart',middleman.isBlocked,services.cartPage)
 // Add to cart 
 router.get('/productAddToCartdb',controller.productAddToCartdb) 
 // Delete product from cart
@@ -72,7 +75,7 @@ router.post('/api/updateCartQuantity',controller.updateCartQuantity)
 
 // === Check out === //
 // Check out Page //
-router.get('/cart/checkout',services.checkout)
+router.get('/cart/checkout',middleman.isBlocked,services.checkout)
 // address change from Check out
 router.get('/selectAddressFromCheckout', controller.selectAddressInCheckout);
 // Add address in checkout
@@ -83,13 +86,13 @@ router.post('/applyCoupon',controller.applyCoupon)
 
 // === UPDATE PROFILE === //
 // change user name
-router.get('/profile/updateProfile',services.updateProfile)
+router.get('/profile/updateProfile',middleman.isBlocked,services.updateProfile)
 // change password 
-router.get('/profile/changePassword',services.changePassword)
+router.get('/profile/changePassword',middleman.isBlocked,services.changePassword)
 // old password chacking 
 router.post('/api/changePassword',controller.oldPasswordChecking)
 // change password from profile After old password page
-router.get('/profile/newPasswordUpdation',services.changePasswordFromProfile)
+router.get('/profile/newPasswordUpdation',middleman.isBlocked,services.changePasswordFromProfile)
 // update After user changed from update profile
 router.post('/password/updatePasswordAfterChanged',controller.updatePasswordAfterChanged)
 
@@ -97,14 +100,17 @@ router.post('/password/updatePasswordAfterChanged',controller.updatePasswordAfte
 // === ORDER LIST === //
 
 // Order Page
-router.get('/orderList',services.orderList)
+router.get('/orderList',middleman.isBlocked,services.orderList)
 // order success page
-router.get('/orderSuccessPage',services.orderSuccessPage)
+router.get('/orderSuccessPage',middleman.isBlocked,services.orderSuccessPage)
 // cancel Order
 router.get('/api/cancelOrder',controller.cancelOrder)
 // return
-router.get('/returnOrder',controller.return)
-
+router.post('/returnOrder',controller.return)
+// order detail page 
+router.get('/orderDetailPage',middleman.isBlocked,services.orderDetailPage)
+// Return reason
+// router.post('/returnReasonSave',controller.returnReasonSave)
 
 // Shubham route
 router.post('/postingOrder',controller.postingOrder)
@@ -113,7 +119,7 @@ router.post('/ordersuccefull',controller.orderSuccessful)
 
 
 // === WISH LIST === //
-router.get('/wishlist',services.wishlist)
+router.get('/wishlist',middleman.isBlocked,services.wishlist)
 // home product to wishlist 
 router.get('/home/addToWislist',controller.homeProductToWishlist)
 // add to wish list from the single product page 
@@ -125,7 +131,7 @@ router.get('/wishlistAddToCartdb',controller.wishlistAddToCartdb)
 
 
 // ===== WALLET ===== // 
-router.get('/wallet',services.wallet)
+router.get('/wallet',middleman.isBlocked,services.wallet)
 // Add money
 router.post('/addWalletMoney',controller.addWalletMoney)
 // successful 
@@ -135,6 +141,9 @@ router.post('/addedMoney',controller.addWalletMoneySuccessful)
 
 
 //api
+
+// Filter 
+// router.post('/filter',controller.filter)
 
 // router.post('/api/register',middleman.userCheck,controller.register)
 router.post('/api/register',controller.register)

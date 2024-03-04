@@ -16,7 +16,7 @@ exports.slashpage = async (req, res) => {
     try {
         const productDetails = await productdb.find({ delete: false })
         const categoryDetails = await categorydb.find({ delete: false })
-        // console.log(productDetails);
+
         res.render('home', { product: productDetails, category: categoryDetails, isLogged: req.session.isLogged })
     } catch (err) {
         console.error(err);
@@ -26,15 +26,19 @@ exports.slashpage = async (req, res) => {
 
 // Login Page
 exports.login = (req, res) => {
-    res.render('login', { message: req.session.message }, (err, hii) => {
+    const message = req.session.NotPass;
+    const block = req.session.blockmessage
+    res.render('login', { blockMsg: block, message: message }, (err, html) => {
         if (err) {
-            res.send(err)
+            res.status(500).send(err)
+        } else {
+            delete req.session.NotPass
+            delete req.session.blockmessage
+            res.send(html)
         }
-        delete req.session.message
-
-        res.send(hii)
-    })
+    });
 }
+
 
 // Reegistration page
 exports.register = (req, res) => {
@@ -51,10 +55,11 @@ exports.register = (req, res) => {
 
 // OTP page
 exports.otppage = (req, res) => {
-    res.render('otppage')
+    const otpmsg = req.session.message
+    res.render('otppage', { otpmessage: otpmsg })
 }
 
-// Forgot page
+// Forgot page 
 exports.forgetpage = (req, res) => {
     try {
         res.render('forgetpage', { message: req.session.message })
@@ -151,10 +156,64 @@ exports.singleProduct = async (req, res) => {
 exports.categoryProducts = async (req, res) => {
     try {
         let products;
+        const category = await categorydb.find({ delete: false });
+
+        const cat = req.query.cat;
+        const min = req.query.minPrice;
+        const max = req.query.maxPrice;
+        const sort = req.query.sort;
 
         if (req.query.search) {
             products = await productdb.find({ Pname: { $regex: req.query.search, $options: 'i' } });
-        } else {
+        } else if (cat) {
+            let query = { delete: false, Pcategory: cat };
+
+            if (min && max) {
+                query.price = { $gte: min, $lte: max };
+            }
+            products = await productdb.aggregate([
+                { $match: query },
+                {
+                    $lookup: {
+                        from: 'offers',
+                        localField: 'offerId',
+                        foreignField: '_id',
+                        as: 'offerDetails'
+                    }
+                }
+            ]);
+
+            if (sort) {
+                if (sort === 'highToLow') {
+                    products.sort((a, b) => b.price - a.price)
+                } else if (sort === 'lowToHigh') {
+                    products.sort((a, b) => a.price - b.price)
+                }
+            }
+        }
+
+        if (cat === 'Allproducts') {
+            products = await productdb.aggregate([
+                { $match: { delete: false } },
+                {
+                    $lookup: {
+                        from: 'offers',
+                        localField: 'offerId',
+                        foreignField: '_id',
+                        as: 'offerDetails'
+                    }
+                }
+            ]);
+        }
+        if (sort) {
+            if (sort === 'highToLow') {
+                products.sort((a, b) => b.price - a.price)
+            } else if (sort === 'lowToHigh') {
+                products.sort((a, b) => a.price - b.price)
+            }
+        }
+
+        if (req.query.category) {
             products = await productdb.aggregate([
                 { $match: { delete: false, Pcategory: req.query.category } },
                 {
@@ -166,25 +225,128 @@ exports.categoryProducts = async (req, res) => {
                     }
                 }
             ]);
-
         }
 
-        res.render('productList', { productList: products });
+        res.render('productList', { productList: products, categoryData: category });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: error.message });
     }
-}
+};
+
+// exports.categoryProducts = async (req, res) => {
+//     try {
+//         let products;
+//         const category = await categorydb.find({ delete: false });
+
+//         const cat = req.query.cat;
+//         const min = req.query.minPrice;
+//         const max = req.query.maxPrice;
+//         const sort = req.query.sort;
+//         // const page = parseInt(req.query.page) || 1;
+//         // const limit = 10; // Adjust the limit as needed
+
+//         if (req.query.search) {
+//             products = await productdb.find({ Pname: { $regex: req.query.search, $options: 'i' } });
+//         } else if (cat) {
+//             let query = { delete: false, Pcategory: cat };
+
+//             if (min && max) {
+//                 query.price = { $gte: min, $lte: max };
+//             }
+
+//             products = await productdb.aggregate([
+//                 { $match: query },
+//                 {
+//                     $lookup: {
+//                         from: 'offers',
+//                         localField: 'offerId',
+//                         foreignField: '_id',
+//                         as: 'offerDetails'
+//                     }
+//                 }
+//             ]);
+
+//             if (sort) {
+//                 if (sort === 'highToLow') {
+//                     products.sort((a, b) => b.price - a.price)
+//                 } else if (sort === 'lowToHigh') {
+//                     products.sort((a, b) => a.price - b.price)
+//                 }
+//             }
+//         }
+
+//         if (cat === 'Allproducts') {
+//             products = await productdb.aggregate([
+//                 { $match: { delete: false} },
+//                 {
+//                     $lookup: {
+//                         from: 'offers',
+//                         localField: 'offerId',
+//                         foreignField: '_id',
+//                         as: 'offerDetails'
+//                     }
+//                 }
+//             ]);
+//         }
+
+//         if (sort) {
+//             if (sort === 'highToLow') {
+//                 products.sort((a, b) => b.price - a.price)
+//             } else if (sort === 'lowToHigh') {
+//                 products.sort((a, b) => a.price - b.price)
+//             }
+//         }
+
+//         if (req.query.category) {
+//             products = await productdb.aggregate([
+//                 { $match: { delete: false, Pcategory: req.query.category } },
+//                 {
+//                     $lookup: {
+//                         from: 'offers',
+//                         localField: 'offerId',
+//                         foreignField: '_id',
+//                         as: 'offerDetails'
+//                     }
+//                 }
+//             ]);
+//         }
+
+//         // const totalCount = products.length;
+//         // const totalPages = Math.ceil(totalCount / limit);
+//         // const currentPage = Math.min(page, totalPages);
+//         // const startIndex = (currentPage - 1) * limit;
+//         // const itemsOnPage = products.slice(startIndex, startIndex + limit);
+
+//         res.render('productList', { productList: itemsOnPage, categoryData: category });
+//         // res.render('productList', { productList: itemsOnPage, categoryData: category, pageNumbers: pageNumbers });
+
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: error.message });
+//     }
+// };
+
 
 
 
 // === USER PROFILE === // 
 // user profile
+
+
 exports.userProfile = async (req, res) => {
 
+    const userId = req.session.userId
+    if (typeof userId == 'undefined') {
+        return res.redirect('/login')
+    }
+
+
     try {
+        const referalOffer = await refferaldb.find()
+        
         const data = await userdb.findOne({ _id: req.session.email })
-        res.render('userProfile', { userData: data })
+        res.render('userProfile', { userData: data, referalOffer: referalOffer })
     } catch (error) {
         console.log(error);
     }
@@ -192,6 +354,7 @@ exports.userProfile = async (req, res) => {
 
 // Update profile
 exports.updateProfile = async (req, res) => {
+
     try {
         const data = await userdb.findOne({ _id: req.session.email })
         res.render('updateProfile', { userData: data })
@@ -280,28 +443,18 @@ exports.editAddress = async (req, res) => {
 
 exports.cartPage = async (req, res) => {
 
+    const userId = req.session.userId
+    if (typeof userId == 'undefined') {
+        return res.redirect('/login')
+    }
+
+
     const user_Id = req.session.userId
     const queryid = req.query.id
 
     try {
 
-        // let userCart = await cartdb.aggregate([
-        //     {
-        //         $match: { user_id: new mongoose.Types.ObjectId(user_Id) }
-        //     },
-        //     {
-        //         $unwind: '$cartItems'
-        //     },
-        //     {
-        //         $lookup: {
-        //             from: 'productdbs',
-        //             localField: 'cartItems.productId',
-        //             foreignField: '_id',
-        //             as: 'productDetails'
-        //         }
 
-        //     }
-        // ])
         const userCart = await cartdb.aggregate([
             {
                 $match: { user_id: new mongoose.Types.ObjectId(user_Id) }
@@ -327,6 +480,7 @@ exports.cartPage = async (req, res) => {
             }
         ]);
 
+
         res.render('cart', { cartData: userCart });
 
     } catch (error) {
@@ -340,11 +494,12 @@ exports.checkout = async (req, res) => {
     const user_Id = req.session.userId
     const queryid = req.query.id
 
-    const TotalPriceChangeUsingCoupon = req.session.total
+    const TotalPriceChangeUsingCoupon = req.session.afterCouponApply
     const maxError = req.session.maxErr
     const notAvailableCoupon = req.session.notAvailable
     const success = req.session.success
     const expired = req.session.expiredCoupon
+    const address = req.session.addressErrorMessage
 
     try {
 
@@ -362,24 +517,36 @@ exports.checkout = async (req, res) => {
                     foreignField: '_id',
                     as: 'productDetails'
                 }
+            },
+            {
+                $lookup: {
+                    from: 'offers',
+                    localField: 'productDetails.offerId',
+                    foreignField: '_id',
+                    as: 'offerDetails'
+                }
             }
-        ])
+        ]);
 
-        const wallet = await walletdb.findOne({ userId: user_Id }) 
 
-        const addressData = await addressdb.findOne({ user_Id: user_Id, 'address.defaultAddress': true })
+        const wallet = await walletdb.findOne({ userId: user_Id })
+
+
+        const addressData = await addressdb.findOne({ user_Id: user_Id })
 
         res.render('checkout', {
             Checkout: checkoutData,
             addressSelect: addressData,
+            address: address,
+            walletInfo: wallet,
             totalUsingCoupon: TotalPriceChangeUsingCoupon,
             maxError: maxError,
             notAvailable: notAvailableCoupon,
             success: success,
-            expired: expired,
-            walletInfo: wallet
+            expired: expired
         }, (err, html) => {
             if (err) {
+                console.log(err);
                 return res.status(500).send(err)
             }
             delete req.session.total;
@@ -387,7 +554,7 @@ exports.checkout = async (req, res) => {
             delete req.session.notAvailable;
             delete req.session.success;
             delete req.session.expiredCoupon
-
+            delete req.session.afterCouponApply
             res.status(200).send(html)
         });
 
@@ -456,17 +623,45 @@ exports.orderList = async (req, res) => {
     }
 }
 
-
 // ORDER SUCCESS PAGE //
 exports.orderSuccessPage = (req, res) => {
     res.render('orderSuccess')
 }
 
+// order detail page 
+exports.orderDetailPage = async (req, res) => {
+    const productId = req.query.id;
+    const userId = req.session.userId;
+
+    try {
+
+        const order = await orderdb.findOne({ _id: productId })
+
+
+        console.log(order);
+
+        res.render('orderDetailPage', { order: order });
+
+    } catch (error) {
+        console.error("Error finding order:", error);
+        res.status(500).send("Internal Server Error");
+    }
+}
+
+
+
+
 
 
 // === WISHL LIST === //
 exports.wishlist = async (req, res) => {
+
     const user_Id = req.session.userId;
+    if (typeof user_Id == 'undefined') {
+        return res.redirect('/login')
+    }
+
+
     const queryid = req.query.id;
     const page = req.query.page || 1;
     const limit = 5
@@ -486,8 +681,17 @@ exports.wishlist = async (req, res) => {
                     foreignField: '_id',
                     as: 'WishlistDetails'
                 }
+            },
+            {
+                $lookup: {
+                    from: 'offers',
+                    localField: 'WishlistDetails.offerId',
+                    foreignField: '_id',
+                    as: 'offerDetails'
+                }
             }
         ]);
+
 
 
         const totalCount = userWishlist.length;

@@ -14,6 +14,7 @@
     body {
       /* font-family: 'Arial', sans-serif;  */
       /* background-color: darkgrey; */
+      background-color: #000000;
     }
 
     .card-container {
@@ -267,7 +268,7 @@
   <div id="imageCarousel" class="carousel slide" data-ride="carousel">
     <div class="carousel-inner">
       <!-- Image 1 -->
-      <div class="carousel-item active" style="width: 100%;">
+      <div class="carousel-item active" style="width: 100%; ">
         <img src="/images/carosil 1.jpg" class="d-block w-100 img-fluid" alt="Image 1">
       </div>
 
@@ -295,45 +296,44 @@
 
 
 
-  <h2 style="padding: 10px; text-align: center; margin-top: 20px; "><b><em>New <b>Arrival</b></em></b></h2>
-  <div class="p-5" style="display: flex;flex-wrap:wrap;gap: 12px;  justify-content: center; margin-top: 10px;">
+  <h2 style="padding: 10px; text-align: center; margin-top: 20px; color: #FFF;"><b><em>New <b>Arrival</b></em></b></h2>
+  <div class=" p-5"
+    style="display: flex;flex-wrap:wrap;gap: 12px;  justify-content: center; margin-top: 10px; background-color: black;">
     <% for (let i=6; i < 9; i++) { %>
       <a>
-        <div
-          class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mb-4 "
-          id="fullcards" style="height: 650px;">
-          <% if(product[i].offerDetails[0] !=null){ %>
-            <div class="offer" style="width: 90px; padding: 5px; color: rgb(41, 137, 0); ">
-              <h3>Offer <%= product[i].offerDetails[0]?.discount %>%</h3>
+        <div class=" bg-light p-2" id="fullcards" style="height: 550px; border-radius: 5px;">
+
+          <a style="margin-left: 350px;" href="/home/addToWislist?id=<%= product[i]._id %>"><button>
+              <i class="ri-heart-line text-danger "></i></button></a>
+          <a href="/home/singleProduct?id=<%= product[i]._id %>" style="display: flex;justify-content: center;">
+            <img style="width: 300px; height: 400px;" class="p-8 rounded-t-lg" id="imgss"
+              src="<%= product[i].images[0] %>" alt="product image" />
+          </a>
+          <div class="px-5 pb-5" style="text-align: c;">
+
+            <h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text- white">
+              <%= product[i].Pname %>
+            </h5>
+
+
+            <div class="flex items-center mt-2.5 mb-5">
+
+              <% if (product[i].offerDetails && product[i].offerDetails[0] !=null) { %>
+                <del style="color: #33333376;">₹ <%= product[i].price %></del>
+                <% if (product[i].offerDetails && product[i].offerDetails[0] !=null) { %>
+                  
+                  <br>
+                  <% } %>
+                  <p class="text-success">Offer<%= product[i].offerDetails[0]?.discount %>%</p>
+                  <b class="text-dark ml-2">₹ <%= Math.floor(product[i].price - (product[i].price * product[i].offerDetails[0]?.discount / 100)) %></b>
+
+                    <% }else{ %>
+                      <b>₹ <%= product[i].price %></b>
+                      <% } %>
             </div>
-            <% } %>
-              <a href="/home/singleProduct?id=<%= product[i]._id %>" style="display: flex;justify-content: center;">
-                <img style="width: 300px; height: 400px;" class="p-8 rounded-t-lg" id="imgss"
-                  src="<%= product[i].images[0] %>" alt="product image" />
-              </a>
-              <div class="px-5 pb-5" style="text-align: c;">
 
-                <h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text- white">
-                  <%= product[i].Pname %>
-                </h5>
 
-                <div class="flex items-center mt-2.5 mb-5">
-                  <h2 class="text-dark">₹<%= product[i].price %>
-                  </h2>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-3xl font-bold text-gray-900 dark:text-white"></span>
-                  <a href="/home/singleProduct?id=<%= product[i]._id %>" class="btn">View</a>
-
-                  <!-- <a style="width: 200px; height: 50px; margin-right: 30px;"
-                href=""
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">View
-                datail</a> -->
-                  <a href="/home/addToWislist?id=<%= product[i]._id %>"><button><i
-                        class="ri-heart-line text-danger "></i></button></a>
-                </div>
-
-              </div>
+          </div>
         </div>
         <% } %>
       </a>
@@ -345,11 +345,11 @@
 
 
   <!-- Categories Section -->
-  <div class=" py-3  py-md-5" style="background-color: #ffffff;">
+  <div class=" py-3  py-md-5" style="background-color: #000000;">
     <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <h4 class="mb-4" style="text-align: center;"><b><em>Our Categories</em></b></h4>
+          <h4 class="mb-4" style="text-align: center; color: white;"><b><em>Our Categories</em></b></h4>
         </div>
 
         <% for(let i=0;i<category.length;i++) { %>

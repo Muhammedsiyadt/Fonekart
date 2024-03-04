@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Referral Offer</title>
+<style>
+    .container {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #000000;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        margin-top: 110px;
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+    label {
+        margin-bottom: 5px;
+    }
+    input {
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #000000;
+        border-radius: 5px;
+    }
+    .error {
+        color: red;
+        margin-bottom: 10px;
+    }
+    button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body style="background-color: rgba(64, 63, 63, 0.148);">
+<div class="container">
+    <h2>Referral Offer</h2>
+    <form id="referralForm" action="/saveRefferal" method="post" onsubmit="return validateForm()">
+        <div>
+            <label for="referralAmount">Referral Offer Amount:</label>
+            <input type="number" id="referralAmount" name="referralAmount" >
+            <p id="referralAmountError" class="error"></p>
+        </div>
+        <div>
+            <label for="referredAmount">Referred Offer Amount:</label>
+            <input type="number" id="referredAmount" name="referredAmount" >
+            <p id="referredAmountError" class="error"></p>
+        </div>
+        <div>
+            <label for="expireDate">Expire Date:</label>
+            <input type="date" id="expireDate" name="expireDate" >
+            <p id="expireDateError" class="error"></p>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+
+
+<script>
+function validateForm() {
+    var referralAmount = document.getElementById("referralAmount").value.trim();
+    var referredAmount = document.getElementById("referredAmount").value.trim();
+    var expireDate = document.getElementById("expireDate").value.trim(); // Get the value without converting to Date
+    var currentDate = new Date();
+    var isValid = true;
+
+    // Validate referral amount
+    if (referralAmount === "") {
+        document.getElementById("referralAmountError").innerText = "Please enter a referral offer amount.";
+        isValid = false;
+    } else if (isNaN(referralAmount) || parseFloat(referralAmount) <= 0) {
+        document.getElementById("referralAmountError").innerText = "Please enter a valid referral offer amount.";
+        isValid = false;
+    } else {
+        document.getElementById("referralAmountError").innerText = "";
+    }
+
+    // Validate referred amount
+    if (referredAmount === "") {
+        document.getElementById("referredAmountError").innerText = "Please enter a referred offer amount.";
+        isValid = false;
+    } else if (isNaN(referredAmount) || parseFloat(referredAmount) <= 0) {
+        document.getElementById("referredAmountError").innerText = "Please enter a valid referred offer amount.";
+        isValid = false;
+    } else {
+        document.getElementById("referredAmountError").innerText = "";
+    }
+
+    // Validate expire date
+    if (expireDate === "") {
+        document.getElementById("expireDateError").innerText = "Please enter an expiration date.";
+        isValid = false;
+    } else if (new Date(expireDate) <= currentDate) {
+        document.getElementById("expireDateError").innerText = "Expiration date must be in the future.";
+        isValid = false;
+    } else {
+        document.getElementById("expireDateError").innerText = "";
+    }
+
+    if (isValid) {
+        displaySuccessModal();
+    }
+
+    return isValid;
+}
+
+
+
+</script>
+
+</body>
+</html>

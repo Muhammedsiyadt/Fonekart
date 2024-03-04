@@ -103,6 +103,12 @@
                 </span>
                 <% } %>
 
+                <% if(typeof blockMsg !=='undefined' ){ %>
+                    <span style="color: red;">
+                        <%= blockMsg %>
+                    </span>
+                    <% } %>
+
 
 
                     <input type="email" name="email" id="email" placeholder="Email">

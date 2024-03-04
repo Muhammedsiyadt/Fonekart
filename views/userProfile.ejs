@@ -18,7 +18,7 @@
   <!-- Custom CSS -->
   <style>
     body {
-      background-color: rgba(255, 243, 113, 0.348);
+      background-color: rgba(0, 255, 0, 0.123);
       font-family: 'Arial', sans-serif;
 
     }
@@ -68,10 +68,10 @@
       margin-bottom: 15px;
     }
 
-    #batt:hover{
-      transform: translateY(-5px);
+    #batt:hover {
+      transform: translateY(-1px);
       box-shadow: 0 10px 20px rgba(27, 27, 27, .5);
-      
+
     }
 
     .Btn {
@@ -185,10 +185,10 @@
           <a style="color: white;" class="nav-link" href="/cart"><i class="ri-shopping-cart-line"></i></a>
         </li>
         <li class="nav-item">
-          <a style="color: white;" class="nav-link" href=""><i class="ri-heart-line"></i></a>
+          <a style="color: white;" class="nav-link" href="/wishlist"><i class="ri-heart-line"></i></a>
         </li>
         <li class="nav-item">
-          <!-- <a style="color: white;" class="nav-link" href="/home/profile"><i class="ri-account-circle-line"></i></a> -->
+          <a style="color: white;" class="nav-link" href="/home/profile"><i class="ri-account-circle-line"></i></a>
         </li>
         <!-- Add more navbar items as needed -->
       </ul>
@@ -197,45 +197,51 @@
   </nav>
 
 
-  <div class="profile-container" style="margin-top: 100px;">
+  <div class="profile-container" style="margin-top: 50px;">
     <div class="profile-header">
       <h2 style="color: #343a40;">Profile</h2>
     </div>
 
     <!-- Personal Information on Left -->
-    <div class="personal-info p-4" style="border: rgb(0, 0, 0) 2px solid; border-radius: 5px; ">
-      <h1 class="text-danger"><i class="ri-hand"></i>
+    <div class="personal-info p-4 " style="background: #ffffff; border: rgb(0, 0, 0) 2px solid; border-radius: 5px; ">
+      <h4 class="text-info"><i class="ri-hand text-dark"></i>
         <%= userData.name %>
-      </h1>
+      </h4>
       <p><strong>Name:</strong>
         <%= userData.name %>
       </p>
       <p><strong>Email:</strong>
         <%= userData.email %>
       </p>
-      
+
       <!-- <p><strong>Address:</strong> 123 Main St, Cityville</p> -->
+
     </div>
 
-    <!-- Buttons on Right -->
-    <div class="button-container mt-5">
-      <a href="/profile/updateProfile" id="batt" class="btn btn-warning p-2"><i class="fas fa-user-edit profile-icon"></i> Update
+
+    <div class="button-container mt-5 text-center">
+      <a href="/profile/updateProfile" id="batt" class="btn btn-warning p-2"><i
+          class="fas fa-user-edit profile-icon"></i> Update
         Account</a>
 
-         <a href="/profile/address_management" id="batt" class="btn btn-success  p-2"><i class="fas fa-map-marker-alt profile-icon"></i>
+      <a href="/profile/address_management" id="batt" class="btn btn-success  p-2"><i
+          class="fas fa-map-marker-alt profile-icon"></i>
         Address</a>
 
-      <a href="/orderList" id="batt" class="btn btn-primary   p-2"><i class="fas fa-shopping-cart profile-icon"></i> Orders</a>
+      <a href="/orderList" id="batt" class="btn btn-primary   p-2"><i class="fas fa-shopping-cart profile-icon"></i>
+        Orders</a>
 
       <a href="/wishlist" id="batt" class="btn btn-info  p-2"><i class="fas fa-heart profile-icon"></i> Wishlist</a>
 
       <a href="/wallet" id="batt" class="btn btn-secondary  p-2"><i class="fas fa-wallet profile-icon"></i> Wallet</a>
+
+
     </div>
 
     <!-- Logout Button at the Bottom -->
     <div class="row">
-      <div class="col-md-12 mt-5 text-center logout-btn">
-        <a href="/home"><button class="Btn">
+      <div class="col-md-12  text-center logout-btn">
+        <a href="/logout"><button class="Btn">
 
             <div class="sign"><svg viewBox="0 0 512 512">
                 <path
@@ -249,40 +255,62 @@
     </div>
   </div>
 
-  <footer class="bg-dark text-light pt-5  pb-3" id="footer" style=" margin-top: 30px;">
-    <div class="container" style="padding: 30px;">
-      <div class="row">
-        <div class="col-md-4">
-          <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>About Us</em></b></a>
-          <p>E-commerce platform</p>
-        </div>
-        <div class="col-md-4">
-          <a class="navbar-brand" href="#"><b style="color: #0F0;"><em>Contact Us</em></b></a>
-          <p>Email: Fonekart@gmail.com<br>Phone: 7558001145</p>
-        </div>
-        <div class="col-md-4">
-          <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>Follow Us</em></b></a>
-          <ul class="list-inline">
-            <li class="list-inline-item"><a class="text-light" href="https://wa.me/qr/QLG7ZQPTHYSDH1">Watsapp</a></li>
-            <br>
-            <li class="list-inline-item"><a class="text-light"
-                href="https://www.facebook.com/siyad.siyu.37?mibextid=ZbWKwL">Facebook</a>
-            </li>
-            <br>
-            <li class="list-inline-item"><a class="text-light"
-                href="https://instagram.com/siyad___._10?igshid=OGQ5ZDc2ODk2ZA==">Instagram</a></li>
-          </ul>
+  <% if(referalOffer){ %>
+    <div class="container p-4 text-light "
+      style="border: rgb(0, 255, 13) solid 2px; background-color: rgb(70, 70, 70); border-radius: 10px; ">
+      <span>Refferal Link : </span>
+      <span class="text-info"> <%- `http://localhost:3000/regiter?refferalCode=${userData?.referralCode}` %></span>
+
+      <div class="row mt-4 d-flex">
+
+        <div class="col-6">
+          <span class="light">Expiring Date</span>
+          <span class="text-danger">
+            <%= new Date(referalOffer[0]?.expiredate).toLocaleDateString() %>
+          </span>
         </div>
       </div>
     </div>
-  </footer>
 
-  <!-- Bootstrap JS and Popper.js -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <% }else{ %>
+      <p>no</p>
+      <% } %>
 
-  
+        <footer class="bg-dark text-light pt-5  pb-3" id="footer" style=" margin-top: 30px;">
+          <div class="container" style="padding: 30px;">
+            <div class="row">
+              <div class="col-md-4">
+                <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>About Us</em></b></a>
+                <p>E-commerce platform</p>
+              </div>
+              <div class="col-md-4">
+                <a class="navbar-brand" href="#"><b style="color: #0F0;"><em>Contact Us</em></b></a>
+                <p>Email: Fonekart@gmail.com<br>Phone: 7558001145</p>
+              </div>
+              <div class="col-md-4">
+                <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>Follow Us</em></b></a>
+                <ul class="list-inline">
+                  <li class="list-inline-item"><a class="text-light" href="https://wa.me/qr/QLG7ZQPTHYSDH1">Watsapp</a>
+                  </li>
+                  <br>
+                  <li class="list-inline-item"><a class="text-light"
+                      href="https://www.facebook.com/siyad.siyu.37?mibextid=ZbWKwL">Facebook</a>
+                  </li>
+                  <br>
+                  <li class="list-inline-item"><a class="text-light"
+                      href="https://instagram.com/siyad___._10?igshid=OGQ5ZDc2ODk2ZA==">Instagram</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </footer>
+
+        <!-- Bootstrap JS and Popper.js -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
 
 </body>
 

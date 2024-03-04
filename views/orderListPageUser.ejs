@@ -15,6 +15,7 @@
   <style>
     body {
       padding-top: 56px;
+      
     }
   </style>
 </head>
@@ -38,7 +39,7 @@
           <a style="color: white;" class="nav-link" href="/cart"><i class="ri-shopping-cart-line"></i></a>
         </li>
         <li class="nav-item">
-          <a style="color: white;" class="nav-link" href=""><i class="ri-heart-line"></i></a>
+          <a style="color: white;" class="nav-link" href="/wishlist"><i class="ri-heart-line"></i></a>
         </li>
         <li class="nav-item">
           <a style="color: white;" class="nav-link" href="/home/profile"><i class="ri-account-circle-line"></i></a>
@@ -51,155 +52,140 @@
 
   <!-- Ordered Products Table -->
   <div class="container mt-5">
-    <h2 style="padding-bottom: 10px; color: chocolate;">Ordered Products</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Image</th>
-          <th scope="col">Product</th>
-          <th scope="col">Quantity</th>
-          <th scope="col">Price</th>
-          <th scope="col">Date</th>
-          <th scope="col">Status</th>
-          <th scope="col">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- < if(typeof OrderData !=='undefined' ){ %> -->
-        <% for(let i=0 ; i<OrderData.length ; i++) {%>
-          <tr>
-            <td>
-              <a href="#" data-toggle="modal" data-target="#orderModal_<%= OrderData[i].orderItems._id %>">
-                <img src="<%= OrderData[i].orderItems.Image[0] %>" alt="image" class="img-thumbnail"
-                  style="max-width: 100px;">
-              </a>
-              <div class="modal fade" id="orderModal_<%= OrderData[i].orderItems._id %>" tabindex="-1" role="dialog" aria-labelledby="orderModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                  <div class="modal-content `">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="orderModalLabel">Ordered product Details</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body">
-                      <h6>Product Details:</h6>
-                      <table class="table">
-                        <tbody>
-                          <tr>
-                            <th>Image</th>
-                            <th>Quantity</th>
-                            <th>Category</th>
-                            <th>Price</th>
-                          </tr>
-                          <tr>
-                            <td><img src="<%= OrderData[i].orderItems.Image[0] %>" alt="product image" style="max-width: 100px;"></td>
-                            <td><%= OrderData[i].orderItems.Pname %></td>
-                            <td><%= OrderData[i].orderItems.quantity %></td>
-                            <td><%= OrderData[i].orderItems.Pcategory %></td>
-                            <td><%= OrderData[i].orderItems.price %></td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <h6>User Details:</h6>
-                      
-                     
-                         
-                            <p>Name:</p>
-                            <p>Address:</p>
-                            <p>Pin:</p>
-                            <p>Phone:</p>
-                            <td><%#= OrderData[i].user.name %></td>
-                            <td><%#= OrderData[i].user.address %></td>
-                            <td><%#= OrderData[i].user.pin %></td>
-                            <td><%#= OrderData[i].user.phone %></td>    
-                      
-                    </div>
-                    
-                  </div>
-                </div>
-              </div>
-              
-            </td>
-            <td>
-              <%= OrderData[i].orderItems.Pname %>
-            </td>
-            <td>
-              <%= OrderData[i].orderItems.quantity %>
-            </td>
-            <td><b>₹</b>
-              <%= OrderData[i].orderItems.price %>
-            </td>
-            <td>
-              <%= new Date(OrderData[i].orderDate).toLocaleDateString() %>
-            </td>
-            <% if(OrderData[i].orderItems.orderStatus=='ordered' ){ %>
-              <td style="color: green;">
-                <%= OrderData[i].orderItems.orderStatus%>
-              </td>
-              <% }else if(OrderData[i].orderItems.orderStatus=='canceled' ){ %>
-                <td style="color: rgb(255, 0, 0); ">
-                  <%= OrderData[i].orderItems.orderStatus%>
-                </td>
-                <% }else if(OrderData[i].orderItems.orderStatus=='delivered' ){ %>
-                  <td style="color: rgb(179, 0, 255); ">
-                    <%= OrderData[i].orderItems.orderStatus%>
-                  </td>
-                  <% }else if(OrderData[i].orderItems.orderStatus=='shipped' ){ %>
-                    <td style="color: rgb(255, 0, 230); ">
-                      <%= OrderData[i].orderItems.orderStatus%>
+    <h2 style="padding-bottom: 10px; color: rgba(0, 112, 11, 0.768);">Ordered Products</h2>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Image</th>
+                    <th scope="col">Product</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let i=0 ; i<OrderData.length ; i++) { %>
+                <tr>
+                    <td>
+                        <a href="/orderDetailPage?id=<%= OrderData[i]._id %>">
+                            <img src="<%= OrderData[i].orderItems.Image[0] %>" alt="image" class="img-thumbnail"
+                                style="max-width: 100px;">
+                        </a>
                     </td>
-                    <% }else if(OrderData[i].orderItems.orderStatus=='returned' ){ %>
-                      <td style="color: rgb(255, 0, 230); ">
-                        <%= OrderData[i].orderItems.orderStatus%>
-                      </td>
-                      <% } %>
+                    <td>
+                        <%= OrderData[i].orderItems.Pname %>
+                    </td>
+                    <td>
+                        <%= OrderData[i].orderItems.quantity %>
+                    </td>
+                    <td><b>₹</b>
+                        <%= OrderData[i].orderItems.price * OrderData[i].orderItems.quantity %>
+                    </td>
+                    <td>
+                        <%= new Date(OrderData[i].orderDate).toLocaleDateString() %>
+                    </td>
+                    <% if(OrderData[i].orderItems.orderStatus=='ordered' ) { %>
+                    <td style="color: green;">
+                        <%= OrderData[i].orderItems.orderStatus %>
+                    </td>
+                    <% } else if(OrderData[i].orderItems.orderStatus=='canceled' ) { %>
+                    <td style="color: rgb(255, 0, 0); ">
+                        <%= OrderData[i].orderItems.orderStatus %>
+                    </td>
+                    <% } else if(OrderData[i].orderItems.orderStatus=='delivered' ) { %>
+                    <td style="color: rgb(179, 0, 255); ">
+                        <%= OrderData[i].orderItems.orderStatus %>
+                    </td>
+                    <% } else if(OrderData[i].orderItems.orderStatus=='shipped' ) { %>
+                    <td style="color: rgb(255, 0, 230); ">
+                        <%= OrderData[i].orderItems.orderStatus %>
+                    </td>
+                    <% } else if(OrderData[i].orderItems.orderStatus=='returned' ) { %>
+                    <td style="color: rgb(255, 0, 230); ">
+                        <%= OrderData[i].orderItems.orderStatus %>
+                    </td>
+                    <% } %>
+                    <% if(OrderData[i].orderItems.orderStatus=='ordered' ) { %>
+                    <td>
+                        <button class="btn btn-danger" data-toggle="modal"
+                            data-target="#confirmationModal<%= i %>">Cancel</button>
+                    </td>
+                    <% } else if(OrderData[i].orderItems.orderStatus=='delivered' ) { %>
+                    <td>
+                        <button type="button" class="btn btn-warning" data-toggle="modal"
+                            data-target="#reasonModal<%= i %>">
+                            Return
+                        </button>
+                    </td>
+                    <% } %>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<% for(let i=0 ; i<OrderData.length ; i++) { %>
+<!-- Reason Modal -->
+<div class="modal fade" id="reasonModal<%= i %>" tabindex="-1" role="dialog"
+    aria-labelledby="reasonModalLabel<%= i %>" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reasonModalLabel<%= i %>">Reason for Return</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Form for specifying the reason of return -->
+                <form action="/returnOrder?id=<%= OrderData[i].orderItems._id %>" method="post">
+                    <div class="form-group">
+                        <label for="returnReason<%= i %>">Please specify the reason for returning the
+                            product:</label>
+                        <textarea class="form-control" id="returnReason<%= i %>" name="reason"
+                            rows="3" required></textarea>
+                        <input type="hidden" name="orderId"
+                            value="<%= OrderData[i].orderItems._id %>">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<% } %>
+
+<% for(let i=0 ; i<OrderData.length ; i++) { %>
+<!-- Confirmation Modal -->
+<div class="modal" tabindex="-1" role="dialog" id="confirmationModal<%= i %>">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to cancel this order?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                    data-dismiss="modal">Cancel</button>
+                <a href="/api/cancelOrder?id=<%= OrderData[i].orderItems._id %>"
+                    class="btn btn-danger">Confirm Cancel</a>
+            </div>
+        </div>
+    </div>
+</div>
+<% } %>
 
 
-                        <% if(OrderData[i].orderItems.orderStatus=='ordered' ){ %>
-                          <td>
-                            <button class="btn btn-danger" data-toggle="modal"
-                              data-target="#confirmationModal<%= i %>">Cancel</button>
-                          </td>
-                          <% }else if(OrderData[i].orderItems.orderStatus=='delivered' ){ %>
-                            <td>
-                              <a href="/returnOrder?id=<%= OrderData[i].orderItems._id %>"><button
-                                  class="btn btn-warning">Return</button></a>
-                            </td>
-                            <% } %>
-                              <div class="modal" tabindex="-1" role="dialog" id="confirmationModal<%= i %>">
-                                <div class="modal-dialog" role="document">
-                                  <div class="modal-content">
-                                    <div class="modal-header">
-                                      <h5 class="modal-title">Confirmation</h5>
-                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                      </button>
-                                    </div>
-                                    <div class="modal-body">
-                                      Are you sure you want to cancel this order?
-                                    </div>
-                                    <div class="modal-footer">
-                                      <button type="button" class="btn btn-secondary"
-                                        data-dismiss="modal">Cancel</button>
-                                      <a href="/api/cancelOrder?id=<%= OrderData[i].orderItems._id %>"
-                                        class="btn btn-danger">Confirm Cancel</a>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
 
-          </tr>
-          <% } %>
-            <%# } %>
-
-
-
-
-
-      </tbody>
-    </table>
-  </div>
 
   <form>
     <div class="col-12 pb-1 ">
@@ -217,28 +203,27 @@
     </div>
   </form>
 
-  <footer class="bg-dark text-light pt-5  pb-3 " id="footer" style="width: 100%; margin-top: 180px;">
+  <footer class="bg-dark text-light pt-5  pb-3" id="footer" style="margin-top: 10px;">
     <div class="container" style="padding: 30px;">
-      <div class="row" style="width: 100%;">
+      <div class="row">
         <div class="col-md-4">
-          <a style="color: #0F0;" class="navbar-brand" href=""><b><em>About Us</em></b></a>
+          <a style="color: #0F0;" class="navbar-brand" href="#"><b><em>About Us</em></b></a>
           <p>E-commerce platform</p>
         </div>
         <div class="col-md-4">
-          <a style="color: #0F0;" class="navbar-brand" href=""><b><em>Contact Us</em></b></a>
+          <a class="navbar-brand" href="#"><b style="color: #0F0;"><em>Contact Us</em></b></a>
           <p>Email: Fonekart@gmail.com<br>Phone: 7558001145</p>
         </div>
         <div class="col-md-4">
-          <a style="color: #0F0;" class="navbar-brand" href=""><b><em>Follow Us</em></b></a>
+          <a style="color: #0F0;" class="navbar-brand " href="#"><b><em>Follow Us</em></b></a>
           <ul class="list-inline">
-            <li class="list-inline-item"><a style="text-decoration: none;" class="text-light"
-                href="https://wa.me/qr/QLG7ZQPTHYSDH1">Watsapp</a></li>
+            <li class="list-inline-item"><a class="text-light" href="https://wa.me/qr/QLG7ZQPTHYSDH1">Watsapp</a></li>
             <br>
-            <li class="list-inline-item"><a style="text-decoration: none;" class="text-light"
+            <li class="list-inline-item"><a class="text-light"
                 href="https://www.facebook.com/siyad.siyu.37?mibextid=ZbWKwL">Facebook</a>
             </li>
             <br>
-            <li class="list-inline-item"><a style="text-decoration: none;" class="text-light"
+            <li class="list-inline-item"><a class="text-light"
                 href="https://instagram.com/siyad___._10?igshid=OGQ5ZDc2ODk2ZA==">Instagram</a></li>
           </ul>
         </div>

@@ -28,25 +28,25 @@ exports.home = async (req, res) => {
     const ordercount = await orderdb.countDocuments()
     const [orderTotalAmountObject] = await orderdb.aggregate([
         {
-            $unwind: "$orderItems" 
+            $unwind: "$orderItems"
         },
         {
             $group: {
                 _id: "$_id",
-                totalPrice: { $sum: "$orderItems.price" } 
+                totalPrice: { $sum: "$orderItems.price" }
             }
         },
         {
             $group: {
-                _id: null, 
-                totalAmount: { $sum: "$totalPrice" } 
+                _id: null,
+                totalAmount: { $sum: "$totalPrice" }
             }
         }
     ]);
-    
+
     const orderTotalAmount = orderTotalAmountObject ? orderTotalAmountObject.totalAmount : undefined;
-    
-    res.render('adminhome',{countUser:countUsers , ordercount:ordercount , orderTotalAmount:orderTotalAmount})
+
+    res.render('adminhome', { countUser: countUsers, ordercount: ordercount, orderTotalAmount: orderTotalAmount })
 
 }
 
@@ -155,12 +155,12 @@ exports.Order_management = async (req, res) => {
         const totalPages = Math.ceil(totalOrders[0].count / limit)
         if (totalOrders && totalOrders.length > 0) {
             const totalPages = Math.ceil(totalOrders[0].count / limit);
-           
+
         } else {
             console.error('Error: totalOrders is empty or undefined');
-            
+
         }
-        
+
         res.render('Order_management', { Order: find, totalPages: totalPages })
 
     } catch (error) {
@@ -225,20 +225,20 @@ exports.deletecategory = async (req, res) => {
 // PRODUCT MANAGEMENT PAGE-------------------------------------------------------------
 exports.product_management = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1; 
+        const page = parseInt(req.query.page) || 1;
         const limit = 6;
         const startIndex = (page - 1) * limit;
 
         const productData = await productdb.find({ delete: false }).skip(startIndex).limit(limit);
 
-        
+
         const totalCount = await productdb.countDocuments({ delete: false });
 
-        
+
         const totalPages = Math.ceil(totalCount / limit);
 
         res.render('product_management', { product: productData, totalPages: totalPages, currentPage: page })
-        
+
     } catch (error) {
         console.log(error);
         res.status(500).send('Internal Server Error');
@@ -284,29 +284,51 @@ exports.deleteToUnlist = async (req, res) => {
 
 
 // -------------------------------------------------------------------------------------
-// COUPON MANAGEMENT
+// COUPON MANAGEMENT 
 // Coupon_management page
 exports.Coupon_management = async (req, res) => {
     try {
 
-        const currentDate = Date.now()
+        const page = parseInt(req.query.page) || 1
+        const limit = 5
+        const startIndex = (page - 1) * limit
+
+        const currentDate = Date.now();
         await coupondb.updateMany({ expiryDate: { $gte: currentDate } }, { $set: { status: true } })
         await coupondb.updateMany({ expiryDate: { $lte: currentDate } }, { $set: { status: false } })
 
-        const findCoupons = await coupondb.find()
-        // console.log(findCoupons);
+        const findCoupons = await coupondb.find().skip(startIndex).limit(limit)
 
-        res.render('Coupon_management', { coupons: findCoupons })
+        const totalCount = await coupondb.countDocuments()
+
+        const totalPages = Math.ceil(totalCount / limit)
+
+        res.render('Coupon_management', { coupons: findCoupons, totalPages: totalPages, currentPage: page })
     } catch (error) {
-        console.log(error);
+        console.log(error)
+        res.status(500).send('Internal Server Error')
     }
 }
 
-// add coupon page 
-exports.addCoupon = (req, res) => {
 
-    res.render('addCoupon')
-}
+// add coupon page 
+exports.
+addCoupon = (req, res) => {
+
+    const samecoupon = req.session.Existmessage;
+
+  
+    delete req.session.Existmessage;
+
+    if (samecoupon) {
+
+        res.render('addCoupon', { samecoupon: samecoupon });
+    } else {
+
+        res.render('addCoupon');
+    }
+};
+
 
 // Edit Coupon 
 exports.editCoupon = async (req, res) => {
@@ -357,6 +379,15 @@ exports.productOffer = async (req, res) => {
 
 
 // === REFFERAL OFFER === //
-exports.refferalOffer = (req, res) => {
-    res.render('refferalOffer')
+exports.refferalOffer = async (req, res) => {
+
+    const data = await refferaldb.find()
+
+    res.render('refferalOffer', { refferal: data })
+}
+
+// Add refferal offer
+exports.addRefferalOffer = (req, res) => {
+
+    res.render('addRefferal')
 }

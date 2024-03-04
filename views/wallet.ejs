@@ -12,7 +12,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            background-color: #f4f4f4;
+            background-color: rgba(0, 255, 0, 0.123);
         }
 
         header {
@@ -183,7 +183,7 @@
                                 <div class="balancewrapper">
                                     <span class="balanceHeading">Total balance</span>
                                     <p class="balance"><span id="currency">₹</span>
-                                        <%=walletInfo.balance || 0 %>
+                                        <%=walletInfo?.balance || 0 %>
                                     </p>
                                 </div>
 
@@ -198,10 +198,10 @@
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="addMoneyModalLabel">Add Money</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <h5 class="modal-title" id="addMoneyModalLabel"></h5>
+                                            <!-- <button type="button" style="text-align: end;" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
-                                            </button>
+                                            </button> -->
                                         </div>
                                         <div class="modal-body">
                                             <!-- Input field for entering the amount -->
@@ -238,7 +238,7 @@
                                         <% if (walletInfo && walletInfo.transactions) { %>
                                             <% const sortedTransactions=walletInfo.transactions.sort((a, b)=> new
                                                 Date(b.date) - new Date(a.date));
-                                                const recentTransactions = sortedTransactions.slice(0, 5);
+                                                const recentTransactions = sortedTransactions.slice(0,5)
                                                 recentTransactions.forEach((transaction, index) => { %>
                                                 <tr>
                                                     <td>
@@ -249,9 +249,15 @@
                                                             Date(transaction.date).toLocaleString('en-IN').split(',')[0]
                                                             %>
                                                     </td>
-                                                    <td class="text-success">
-                                                        <%= transaction.amount %>
-                                                    </td>
+                                                    <% if(transaction.amount < 0 ){ %>
+                                                        <td class="text-danger">
+                                                            <%= transaction.amount %>
+                                                        </td>
+                                                        <%}else {%>
+                                                            <td class="text-success">
+                                                                +<%= transaction.amount %>
+                                                            </td>
+                                                            <%}%>
                                                 </tr>
                                                 <% }); %>
                                                     <% } else { %>
@@ -287,6 +293,17 @@
                 var amount = $('#moneyAmount').val();
                 if (!amount) {
                     $("#errorMsg").text("Please enter the amount you want to add.");
+                    return;
+                }
+               
+                if (parseFloat(amount) <= 0) {
+                    $("#errorMsg").text("Amount must be greater than zero.");
+                    return;
+                }
+
+               
+                if (parseFloat(amount) < 0) {
+                    $("#errorMsg").text("Amount cannot be negative.");
                     return;
                 }
 
