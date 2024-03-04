@@ -344,7 +344,7 @@ exports.userProfile = async (req, res) => {
 
     try {
         const referalOffer = await refferaldb.find()
-        
+
         const data = await userdb.findOne({ _id: req.session.email })
         res.render('userProfile', { userData: data, referalOffer: referalOffer })
     } catch (error) {
@@ -718,6 +718,11 @@ exports.wishlist = async (req, res) => {
 // WALLET =====//
 exports.wallet = async (req, res) => {
     try {
+        const user_Id = req.session.userId;
+        if (typeof user_Id == 'undefined') {
+            return res.redirect('/login')
+        }
+        
         const userId = req.session.userId
         const wallet = await walletdb.findOne({ userId: userId })
         res.render('wallet', { walletInfo: wallet })

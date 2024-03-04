@@ -25,7 +25,7 @@ adminRouter.get('/yearlyReportDownload',controller.yearlyReport)
 
 // costome date sales report
 adminRouter.post('/costomeDateSalesReport',controller.customDateSales)
-
+     
 
 // PRODUCT MANAGEMENT--------------------------------------------------------------------
 // Product management page

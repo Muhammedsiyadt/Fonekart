@@ -128,7 +128,7 @@ exports.weeklyReport = async (req, res) => {
 
         weeklyOrders.forEach(order => {
             order.orderItems.forEach(item => {
-                tableData.push([
+                tableData.push([    
                     order.orderDate.toDateString(),
                     order.address.name,
                     `${order.address.address}, ${order.address.district}, ${order.address.city}, ${order.address.pin}`,
