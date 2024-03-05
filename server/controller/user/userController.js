@@ -27,9 +27,9 @@ const otpGenerator = () => {
 
 // send mail
 const sendOtpMail = async (req, res) => {
-    
-    const otp = otpGenerator() 
-    console.log(otp) 
+
+    const otp = otpGenerator()
+    console.log(otp)
 
     const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -91,61 +91,54 @@ const sendOtpMail = async (req, res) => {
 
 // Register // 
 exports.register = async (req, res) => {
-
     try {
-        req.session.userData = req.body
+        req.session.userData = req.body;
 
         const userData = await Userdb.findOne({ email: req.body.email });
 
-    if (userData) {
+        if (userData) {
+            req.session.message = 'Email already taken, Please enter a different email';
 
-        req.session.message = 'Email already taken, Please enter a different email'
+            if (req.query.referralCode) {
+                return res.redirect(`/register?referralCode=${req.query.referralCode}`);
+            }
 
-        if (req.query.refferalCode) {
-            return res.redirect(`/register?referralCode=${req.query.refferalCode}`)
-          }
-
-        return res.redirect('/regiter')
-    }
-
-    let code = req.query.refferalCode
-
-    req.session.refferalCode = code;
-    
-
-    if (req.query.refferalCode) {
-        const userReferral = await Userdb.findOne({ refferalCode: code });
-  
-        if (!userReferral) {
-          return res.redirect("/register");
+            return res.redirect('/register');
         }
-        const refferal = await refferaldb.findOne({
-            expiredate: { $gte: Date.now() },
-        });
-  
-        if (!refferal) {
-          return res.redirect("/register");
+
+        let referralCode = req.query.referralCode;
+
+        req.session.referralCode = referralCode;
+
+        if (referralCode) {
+            const userReferral = await Userdb.findOne({ referralCode: referralCode });
+
+            if (!userReferral) {
+                return res.redirect("/register");
+            }
+
+            const referral = await referraldb.findOne({ expiredate: { $gte: Date.now() } });
+
+            if (!referral) {
+                return res.redirect("/register");
+            }
+
+            req.session.user = req.body.Email;
+
+            await sendOtpMail(req, res);
+
+            return res.redirect("/register");
         }
-  
-        req.session.user = req.body.Email;
-  
+
+        req.session.userEmail = req.body.email;
+        req.session.pass = req.body.password;
+
         await sendOtpMail(req, res);
-  
-        return res.redirect("/register");
-      }
-
-    req.session.userEmail = req.body.email
-
-    req.session.pass = req.body.password
-
-    await sendOtpMail(req, res)
-
     } catch (error) {
-        res.send(err) 
+        res.send(error);
     }
+};
 
-
-}
 
 // OTP VERIFY //
 exports.otpverify = async (req, res) => {
@@ -160,23 +153,30 @@ exports.otpverify = async (req, res) => {
         }
 
         if (req.body.otp === otp.otp) {
+            
             const userData = req.session.userData;
 
-            
-            let referralCode = req.body.referralCode;
+
+            let referralCode = req.query.refferalCode;
+            console.log('reffeeeeeeeeeeeeerrrrrrrrrrrr',referralCode);
             if (!referralCode && req.session.referalCode) {
                 referralCode = req.session.referalCode;
             }
 
             if (referralCode) {
-                
-                const existingUser = await Userdb.findOne({ referralCode });
-                if (!existingUser) {
-                    return res.status(400).json({ message: "Invalid referral code" });
-                }
 
+                const existingUser = await Userdb.findOne({ refferalCode: referralCode })
+
+
+                const refferalAmount = await refferaldb.findOne()
+
+                console.log('amount',refferalAmount);
+
+                const dd = walletdb.findOneAndUpdate(
+                    { userId: existingUser._id }
+                )
+                console.log('wallettt',dd);
                 
-                const refferalAmount = await refferaldb.findOne({});
                 await walletdb.findOneAndUpdate(
                     { userId: existingUser._id },
                     {
@@ -191,15 +191,15 @@ exports.otpverify = async (req, res) => {
                 );
             }
 
-            
+
             const user = new Userdb({
                 name: userData.name,
                 email: userData.email,
                 password: userData.password,
-                referralCode: referralCode || shortid.generate(),
+                referralCode: shortid.generate(),
             });
 
-            await user.save();
+            await user.save()
 
             const walletData = new walletdb({
                 userId: user._id,
@@ -207,7 +207,7 @@ exports.otpverify = async (req, res) => {
 
             await walletData.save();
 
-            res.redirect("/login");
+            res.redirect("/login")
         } else {
             req.session.otpValidation = "Your OTP is wrong";
             res.redirect("/register");
@@ -217,9 +217,103 @@ exports.otpverify = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 }
+// exports.otpverify = async (req, res) => {
+    
+//     try {
+//         if (!req.body) {
+//             return res.status(400).send({ message: "Enter something" });
+//         }
+
+//         const otp = await Otpdb.findOne({ _id: req.session.otpId });
+//         if (!otp) {
+//             req.session.message = 'OTP Not found'
+//         }
+
+//         if (req.body.otp === otp.otp) {
+//             const userData = req.session.userData;
+//             if (req.session.referralCode) {
+//                 const user = new Userdb({
+//                     name: userData.name,
+//                     email: userData.Email,
+//                     password: userData.password,
+//                     referralCode: shortid.generate()
+//                 });
+
+//                 await user.save();
+
+//                 const walletData = new walletdb({
+//                     userId: user._id,
+//                 });
+
+//                 await walletData.save();
+
+//                 const referalAmount = await refferaldb.findOne({});
+
+//                 await walletdb.findOneAndUpdate(
+//                     { userId: user._id },
+//                     {
+//                         $inc: { balance: referalAmount.referralAmount },
+//                         $push: {
+//                             transactionHistory: {
+//                                 amount: referalAmount.referralAmount,
+//                                 PaymentType: "Credit",
+//                             },
+//                         },
+//                     }
+//                 );
+
+//                 const referalUser = await Userdb.findOneAndUpdate(
+//                     { referralCode: req.session.referralCode },
+//                     { $inc: { referralCount: 1 } },
+//                     { upsert: true })
+                
+
+//                 await walletdb.updateOne(
+//                     { userId: referalUser._id },
+//                     {
+//                         $inc: { balance: referalAmount.referredAmount },
+//                         $push: {
+//                             transactionHistory: {
+//                                 amount: referalAmount.referredAmount,
+//                                 PaymentType: "Credit",
+//                             },
+//                         },
+//                     }
+//                 );
+
+//                 return res.redirect("/login");
+//             }
+
+//             const user = new Userdb({
+//                 name: userData.name,
+//                 email: userData.Email,
+//                 password: userData.password,
+//                 referralCode: shortid.generate(),
+//             });
+
+//             await user.save();
+
+//             const walletData = new walletdb({
+//                 userId: user._id,
+//             });
+
+//             await walletData.save();
+
+//             res.redirect("/login");
+//         } else {
+//             req.session.otpValidation = "Verify your otp";
+//             res.redirect("/register");
+//         }
+//     } catch (error) {
+//         console.error('Error verifying OTP:', error);
+//         res.status(500).send('Internal Server Error');
+//     }
+// }
 
 
 // LOGIN VERIFICATION //
+
+
 exports.loginverification = async (req, res) => {
 
     const email = await Userdb.findOne({ email: req.body.email })
@@ -230,7 +324,7 @@ exports.loginverification = async (req, res) => {
             req.session.blockmessage = 'You are blocked'
             return res.redirect('/login')
         }
-        req.session.isLogged  = true
+        req.session.isLogged = true
         req.session.email = email
         req.session.userId = email._id
 
@@ -567,11 +661,11 @@ exports.productAddToCartdb = async (req, res) => {
                 cartItems: [{ productId: queryId }],
             });
         } else {
-          
+
             const isProductInCart = cart.cartItems.some(item => item.productId.equals(queryId));
 
             if (!isProductInCart) {
-              
+
                 cart.cartItems.push({ productId: queryId });
             }
         }
@@ -599,18 +693,18 @@ exports.deleteCartItem = async (req, res) => {
             { $pull: { cartItems: { productId: productId } } }
         );
 
-        
+
         if (deleteCartItem.nModified > 0) {
-           
+
         } else {
-            
+
         }
 
-        
+
         res.redirect('/cart');
     } catch (error) {
         console.error(error);
-        
+
         res.status(500).send({ message: "Internal server error" });
     }
 }
@@ -672,9 +766,9 @@ exports.addaddressFromCheckout = async (req, res) => {
         console.error("Error adding address:", error);
         let errorMessage = "An error occurred while adding the address.";
 
-        
+
         if (error.name === 'ValidationError') {
-            
+
             errorMessage = Object.values(error.errors).map(err => err.message).join(' ');
         }
 
@@ -690,7 +784,7 @@ exports.updateCartQuantity = async (req, res, next) => {
     const userId = req.session.userId;
     const productId = req.query.pid;
     const qty = req.query.qty;
-      
+
     try {
         const product = await productdb.findOne({ _id: productId });
 
@@ -698,10 +792,10 @@ exports.updateCartQuantity = async (req, res, next) => {
             { user_id: userId, "cartItems.productId": productId },
             { $set: { "cartItems.$.quantity": qty } }
         )
-        
+
         res.send(true);
     } catch (err) {
-       
+
         next(err);
     }
 }
@@ -768,7 +862,7 @@ exports.postingOrder = async (req, res) => {
             return total + parseInt(item.productDetails.price * item.cartItems.quantity);
         }, 0)
 
-        if(req.session.afterCouponApply){
+        if (req.session.afterCouponApply) {
             subtotal = req.session.afterCouponApply
         }
 
@@ -825,8 +919,10 @@ exports.postingOrder = async (req, res) => {
                 await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
 
                 await walletdb.updateOne({ userId: userId },
-                    { $inc: { balance: -(subtotal) },
-                $push: {transactions: {amount: -(subtotal)}} },
+                    {
+                        $inc: { balance: -(subtotal) },
+                        $push: { transactions: { amount: -(subtotal) } }
+                    },
                     { upsert: true }
                 )
 
@@ -947,7 +1043,7 @@ exports.applyCoupon = async (req, res) => {
                 return accumulator + totalPrice;
             }, 0);
 
-            
+
 
             // Check if the total amount before discount exceeds the maximum price allowed by the coupon
             if (total >= coupon.MaxPrice) {

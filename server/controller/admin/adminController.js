@@ -9,8 +9,9 @@ const coupondb = require('../../model/couponSchema')
 const { default: mongoose } = require('mongoose')
 const offerdb = require('../../model/offerSchema')
 const refferaldb = require('../../model/refferalSchema')
-const PDFDocument = require("pdfkit-table") 
+const PDFDocument = require("pdfkit-table")
 const fs = require("fs")
+const moment = require('moment')
 
 
 
@@ -18,7 +19,7 @@ const fs = require("fs")
 
 
 // admin login
-exports.verifylogin = (req, res) => { 
+exports.verifylogin = (req, res) => {
     const a = {
         name: 'admin',
         password: '123'
@@ -38,7 +39,7 @@ exports.dailyReport = async (req, res) => {
         const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
 
-       
+
         const dailyOrders = await orderdb.find({
             orderDate: {
                 $gte: startOfDay,
@@ -46,20 +47,20 @@ exports.dailyReport = async (req, res) => {
             }
         });
 
-       
+
         const doc = new PDFDocument();
 
-     
+
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename="daily_sales_report.pdf"');
 
-       
+
         doc.pipe(res);
 
-       
+
         doc.fontSize(12).text('Daily Sales Report', { align: 'center' }).moveDown();
 
-       
+
         const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
 
         let totalPrice = 0;
@@ -85,16 +86,16 @@ exports.dailyReport = async (req, res) => {
 
         tableData.push(['Total Price', '', '', '', '', '', '', totalPrice.toString()]);
 
-        
+
         const tableOptions = {
-            headers: tableHeaders, 
-            rows: tableData 
+            headers: tableHeaders,
+            rows: tableData
         };
 
-        
+
         doc.table(tableOptions);
 
-      
+
         doc.end();
 
     } catch (error) {
@@ -128,7 +129,7 @@ exports.weeklyReport = async (req, res) => {
 
         weeklyOrders.forEach(order => {
             order.orderItems.forEach(item => {
-                tableData.push([    
+                tableData.push([
                     order.orderDate.toDateString(),
                     order.address.name,
                     `${order.address.address}, ${order.address.district}, ${order.address.city}, ${order.address.pin}`,
@@ -160,10 +161,10 @@ exports.weeklyReport = async (req, res) => {
         });
         doc.on('end', () => {
             const pdfBuffer = Buffer.concat(pdfChunks)
-            
+
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', 'attachment; filename="weekly_sales_report.pdf"')
-           
+
             res.send(pdfBuffer);
         });
         doc.end()
@@ -180,18 +181,18 @@ exports.yearlyReport = async (req, res) => {
         const startOfYear = new Date(new Date().getFullYear(), 0, 1)
         const endOfYear = new Date(new Date().getFullYear() + 1, 0, 1)
 
-      
+
         const yearlyOrders = await orderdb.find({
             orderDate: {
                 $gte: startOfYear,
                 $lt: endOfYear
             }
-        }) 
+        })
 
-       
+
         const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
 
-      
+
         let totalPrice = 0;
 
         const tableData = [];
@@ -217,30 +218,30 @@ exports.yearlyReport = async (req, res) => {
 
         tableData.push(['Total Price', '', '', '', '', '', '', totalPrice.toString()]);
 
-       
+
         const doc = new PDFDocument();
 
-        
+
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename="yearly_sales_report.pdf"');
 
-       
+
         doc.pipe(res);
 
-     
+
         doc.fontSize(14).text('Fonekart', { align: 'center' }).moveDown();
 
-      
+
         const tableOptions = {
             title: 'Yearly Sales Report',
             headers: tableHeaders,
             rows: tableData
         };
 
-      
+
         await doc.table(tableOptions);
 
-       
+
         doc.end();
 
     } catch (error) {
@@ -252,20 +253,23 @@ exports.yearlyReport = async (req, res) => {
 // custome date 
 exports.customDateSales = async (req, res) => {
     try {
-        const from = new Date(req.body.fromDate);
-        const to = new Date(req.body.toDate);
+        const fromDate = moment(req.body.fromDate, 'YYYY-MM-DD', true);
+        const toDate = moment(req.body.toDate, 'YYYY-MM-DD', true);
+
+        if (!fromDate.isValid() || !toDate.isValid()) {
+            throw new Error('Invalid date format. Please use the format YYYY-MM-DD.');
+        }
 
         const sales = await orderdb.find({
             orderDate: {
-                $gte: from,
-                $lt: to
+                $gte: fromDate.toDate(),
+                $lt: toDate.toDate()
             }
         });
 
         const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
 
-        let totalPrice = 0; // Initialize total price
-
+        let totalPrice = 0;
         const tableData = [];
 
         sales.forEach(order => {
@@ -281,14 +285,12 @@ exports.customDateSales = async (req, res) => {
                     item.price !== undefined ? item.price.toString() : 'N/A',
                 ]);
 
-               
                 if (item.price !== undefined) {
                     totalPrice += item.price;
                 }
             });
         });
 
-        // Add total price as the last row
         tableData.push(['Total Price', '', '', '', '', '', '', totalPrice.toString()]);
 
         const doc = new PDFDocument();
@@ -312,9 +314,11 @@ exports.customDateSales = async (req, res) => {
 
     } catch (error) {
         console.error("Error generating custom date sales report:", error);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(400).json({ error: error.message });
     }
 }
+
+
 
 
 
@@ -363,9 +367,9 @@ exports.add_product = async (req, res) => {
 
 // edit product 
 // exports.submitEdit_product = async (req, res) => {
-   
+
 //     const file = req.files
-    
+
 //     const images = [];
 //     file.map(files => {
 //         return images.push(`/images/${files.originalname}`);
@@ -385,18 +389,18 @@ exports.add_product = async (req, res) => {
 exports.submitEdit_product = async (req, res) => {
     const file = req.files;
 
-  
+
     let images = [];
     if (file && file.length > 0) {
 
         images = file.map(file => `/images/${file.originalname}`);
     } else {
-       
+
         const existingProduct = await productdb.findById(req.query.id);
         images = existingProduct.images;
     }
 
-    
+
     const idpass = await productdb.findOneAndUpdate({ _id: req.query.id }, {
         $set: {
             Pname: req.body.productName,
@@ -444,7 +448,7 @@ exports.imageDeleteSeperate = async (req, res) => {
     const img = req.query.image;
 
     try {
-        
+
         const product = await productdb.findOne({ images: img });
 
         await productdb.findOneAndUpdate(
@@ -452,7 +456,7 @@ exports.imageDeleteSeperate = async (req, res) => {
             { $pull: { images: img } }
         );
 
-        
+
         res.redirect(`/product/edit-product?id=${product._id}`);
 
     } catch (error) {
@@ -517,7 +521,7 @@ exports.submitEdit_category = async (req, res) => {
 
         if (categoryName) {
             req.session.message = 'Category is Unique'
-            
+
         }
 
         const idPass = await categorydb.updateOne({ _id: req.query.id }, { $set: { category: req.body.name, image: images } })
@@ -616,13 +620,48 @@ exports.updateOrderStatus = async (req, res) => {
     }
 }
 
+// Order Detail Page 
+exports.orderDetail = async (req, res) => {
+
+    try {
+
+        const id = req.query.id
+
+        const order = await orderdb.aggregate(
+            [
+                {
+                    '$match': {
+                        '_id': new mongoose.Types.ObjectId(id)
+                    }
+                },
+                {
+                    '$unwind': {
+                        'path': '$orderItems'
+                    }
+                },
+            ]
+        )
+       
+
+        res.render('orderDetailAdmin', { order: order });
+
+
+    } catch (err) {
+        res.send(err)
+    }
+
+}
+
+
+
+
 
 // COUPON MANAGEMENT ===== // 
 // Save to coupon db
 exports.saveToCouponDb = async (req, res) => {
     try {
         const { couponCode, discount, maxUse, maxPrice, expiryDate } = req.body;
-        
+
         const existingCoupon = await coupondb.findOne({ Code: couponCode });
 
         if (existingCoupon) {
@@ -638,7 +677,7 @@ exports.saveToCouponDb = async (req, res) => {
             });
 
             await newCoupon.save();
-        } 
+        }
 
         req.session.message = 'Coupon saved successfully';
         return res.redirect('/Coupon_management'); // Change here to return
@@ -668,7 +707,7 @@ exports.submitEditedCoupon = async (req, res) => {
         const id = req.query.id
         const { couponCode, discount, maxUse, maxPrice, expiryDate } = req.body;
 
-        
+
 
 
         const updateCoupon = await coupondb.findByIdAndUpdate({ _id: id }, {
@@ -696,7 +735,7 @@ exports.saveToOfferOfCategory = async (req, res) => {
     if (existingOffer) {
         req.session.Existmessage = 'Offer for this category already exists';
         res.redirect('Offer_management');
-        return; 
+        return;
     } else {
         const newOffer = new offerdb({
             name: category,
@@ -707,13 +746,13 @@ exports.saveToOfferOfCategory = async (req, res) => {
         await newOffer.save();
 
         const id = newOffer._id
-        console.log(id) 
+        console.log(id)
 
         req.session.message = 'Offer saved successfully';
         res.redirect('Offer_management');
 
-        const categoryFind = await productdb.updateMany({Pcategory : category},{$set:{offerId:id}})
-        
+        const categoryFind = await productdb.updateMany({ Pcategory: category }, { $set: { offerId: id } })
+
     }
 }
 
@@ -726,31 +765,31 @@ exports.saveToOfferOfProduct = async (req, res) => {
     if (existingOffer) {
         req.session.Existmessage = 'Offer for this product already exists';
         res.redirect('Offer_management');
-        return; 
+        return;
     } else {
         const newOffer = new offerdb({
-            name : product,
-            discount : discount,
-            expirydate : expiryDate
+            name: product,
+            discount: discount,
+            expirydate: expiryDate
         });
 
         await newOffer.save();
 
         const id = newOffer._id
-       
+
 
         req.session.message = 'Offer saved successfully';
         res.redirect('Offer_management');
 
-        const productFind = await productdb.updateOne({Pname: product},{$set:{offerId:id}})
-        const fff = await productdb.find({Pname:product})
+        const productFind = await productdb.updateOne({ Pname: product }, { $set: { offerId: id } })
+        const fff = await productdb.find({ Pname: product })
         console.log(fff);
     }
 
 }
 
 // Delete offer
-exports.deleteOffer = async(req,res) => {
+exports.deleteOffer = async (req, res) => {
     try {
         const PassId = req.query.id
         const deleteOffer = await offerdb.deleteOne({ _id: new mongoose.Types.ObjectId(PassId) })
@@ -765,11 +804,11 @@ exports.deleteOffer = async(req,res) => {
 // add refferal offer
 exports.saveRefferal = async (req, res) => {
     try {
-        
+
 
         const { referralAmount, referredAmount, expireDate } = req.body
 
-       
+
         const referral = new refferaldb({
             referralAmount: referralAmount,
             referredAmount: referredAmount,
@@ -781,7 +820,7 @@ exports.saveRefferal = async (req, res) => {
         res.redirect('/refferalOffer')
 
     } catch (error) {
-      
+
         console.error("Error saving referral offer:", error);
         return res.status(500).json({ error: "An error occurred while saving referral offer" })
     }
@@ -790,17 +829,17 @@ exports.saveRefferal = async (req, res) => {
 // Delete refferel offer 
 exports.deleteRefferal = async (req, res) => {
     try {
-        
+
         const deleteRefferalId = req.query.id
 
-       
+
         await refferaldb.deleteOne({ _id: deleteRefferalId })
 
-       
+
         res.redirect('/refferalOffer')
 
     } catch (error) {
-    
+
         console.error("Error deleting referral offer:", error)
         res.status(500).send("An error occurred while deleting referral offer.")
     }

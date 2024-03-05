@@ -107,15 +107,16 @@
 
 </body>
 
-<script>
 
+
+<script>
     function addproduct() {
 
         const pmodel = document.getElementById('productModel').value
         const pprice = document.getElementById('price').value
         const pcolor = document.getElementById('color').value
         const punit = document.getElementById('unit').value
-        const pimage = document.getElementById('image').value
+        const pimage = document.getElementById('image').files[0]; // Get the selected file
         const pname = document.getElementById('productName').value
 
         const pmErr = document.getElementById('pm')
@@ -134,34 +135,47 @@
         const pnErrmsg = [] 
 
         if (pname.trim() === "") {
-            pnErrmsg.push("This feild is required")
+            pnErrmsg.push("This field is required")
         }
 
         if (pmodel.trim() === "") {
-            pmErrmsg.push("This feild is required")
+            pmErrmsg.push("This field is required")
         }
 
         if (pprice.trim() === "") {
-            prErrmsg.push("This feild is required")
+            prErrmsg.push("This field is required")
         }
 
-        if(pprice < 0 ){
+        if (pprice < 0 ){
             prErrmsg.push("Negative value not allowed")
+        }
+        if (pprice == 0 ){
+            prErrmsg.push("give propper price")
         }
 
         if (punit.trim() === "") {
-            uniErrmsg.push("This feild is required")
+            uniErrmsg.push("This field is required")
         }
-        if(punit < 0 ){
+
+        if (punit < 0 ){
             uniErrmsg.push("Negative value not allowed")
         }
 
-        if (pimage.trim() === "") {
-            imgErrmsg.push("This feild is required")
+        if (punit == 0 ){
+            uniErrmsg.push("Negative value not allowed")
+        }
+
+        if (!pimage) {
+            imgErrmsg.push("Please select an image file")
+        } else {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(pimage.type)) {
+                imgErrmsg.push("Only JPEG, PNG, and GIF files are allowed");
+            }
         }
 
         if (pcolor.trim() === "") {
-            clrErrmsg.push("This feild is required")
+            clrErrmsg.push("This field is required")
         }
 
         pmErr.innerHTML = pmErrmsg.join(". ")
@@ -171,11 +185,11 @@
         imgErr.innerHTML = imgErrmsg.join(". ")
         pnErr.innerHTML = pnErrmsg.join(". ")
 
-
         if (pmErrmsg.length === 0 && prErrmsg.length === 0  && clrErrmsg.length === 0 && uniErrmsg.length === 0 && imgErrmsg.length === 0 && pnErrmsg.length === 0) {
-                form.submit()
-            }
-
+           
+            const form = document.querySelector('form');
+            form.submit();
+        }
     }
 </script>
 

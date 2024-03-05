@@ -74,3 +74,17 @@ switchMode.addEventListener('change', function () {
 		document.body.classList.remove('dark');
 	}
 })
+
+
+document.getElementById('openModalBtn').addEventListener('click', function() {
+	document.getElementById('modal').style.display = 'block';
+  });
+  
+  // Close the modal when clicking outside of it
+  window.onclick = function(event) {
+	var modal = document.getElementById('modal');
+	if (event.target == modal) {
+	  modal.style.display = "none";
+	}
+  }
+  

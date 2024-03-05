@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Sales Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #dddddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-right: 100px;
+            margin-top: 50px;
+        }
+
+        button {
+            width: 80px;
+            color: white;
+            height: 30px;
+            background-color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weekly Sales Report</h1>
+    <table>
+        <thead>
+            <tr>
+                <% tableOptions.headers.forEach(header => { %>
+                    <th><%= header %></th>
+                <% }); %>
+            </tr>
+        </thead>
+        <tbody>
+            <% tableOptions.rows.forEach(row => { %>
+                <tr>
+                    <% row.forEach(cell => { %>
+                        <td><%= cell %></td>
+                    <% }); %>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+
+    <div class="button-container">
+        <a href="/weeklyReportDownload">
+            <button><b>Download</b></button>
+        </a>
+    </div>
+</body>
+</html>

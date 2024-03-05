@@ -41,3 +41,26 @@ exports.isBlocked = async (req, res, next) => {
         console.log(error);
     }
 }
+
+exports.backProfile = async (req,res,next) => {
+    const userId = req.session.userId
+      
+    if(userId){
+      
+        res.redirect('/home/profile')
+    }else{
+        next() 
+    }
+}
+
+// Middleware function to validate date format
+exports.validateDateFormat = (req, res, next) => {
+    const { fromDate, toDate } = req.body;
+    const dateFormat = /^\d{4}-\d{2}-\d{2}$/;
+
+    if (!dateFormat.test(fromDate) || !dateFormat.test(toDate)) {
+        return res.status(400).json({ error: 'Invalid date format. Please use the format YYYY-MM-DD.' });
+    }
+
+    next();
+};

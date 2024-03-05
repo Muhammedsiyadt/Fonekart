@@ -135,8 +135,8 @@
 				<% for (let i=0; i < Order.length; i++){ %>
 					<tr>
 						<td >
-							<p><img src="<%= Order[i].orderItems.Image[0] %>" alt="Product image" class="img-thumbnail"
-									style="max-width: 100px;"></p> 
+							<a href="/orderDetailPageAdmin?id=<%= Order[i]._id %>"><p><img src="<%= Order[i].orderItems.Image[0] %>" alt="Product image" class="img-thumbnail"
+									style="max-width: 100px;"></p></a> 
 						</td>
 						<td>
 							<% if(Order[i].orderItems.orderStatus=='canceled' ){ %>
@@ -182,11 +182,11 @@
 									!='canceled' && Order[i].orderItems.orderStatus
 									!='returned' ){ %>
 									<label for="paymentMethod">
-										<h5><b>change status:</b></h5>
+										<small><b>change status:</b></small>
 									</label>
 									<br>
 
-									<select id="paymentMethod" name="status" style="padding: 5px; padding-right: 30px;">
+									<select id="paymentMethod" name="status" style="padding: px; padding-right: 30px;">
 										<option value="<%= Order[i].orderItems.orderStatus%>" hidden></option>
 										<option value="pending">pending</option>
 										<option value="shipped">shipped</option>
@@ -195,18 +195,18 @@
 
 
 									<input type="submit" value="submit"
-										style="width: 100px; height: 30px; background-color: #ffea00;">
+										style="width: 100px; height: 25px; background-color: #000000; color: #ffffff;">
 									<% }else if(Order[i].orderItems.orderStatus=='delivered' ) { %>
 										<p><b>
-												<h2><em style="color: #00ff04;">
+												<h4><em style="color: #00ff04;">
 														<%= Order[i].orderItems.orderStatus%>
-													</em></h2>
+													</em></h4>
 											</b></p>
 										<% }else if(Order[i].orderItems.orderStatus=='canceled' ){ %>
 											<p><b>
-													<h2><em style="color: #ff0000;">
+													<h4><em style="color: #ff0000;">
 															<%= Order[i].orderItems.orderStatus%>
-														</em></h2>
+														</em></h4>
 												</b></p>
 											<% } %>
 							</form>

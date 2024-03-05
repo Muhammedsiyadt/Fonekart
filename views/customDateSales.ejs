@@ -1,0 +1,87 @@
+exports.otpverification = async (req, res, next) => {
+    try {
+      if (!req.body) {
+        return res.status(400).send({ message: "hi you entered any thing" });
+      }
+      const otpUser = await otpdb.findOne({ _id: req.session.otpId });
+      const otp = req.body.otp;
+  
+      if (otp == otpUser.otp) {
+        const userData = req.session.userData;
+        if (req.session.referralCode) {
+          const user = new Userdb({
+            name: userData.name,
+            email: userData.Email,
+            password: userData.password,
+            referralCode: shortid.generate(),
+            referredBy: req.session.referralCode,
+          });
+  
+          await user.save();
+  
+          const walletData = new Wallet({
+            userId: user._id,
+          });
+  
+          await walletData.save();
+  
+          const referalAmount = await referralOfferDb.findOne({});
+  
+          await Wallet.findOneAndUpdate(
+            { userId: user._id },
+            {
+              $inc: { walletAmount: referalAmount.referralUserRewards },
+              $push: {
+                transactionHistory: {
+                  amount: referalAmount.referralUserRewards,
+                  PaymentType: "Credit",
+                },
+              },
+            }
+          );
+  
+          const referalUser = await Userdb.findOneAndUpdate(
+            { referralCode: req.session.referralCode },
+            { $inc: { referralCount: 1 } }
+          );
+  
+          await Wallet.updateOne(
+            { userId: referalUser._id },
+            {
+              $inc: { walletAmount: referalAmount.referralRewards },
+              $push: {
+                transactionHistory: {
+                  amount: referalAmount.referralRewards,
+                  PaymentType: "Credit",
+                },
+              },
+            }
+          );
+  
+          return res.redirect("/login");
+        }
+  
+        const user = new Userdb({
+          name: userData.name,
+          email: userData.Email,
+          password: userData.password,
+          referralCode: shortid.generate(),
+        });
+  
+        await user.save();
+  
+        const walletData = new Wallet({
+          userId: user._id,
+        });
+  
+        await walletData.save();
+  
+        res.redirect("/login");
+      } else {
+        req.session.otpValidation = "your otp ise error";
+        res.redirect("/register2");
+      }
+    } catch (err) {
+      next(err);
+    }
+  };

@@ -10,7 +10,7 @@ const { route } = require('./adminRouter')
 router.get('/',middleman.isBlocked,services.slashpage)
 
 // Login page router
-router.get('/login',middleman.isBlocked,services.login)
+router.get('/login',middleman.backProfile,middleman.isBlocked,services.login)
 router.post('/login',middleman.isBlocked,services.login)
 
 // Logout 

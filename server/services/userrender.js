@@ -155,6 +155,8 @@ exports.singleProduct = async (req, res) => {
 
 exports.categoryProducts = async (req, res) => {
     try {
+        
+
         let products;
         const category = await categorydb.find({ delete: false });
 
@@ -637,9 +639,6 @@ exports.orderDetailPage = async (req, res) => {
 
         const order = await orderdb.findOne({ _id: productId })
 
-
-        console.log(order);
-
         res.render('orderDetailPage', { order: order });
 
     } catch (error) {
@@ -722,7 +721,7 @@ exports.wallet = async (req, res) => {
         if (typeof user_Id == 'undefined') {
             return res.redirect('/login')
         }
-        
+
         const userId = req.session.userId
         const wallet = await walletdb.findOne({ userId: userId })
         res.render('wallet', { walletInfo: wallet })

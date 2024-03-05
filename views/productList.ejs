@@ -220,17 +220,19 @@
       </div>
 
     </div>
-    <!-- Pagination Icons -->
-    <!-- <div class="pagination-icons text-center mt-3">
-      <a href="#" class="pagination-icon"><i class="fas fa-chevron-left"></i></a>
-      <%# pageNumbers.forEach(pageNumber=> { %>
-        <a href="/home/category/products?page=<%#= pageNumber %>" class="pagination-number">
-          <%#= pageNumber %>
-        </a>
-        <%#}); %>
-          <a href="#" class="pagination-icon"><i class="fas fa-chevron-right"></i></a>
-    </div> -->
+
   </div>
+
+  <div class="pagination-area mt-15 mb-50 text-center">
+    <nav aria-label="Page navigation example">
+      <ul id="pagination" class="pagination justify-content-center">
+        <!-- Pagination buttons will be generated here dynamically -->
+      </ul>
+    </nav>
+  </div>
+  
+
+
 
 
 
@@ -263,20 +265,55 @@
   </footer>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
   <script>
     $(document).ready(function () {
-      // Toggle filter options on button click
+
       $("#toggleFiltersBtn").click(function () {
         $(".filter-options").toggle();
       });
     });
   </script>
 
+<script>
+  var itemsPerPage = 8;
+  var currentPage = 1;
+  var totalItems = '<%= productList.length %>';
+  var totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  <!-- Bootstrap JS -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  function showPage(page) {
+    $('.product-card').hide();
+    var startIndex = (page - 1) * itemsPerPage;
+    var endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+    $('.product-card').slice(startIndex, endIndex).show();
+  }
+
+  function generatePaginationButtons() {
+    var paginationHtml = '';
+    for (var i = 1; i <= totalPages; i++) {
+      paginationHtml += '<li class="page-item' + (i === currentPage ? ' active' : '') + '"><a class="page-link" href="#" onclick="changePage(' + i + ')">' + i + '</a></li>';
+    }
+    $('#pagination').html(paginationHtml);
+  }
+
+  function changePage(page) {
+    currentPage = page;
+    showPage(currentPage);
+    generatePaginationButtons();
+  }
+
+  $(document).ready(function () {
+    showPage(currentPage);
+    generatePaginationButtons();
+  });
+</script>
+
+
+
 
 </body>
 

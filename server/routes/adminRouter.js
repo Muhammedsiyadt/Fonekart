@@ -15,16 +15,26 @@ adminRouter.post('/api/adminlogin',controller.verifylogin)
 // home page 
 adminRouter.get('/adminhome',services.home)
 
-// SALES REPORT
+
+// SALES REPORT------------------------------------------------------------------------
 // daily
+adminRouter.get('/dailyReportPreview',services.dailyReport)
+// preview page 
 adminRouter.get('/dailyReportDownload',controller.dailyReport)
+
 // weekly
 adminRouter.get('/weeklyReportDownload',controller.weeklyReport)
+// preview page 
+adminRouter.get('/weeklyReportPreview',services.weeklyReport)
+
 // yearly 
 adminRouter.get('/yearlyReportDownload',controller.yearlyReport)
+// preview page
+adminRouter.get('/yearlyReportPreview',services.yearlyReport)
 
 // costome date sales report
 adminRouter.post('/costomeDateSalesReport',controller.customDateSales)
+
      
 
 // PRODUCT MANAGEMENT--------------------------------------------------------------------
@@ -62,6 +72,8 @@ adminRouter.post('/adminUserStatus/unblock',controller.unblockUser)
 adminRouter.get('/Order_management',services.Order_management)
 // update order status 
 adminRouter.post('/api/updateOrderStatus',controller.updateOrderStatus)
+// Order Detail page 
+adminRouter.get('/orderDetailPageAdmin',controller.orderDetail)
 
 
 // CATEGORY MANAGEMENT------------------------------------------------------------------

@@ -24,8 +24,10 @@ var schema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
-    refferalCode: {
-        type: String
+    referralCode:{
+        type:String,
+        unique:true,
+        required:true
     }   
 
 })

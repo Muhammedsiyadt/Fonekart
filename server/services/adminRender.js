@@ -50,6 +50,166 @@ exports.home = async (req, res) => {
 
 }
 
+// SALES REPORT 
+// daily
+exports.dailyReport = async (req, res) => {
+    try {
+        const today = new Date();
+        const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+
+
+        const dailyOrders = await orderdb.find({
+            orderDate: {
+                $gte: startOfDay,
+                $lt: endOfDay
+            }
+        });
+
+        const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
+
+        let totalPrice = 0;
+        const tableData = [];
+
+        dailyOrders.forEach(order => {
+            order.orderItems.forEach(item => {
+                tableData.push([
+                    order.orderDate.toDateString(),
+                    order.address.name,
+                    `${order.address.address}, ${order.address.district}, ${order.address.city}, ${order.address.pin}`,
+                    order.address.phone,
+                    item.Pname || 'N/A',
+                    item.category || 'N/A',
+                    item.orderStatus || 'N/A',
+                    item.price !== undefined ? item.price.toString() : 'N/A'
+                ])
+                if (item.price !== undefined) {
+                    totalPrice += item.price;
+                }
+            });
+        })
+
+        tableData.push(['Total Price', '', '', '', '', '', '', totalPrice.toString()]);
+
+        const tableOptions = {
+            headers: tableHeaders,
+            rows: tableData
+        };
+
+        res.render('dailyReport', { tableOptions });
+
+    } catch (error) {
+        console.error("Error generating daily sales report:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+// Weekly
+exports.weeklyReport = async (req, res) => {
+    try {
+        const startDate = new Date()
+        const endDate = new Date(startDate.getTime() - 7 * 24 * 60 * 60 * 1000)
+
+        const weeklyOrders = await orderdb.find({
+            orderDate: {
+                $gte: endDate,
+                $lt: startDate
+            }
+        });
+
+        const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
+
+        let totalPrice = 0;
+        const tableData = [];
+
+        weeklyOrders.forEach(order => {
+            order.orderItems.forEach(item => {
+                tableData.push([
+                    order.orderDate.toDateString(),
+                    order.address.name,
+                    `${order.address.address}, ${order.address.district}, ${order.address.city}, ${order.address.pin}`,
+                    order.address.phone,
+                    item.Pname || 'N/A',
+                    item.category || 'N/A',
+                    item.orderStatus || 'N/A',
+                    item.price !== undefined ? item.price.toString() : 'N/A',
+                ])
+                if (item.price !== undefined) {
+                    totalPrice += item.price;
+                }
+            })
+        })
+        tableData.push(['Total Price', '', '', '', '', '', '', totalPrice.toString()]);
+
+        const tableOptions = {
+            headers: tableHeaders,
+            rows: tableData
+        };
+
+        res.render('weeklyReport', { tableOptions });
+
+    } catch (error) {
+        console.error("Error generating weekly sales report:", error)
+        res.status(500).json({ error: "Internal server error" })
+    }
+}
+
+// yearly
+exports.yearlyReport = async (req, res) => {
+    try {
+        const startOfYear = new Date(new Date().getFullYear(), 0, 1);
+        const endOfYear = new Date(new Date().getFullYear() + 1, 0, 1);
+
+        const yearlyOrders = await orderdb.find({
+            orderDate: {
+                $gte: startOfYear,
+                $lt: endOfYear
+            }
+        });
+
+        const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
+        let totalPrice = 0;
+        const tableData = [];
+
+        yearlyOrders.forEach(order => {
+            order.orderItems.forEach(item => {
+                tableData.push([
+                    order.orderDate.toDateString(),
+                    order.address.name,
+                    `${order.address.address}, ${order.address.district}, ${order.address.city}, ${order.address.pin}`,
+                    order.address.phone,
+                    item.Pname || 'N/A',
+                    item.category || 'N/A',
+                    item.orderStatus || 'N/A',
+                    item.price !== undefined ? item.price.toString() : 'N/A',
+                ]);
+
+                if (item.price !== undefined) {
+                    totalPrice += item.price;
+                }
+            });
+        });
+
+        tableData.push(['Total Price', '', '', '', '', '', '', totalPrice.toString()]);
+
+        const tableOptions = {
+            title: 'Yearly Sales Report',
+            headers: tableHeaders,
+            rows: tableData
+        };
+
+        res.render('yearlyReport', { tableOptions });
+    } catch (error) {
+        console.error("Error generating yearly sales report:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+
+
+
+
+
 
 
 
@@ -167,6 +327,7 @@ exports.Order_management = async (req, res) => {
         console.log(error)
     }
 }
+
 
 
 // CATEGORY MANAGEMENT PAGE -------------------------------------------------------------------
