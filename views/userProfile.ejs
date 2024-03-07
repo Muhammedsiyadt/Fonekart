@@ -202,20 +202,20 @@
       <h2 style="color: #343a40;">Profile</h2>
     </div>
 
-    
+
     <div class="personal-info p-4 " style="background: #ffffff; border: rgb(0, 0, 0) 2px solid; border-radius: 5px; ">
-      <h4 class="text-info"><i class="ri-hand text-dark">Hello</i>
-        <!-- <h4 class="text-info"><i class="ri-hand text-dark">Hello</i> -->
+      <small style="color: rgba(0, 0, 0, 0.664);">Hello,</small>
+      <h4 class="text-info">
         <%= userData.name %>
       </h4>
-      <p><strong>Name:</strong>
-        <%= userData.name %>
-      </p>
-      <p><strong>Email:</strong>
-        <%= userData.email %>
-      </p>
+      <!-- <p><strong>Name:</strong> -->
+      <%#= userData.name %>
+        </p>
+        <!-- <p><strong>Email:</strong> -->
+        <%#= userData.email %>
+          </p>
 
-    
+
 
     </div>
 
@@ -236,12 +236,55 @@
 
       <a href="/wallet" id="batt" class="btn btn-secondary  p-2"><i class="fas fa-wallet profile-icon"></i> Wallet</a>
 
+      <% if(referalOffer){ %>
+        <a style="border: black 1px solid;" href="#" id="batt" class="btn btn-muted p-2" data-toggle="modal" data-target="#referralModal">
+          <i class="fas fa-wallet profile-icon"></i>Referral
+        </a>
+        <% } %>
 
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="referralModal" tabindex="-1" role="dialog" aria-labelledby="referralModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="referralModalLabel">Referral Information</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+         
+          <div class="modal-body">
+            <% if(referalOffer){ %>
+            <div class="container p-4 text-light"
+              style="border: rgb(0, 255, 13) solid 2px; background-color: rgb(70, 70, 70); border-radius: 10px;">
+              <p>Referral Link:</p>
+              <p class="text-info mb-2" id="referralLink"> <%- `http://localhost:3000/regiter?refferalCode=${userData?.referralCode}` %>
+              </p>
+              <div class="row mt-2 d-flex">
+                <div class="col">
+                  <button class="btn btn-sm btn-secondary" id="copyButton"
+                    data-clipboard-target="#referralLink">Copy</button>
+                </div>
+              </div>
+            </div>
+            <% }else{ %>
+              <p>No Referral Offer</p>
+            <% } %>
+          </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Logout Button at the Bottom -->
     <div class="row">
-      <div class="col-md-12  text-center logout-btn">
+      <div class="  text-center logout-btn">
         <a href="/logout"><button class="Btn">
 
             <div class="sign"><svg viewBox="0 0 512 512">
@@ -256,26 +299,28 @@
     </div>
   </div>
 
-  <% if(referalOffer){ %>
-    <div class="container p-4 text-light "
+
+  <%# if(referalOffer){ %>
+
+    <!-- <div class="container p-4 text-light "
       style="border: rgb(0, 255, 13) solid 2px; background-color: rgb(70, 70, 70); border-radius: 10px; ">
       <span>Refferal Link : </span>
-      <span class="text-info"> <%- `http://localhost:3000/regiter?refferalCode=${userData?.referralCode}` %></span>
+      <span class="text-info"> <%#- `http://localhost:3000/regiter?refferalCode=${userData?.referralCode}` %></span>
 
       <div class="row mt-4 d-flex">
 
         <div class="col-6">
           <span class="light">Expiring Date</span>
           <span class="text-danger">
-            <%= new Date(referalOffer[0]?.expiredate).toLocaleDateString() %>
+            <%#= new Date(referalOffer[0]?.expiredate).toLocaleDateString() %>
           </span>
         </div>
       </div>
-    </div>
+    </div> -->
 
-    <% }else{ %>
-      <p>no</p>
-      <% } %>
+    <%# }else{ %>
+      <!-- <p>no</p> -->
+      <%# } %>
 
         <footer class="bg-dark text-light pt-5  pb-3" id="footer" style=" margin-top: 30px;">
           <div class="container" style="padding: 30px;">
@@ -310,9 +355,15 @@
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
 
-
-
+        <script>
+         
+          var clipboard = new ClipboardJS('#copyButton');
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+          });
+        </script>
 </body>
 
 </html>

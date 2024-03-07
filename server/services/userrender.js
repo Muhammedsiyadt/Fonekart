@@ -19,9 +19,15 @@ exports.slashpage = async (req, res) => {
 
         res.render('home', { product: productDetails, category: categoryDetails, isLogged: req.session.isLogged })
     } catch (err) {
+        res.status(500).redirect('/500')
         console.error(err);
-        res.status(500).send('Internal server err');
+        
     }
+}
+
+// 500 page 
+exports.errorPage = (req,res) => {
+    res.render('500page')
 }
 
 // Login Page
@@ -64,6 +70,8 @@ exports.forgetpage = (req, res) => {
     try {
         res.render('forgetpage', { message: req.session.message })
     } catch (error) {
+
+        res.status(500).redirect('/500')
         console.log(error);
     }
 
@@ -106,6 +114,7 @@ exports.home = async (req, res) => {
 
         res.render('home', { product: productDetails, category: categoryDetails, isLogged: req.session.isLogged })
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
     }
 
@@ -136,10 +145,9 @@ exports.singleProduct = async (req, res) => {
         res.render('singleProductPage', { single: singleProduct, wishlist: wishlistFromSession })
 
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
-        res.status(500).send({
-            message: "Internal server error",
-        });
+        
     }
 }
 
@@ -166,6 +174,7 @@ exports.categoryProducts = async (req, res) => {
         const sort = req.query.sort;
 
         if (req.query.search) {
+            req.session.search = req.query.search
             products = await productdb.find({ Pname: { $regex: req.query.search, $options: 'i' } });
         } else if (cat) {
             let query = { delete: false, Pcategory: cat };
@@ -231,10 +240,12 @@ exports.categoryProducts = async (req, res) => {
 
         res.render('productList', { productList: products, categoryData: category });
     } catch (error) {
+        res.status(500).redirect('/500')
         console.error(error);
-        res.status(500).json({ message: error.message });
+       
     }
 };
+
 
 // exports.categoryProducts = async (req, res) => {
 //     try {
@@ -350,6 +361,8 @@ exports.userProfile = async (req, res) => {
         const data = await userdb.findOne({ _id: req.session.email })
         res.render('userProfile', { userData: data, referalOffer: referalOffer })
     } catch (error) {
+
+        res.status(500).redirect('/500')
         console.log(error);
     }
 }
@@ -361,7 +374,7 @@ exports.updateProfile = async (req, res) => {
         const data = await userdb.findOne({ _id: req.session.email })
         res.render('updateProfile', { userData: data })
     } catch (error) {
-
+        res.status(500).redirect('/500')
     }
 
 }
@@ -379,6 +392,7 @@ exports.changePassword = async (req, res) => {
             res.send(html)
         })
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
     }
 
@@ -401,6 +415,7 @@ exports.address_management = async (req, res) => {
         // console.log(addressData) 
         res.render('userAddress', { address: addressData })
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
     }
 }
@@ -435,6 +450,7 @@ exports.editAddress = async (req, res) => {
 
         res.render('editaddress', { editAddress: addressIdpass })
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
     }
 
@@ -486,6 +502,7 @@ exports.cartPage = async (req, res) => {
         res.render('cart', { cartData: userCart });
 
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error)
     }
 }
@@ -563,6 +580,7 @@ exports.checkout = async (req, res) => {
 
 
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error)
     }
 }
@@ -572,7 +590,12 @@ exports.checkout = async (req, res) => {
 // order list page 
 exports.orderList = async (req, res) => {
     try {
-        const user_Id = req.session.userId;
+
+        const user_Id = req.session.userId
+    if (typeof user_Id == 'undefined') {
+        return res.redirect('/login')
+    }
+        
         const page = req.query.page || 1;
         const limit = 5;
 
@@ -619,9 +642,8 @@ exports.orderList = async (req, res) => {
 
         res.render('orderListPageUser', { OrderData: orderData, totalPages: totalPages });
     } catch (error) {
-
+        res.status(500).redirect('/500')
         console.error(error);
-        res.status(500).send('Internal Server Error');
     }
 }
 
@@ -642,8 +664,9 @@ exports.orderDetailPage = async (req, res) => {
         res.render('orderDetailPage', { order: order });
 
     } catch (error) {
+        res.status(500).redirect('/500')
         console.error("Error finding order:", error);
-        res.status(500).send("Internal Server Error");
+       
     }
 }
 
@@ -709,6 +732,7 @@ exports.wishlist = async (req, res) => {
             totalPages: totalPages
         });
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
     }
 }
@@ -726,8 +750,9 @@ exports.wallet = async (req, res) => {
         const wallet = await walletdb.findOne({ userId: userId })
         res.render('wallet', { walletInfo: wallet })
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error)
-        res.status(500).send('internal server error')
+       
     }
 }
 

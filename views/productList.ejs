@@ -117,8 +117,8 @@
   <!-- Compact Filter Toggle Button -->
   <div class="container-fluid mt-3">
     <div class="row">
-      <div class="col-md-12 text-center">
-        <button class="compact-filter-btn mt-5" id="toggleFiltersBtn">
+      <div class="col-md-12 text-center mt-5">
+        <button class="compact-filter-btn " id="toggleFiltersBtn">
           <i class="fas fa-sliders-h mr-2"></i> Filter
         </button>
       </div>
@@ -127,45 +127,28 @@
 
   <!-- Filter Options Section (Initially hidden) -->
   <form action="/home/category/products" method="get">
-    <div class="container filter-options mt-4">
+    <div class="container filter-options ">
       <div class="row">
         <div class="col-md-3">
           <div class="form-group">
             <label for="category">Category:</label>
-
             <select class="form-control" name="cat" id="category">
               <option>Allproducts</option>
-              <% for(let i=0;i<categoryData.length;i++) {%>
 
+              <% for(let i=0;i<categoryData.length;i++) {%>
                 <option>
                   <%= categoryData[i].category %>
                 </option>
-
                 <% } %>
-
-
             </select>
 
           </div>
         </div>
-        <!-- <div class="col-md-3">
-          <div class="form-group">
-            <label  for="minPrice">Price filter:</label>
-            <input name="minPrice" type="number" class="form-control" id="minPrice" placeholder="Min Price">
-            <br>
-            <input name="maxPrice" type="number" class="form-control" id="maxPrice" placeholder="Max Price">
-          </div>
-        </div> -->
-        <!-- <div class="col-md-3">
-          <div class="form-group">
-            <label for="maxPrice">Max Price:</label>
-            <input name="maxPrice" type="number" class="form-control" id="maxPrice" placeholder="Max Price">
-          </div>
-        </div> -->
         <div class="col-md-3">
           <div class="form-group">
             <label for="sort">Sort Price:</label>
             <select name="sort" class="form-control" id="category">
+              <option value=""></option>
               <option value="highToLow">High to Low</option>
               <option value="lowToHigh">Low to High</option>
             </select>
@@ -179,7 +162,7 @@
   </form>
 
 
-  <div class="container-fluid" style="padding-bottom: 100px;">
+  <div class="container" style="padding-bottom: 50px;">
     <div class="row">
       <!-- Product Listing -->
       <div class="col-md-12">
@@ -230,7 +213,7 @@
       </ul>
     </nav>
   </div>
-  
+
 
 
 
@@ -278,39 +261,48 @@
       });
     });
   </script>
+  <script>
+   const currentUrl = new URL(window.location.href);
+if (currentUrl.searchParams.has("search")) {
+  
+  document.getElementById("toggleFiltersBtn").style.display = "none";
+} else {
+  document.getElementById("toggleFiltersBtn").style.display = "block";
+}
 
-<script>
-  var itemsPerPage = 8;
-  var currentPage = 1;
-  var totalItems = '<%= productList.length %>';
-  var totalPages = Math.ceil(totalItems / itemsPerPage);
+  </script>
+  <script>
+    var itemsPerPage = 8;
+    var currentPage = 1;
+    var totalItems = '<%= productList.length %>';
+    var totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  function showPage(page) {
-    $('.product-card').hide();
-    var startIndex = (page - 1) * itemsPerPage;
-    var endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-    $('.product-card').slice(startIndex, endIndex).show();
-  }
-
-  function generatePaginationButtons() {
-    var paginationHtml = '';
-    for (var i = 1; i <= totalPages; i++) {
-      paginationHtml += '<li class="page-item' + (i === currentPage ? ' active' : '') + '"><a class="page-link" href="#" onclick="changePage(' + i + ')">' + i + '</a></li>';
+    function showPage(page) {
+      $('.product-card').hide();
+      var startIndex = (page - 1) * itemsPerPage;
+      var endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+      $('.product-card').slice(startIndex, endIndex).show();
     }
-    $('#pagination').html(paginationHtml);
-  }
 
-  function changePage(page) {
-    currentPage = page;
-    showPage(currentPage);
-    generatePaginationButtons();
-  }
+    function generatePaginationButtons() {
+      var paginationHtml = '';
+      for (var i = 1; i <= totalPages; i++) {
+        paginationHtml += '<li class="page-item' + (i === currentPage ? ' active' : '') + '"><a class="page-link" href="#" onclick="changePage(' + i + ')">' + i + '</a></li>';
+      }
+      $('#pagination').html(paginationHtml);
+    }
 
-  $(document).ready(function () {
-    showPage(currentPage);
-    generatePaginationButtons();
-  });
-</script>
+    function changePage(page) {
+      currentPage = page;
+      showPage(currentPage);
+      generatePaginationButtons();
+    }
+
+    $(document).ready(function () {
+      showPage(currentPage);
+      generatePaginationButtons();
+    });
+  </script>
 
 
 

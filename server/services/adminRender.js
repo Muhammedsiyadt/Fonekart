@@ -44,9 +44,27 @@ exports.home = async (req, res) => {
         }
     ]);
 
+    const topProducts = await orderdb.aggregate([
+        { $unwind: { path: '$orderItems' } },
+        { "$group": { _id: "$orderItems.productId", productName: { $first: '$orderItems.Pname' }, totalQuantitySold: { "$sum": "$orderItems.quantity" } } },
+        { $project: { _id: 0, productName: 1, totalQuantitySold: 1 } },
+        { $sort: { totalQuantitySold: -1 } },
+        { $limit: 10 }
+    ])
+
+    // console.log(topProducts);
+    const topCategory = await orderdb.aggregate([
+        { $unwind: '$orderItems' },
+        { $group: { _id: '$orderItems.category', totalQuantitySold: { $sum: '$orderItems.quantity' } } },
+        { $project: { _id: 0, _id: 1, totalQuantitySold: 1 } },
+        { $sort: { totalQuantitySold: -1 } },
+        { $limit: 10 }
+    ])
+    // console.log(topCategory);
+
     const orderTotalAmount = orderTotalAmountObject ? orderTotalAmountObject.totalAmount : undefined;
 
-    res.render('adminhome', { countUser: countUsers, ordercount: ordercount, orderTotalAmount: orderTotalAmount })
+    res.render('adminhome', { countUser: countUsers, ordercount: ordercount, orderTotalAmount: orderTotalAmount, topProducts: topProducts, topCategory: topCategory })
 
 }
 
@@ -474,21 +492,21 @@ exports.Coupon_management = async (req, res) => {
 
 // add coupon page 
 exports.
-addCoupon = (req, res) => {
+    addCoupon = (req, res) => {
 
-    const samecoupon = req.session.Existmessage;
+        const samecoupon = req.session.Existmessage;
 
-  
-    delete req.session.Existmessage;
 
-    if (samecoupon) {
+        delete req.session.Existmessage;
 
-        res.render('addCoupon', { samecoupon: samecoupon });
-    } else {
+        if (samecoupon) {
 
-        res.render('addCoupon');
-    }
-};
+            res.render('addCoupon', { samecoupon: samecoupon });
+        } else {
+
+            res.render('addCoupon');
+        }
+    };
 
 
 // Edit Coupon 

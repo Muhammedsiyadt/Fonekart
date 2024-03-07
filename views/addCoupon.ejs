@@ -64,7 +64,7 @@
     
             const discountInput = document.getElementById('discount');
             const discountError = document.getElementById('discountError');
-            if (discountInput.value.trim() === '' || discountInput.value < 1 || discountInput.value.includes(' ')) {
+            if (discountInput.value.trim() === '' || discountInput.value < 1 || discountInput.value > 100 || discountInput.value.includes(' ')) {
                 discountError.style.display = 'block';
                 return;
             } else {

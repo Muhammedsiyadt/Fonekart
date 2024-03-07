@@ -82,7 +82,7 @@
 
 
 
-	
+
 
 
 	<section id="content">
@@ -103,7 +103,7 @@
 
 			</div>
 
-			<div 
+			<div
 				style="background-color: rgba(255, 255, 255, 0.505); border-radius: 10px; justify-content: center; align-items: center; margin-top: 20px; padding: 10px;">
 
 				<button class="download-button" style="margin-left: 450px;" onclick="openModal()">
@@ -130,7 +130,7 @@
 			<ul class="box-info">
 				<li>
 					<i class='bx bxs-group'></i>
-					
+
 					<span class="text">
 						<% if(typeof countUser !=='undefined' ){ %>
 							<h3>
@@ -169,7 +169,7 @@
 				</li>
 			</ul>
 
-			
+
 
 		</main>
 		<!-- MAIN -->
@@ -202,21 +202,24 @@
 			<!-- daily -->
 			<a href="/dailyReportPreview"><button
 					style="width: 80px; color: white;  height: 30px; background-color: rgb(0, 0, 0);"><b>Daily</b></button></a>
-			  <!-- daily end modal -->
+			<!-- daily end modal -->
 
-			  <!-- weekly -->
-			  <a href="/weeklyReportPreview"><button style="width: 80px; color: white; height: 30px; background-color: rgb(0, 0, 0);"><b>Weekly</b></button><a href=""></a>
-			<!-- end weekly -->
+			<!-- weekly -->
+			<a href="/weeklyReportPreview"><button
+					style="width: 80px; color: white; height: 30px; background-color: rgb(0, 0, 0);"><b>Weekly</b></button><a
+					href=""></a>
+				<!-- end weekly -->
 
-			<!-- yearly -->
-			<a href="/yearlyReportPreview"><button style="width: 80px; color: white; height: 30px; background-color: rgb(0, 0, 0);"><b>Yearly</b></button></a>	
-			<!-- end year -->
-						<br><br>
-			<form action="/costomeDateSalesReport" method="post">
-				<input type="date" name="fromDate" id="date"  required>
-				<input type="date" name="toDate" id="date"  required>
-				<button type="submit">Download</button>
-			</form>
+				<!-- yearly -->
+				<a href="/yearlyReportPreview"><button
+						style="width: 80px; color: white; height: 30px; background-color: rgb(0, 0, 0);"><b>Yearly</b></button></a>
+				<!-- end year -->
+				<br><br>
+				<form action="/costomeDateSalesReport" method="post">
+					<input type="date" name="fromDate" id="date" required>
+					<input type="date" name="toDate" id="date" required>
+					<button type="submit">Download</button>
+				</form>
 		</div>
 	</div>
 
@@ -232,11 +235,11 @@
 		}
 
 		function generateReport(reportType) {
-			// Logic to generate report based on reportType (Daily, Weekly, Yearly)
+
 		}
 
 		function generateCustomReport() {
-			// Logic to generate report based on custom date
+
 		}
 
 	</script>

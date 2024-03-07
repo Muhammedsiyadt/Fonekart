@@ -114,8 +114,9 @@ router.get('/orderDetailPage',middleman.isBlocked,services.orderDetailPage)
 
 // Shubham route
 router.post('/postingOrder',controller.postingOrder)
-
 router.post('/ordersuccefull',controller.orderSuccessful)
+// invoice
+router.get('/invoice',controller.invoiceDownload)
 
 
 // === WISH LIST === //
@@ -163,6 +164,9 @@ router.post('/api/submitEdit_address',controller.updateAddress)
 // === Profile updation === // 
 router.post('/api/emailForUpdateProfile',controller.updateProfile)
 
+
+// 500
+router.get('/500',services.errorPage)
 
 module.exports = router 
 

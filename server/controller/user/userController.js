@@ -15,6 +15,8 @@ const walletdb = require('../../model/walletSchema')
 const Razorpay = require('razorpay')
 const shortid = require('shortid')
 const refferaldb = require('../../model/refferalSchema');
+const { Table } = require('pdfkit-table')
+const PDFDocument = require('pdfkit');
 
 
 
@@ -84,6 +86,7 @@ const sendOtpMail = async (req, res) => {
         res.status(200).redirect('/otppage');
         await transporter.sendMail(message);
     } catch (err) {
+        res.status(500).redirect('/500')
         console.log(err);
     }
 }
@@ -135,6 +138,7 @@ exports.register = async (req, res) => {
 
         await sendOtpMail(req, res);
     } catch (error) {
+        res.status(500).redirect('/500')
         res.send(error);
     }
 };
@@ -153,12 +157,12 @@ exports.otpverify = async (req, res) => {
         }
 
         if (req.body.otp === otp.otp) {
-            
+
             const userData = req.session.userData;
 
 
             let referralCode = req.query.refferalCode;
-            console.log('reffeeeeeeeeeeeeerrrrrrrrrrrr',referralCode);
+            console.log('reffeeeeeeeeeeeeerrrrrrrrrrrr', referralCode);
             if (!referralCode && req.session.referalCode) {
                 referralCode = req.session.referalCode;
             }
@@ -170,13 +174,13 @@ exports.otpverify = async (req, res) => {
 
                 const refferalAmount = await refferaldb.findOne()
 
-                console.log('amount',refferalAmount);
+                console.log('amount', refferalAmount);
 
                 const dd = walletdb.findOneAndUpdate(
                     { userId: existingUser._id }
                 )
-                console.log('wallettt',dd);
-                
+                console.log('wallettt', dd);
+
                 await walletdb.findOneAndUpdate(
                     { userId: existingUser._id },
                     {
@@ -213,12 +217,13 @@ exports.otpverify = async (req, res) => {
             res.redirect("/register");
         }
     } catch (error) {
+        res.status(500).redirect('/500')
         console.error('Error verifying OTP:', error);
         res.status(500).send('Internal Server Error');
     }
 }
 // exports.otpverify = async (req, res) => {
-    
+
 //     try {
 //         if (!req.body) {
 //             return res.status(400).send({ message: "Enter something" });
@@ -266,7 +271,7 @@ exports.otpverify = async (req, res) => {
 //                     { referralCode: req.session.referralCode },
 //                     { $inc: { referralCount: 1 } },
 //                     { upsert: true })
-                
+
 
 //                 await walletdb.updateOne(
 //                     { userId: referalUser._id },
@@ -349,6 +354,7 @@ exports.logout = async (req, res) => {
         req.session.destroy();
         res.status(200).redirect("/home");
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error)
     }
 
@@ -370,8 +376,9 @@ exports.emailForResetPassword = async (req, res) => {
         }
 
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
-        res.status(500).send('Internal Server Error')
+        
     }
 }
 
@@ -397,6 +404,7 @@ exports.updatePassword = async (req, res) => {
             res.redirect('/login')
         }
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
     }
 
@@ -517,6 +525,7 @@ exports.updateAddress = async (req, res) => {
         // console.log(dee)
         res.redirect('/profile/address_management')
     } catch (error) {
+        res.status(500).redirect('/500')
         res.send(error)
     }
 
@@ -536,6 +545,7 @@ exports.deleteAddress = async (req, res) => {
         // console.log("saaaaiiii",deleteIdpass) 
         res.redirect('/profile/address_management')
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
     }
 }
@@ -559,6 +569,7 @@ exports.selectAddress = async (req, res) => {
 
         res.redirect('/profile/address_management')
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
     }
 }
@@ -583,6 +594,7 @@ exports.selectedToUnselect = async (req, res) => {
 
         res.redirect('/profile/address_management')
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
     }
 }
@@ -598,8 +610,9 @@ exports.updateProfile = async (req, res) => {
         console.log(userProfileUpdate)
         res.redirect('/home/profile')
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
-        res.status(500).send('Internal Server Error')
+      
     }
 }
 
@@ -617,8 +630,9 @@ exports.oldPasswordChecking = async (req, res) => {
             return res.redirect('/profile/changePassword')
         }
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
-        res.status(500).send('Internal Server Error')
+       
     }
 }
 
@@ -632,8 +646,9 @@ exports.updatePasswordAfterChanged = async (req, res) => {
         res.redirect('/profile/updateProfile')
 
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
-        res.status(500).send('Internal Server Error')
+        
     }
 }
 
@@ -674,10 +689,9 @@ exports.productAddToCartdb = async (req, res) => {
         await cart.save()
         res.redirect('/cart')
     } catch (err) {
+        res.status(500).redirect('/500')
         console.error(err);
-        res.status(500).send({
-            message: "Internal server error",
-        })
+        
     }
 }
 
@@ -703,9 +717,9 @@ exports.deleteCartItem = async (req, res) => {
 
         res.redirect('/cart');
     } catch (error) {
+        res.status(500).redirect('/500')
         console.error(error);
 
-        res.status(500).send({ message: "Internal server error" });
     }
 }
 
@@ -728,6 +742,7 @@ exports.selectAddressInCheckout = async (req, res) => {
         await existingAddressDocument.save();
         res.redirect('/cart/checkout');
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
     }
 };
@@ -763,6 +778,7 @@ exports.addaddressFromCheckout = async (req, res) => {
         const savedAddress = await checkAddress.save();
         res.redirect('/cart/checkout');
     } catch (error) {
+        res.status(500).redirect('/500')
         console.error("Error adding address:", error);
         let errorMessage = "An error occurred while adding the address.";
 
@@ -771,10 +787,6 @@ exports.addaddressFromCheckout = async (req, res) => {
 
             errorMessage = Object.values(error.errors).map(err => err.message).join(' ');
         }
-
-        res.status(400).send({
-            message: errorMessage
-        });
     }
 }
 
@@ -795,6 +807,7 @@ exports.updateCartQuantity = async (req, res, next) => {
 
         res.send(true);
     } catch (err) {
+        res.status(500).redirect('/500')
 
         next(err);
     }
@@ -968,8 +981,8 @@ exports.postingOrder = async (req, res) => {
         }
 
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
-        return res.status(500).send("Error in Payment")
     }
 };
 
@@ -996,10 +1009,94 @@ exports.orderSuccessful = async (req, res) => {
             return res.send("Order Failed");
         }
     } catch (err) {
+        res.status(500).redirect('/500')
         console.error("order razorpay err", err);
-        res.status(500).send("internal server error");
+        
     }
 }
+
+// invoice
+
+function generateInvoiceNumber() {
+
+    return Math.floor(Math.random() * 1000000) + 1;
+}
+
+exports.invoiceDownload = async (req, res) => {
+    const orderId = req.query.productId;
+    try {
+        const order = await orderdb.findOne({ _id: orderId });
+        
+
+        const doc = new PDFDocument();
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="invoice.pdf"');
+
+        doc.pipe(res);
+
+        
+        const invoiceNumber = generateInvoiceNumber();
+
+        doc.font('Helvetica').fontSize(24).text('Fonekart', { align: 'center' }).moveDown().moveDown();
+        doc.font('Helvetica-Bold').fontSize(24).text('INVOICE', { align: 'start' }).moveDown();
+
+        
+        doc.fontSize(12).text(`Invoice Number: ${invoiceNumber}`, { align: 'start' }).moveDown();
+        doc.fontSize(10).text(`Order Date: ${order.orderDate.toDateString()}`, { align: 'start' }).moveDown().moveDown();
+
+        
+        doc.fontSize(12).text('BILLED TO :', { underline: true })
+        doc.fontSize(10).text(`Name: ${order.address.name}`)
+        doc.fontSize(10).text(`Address: ${order.address.address}, ${order.address.city}, ${order.address.pin}`)
+        
+        const tableHeaders = ['Product Name', 'Quantity', 'Unit Price', 'Total Price'];
+
+
+        const startX = 50;
+        const startY = doc.y + 15;
+        const cellWidth = 120;
+
+      
+        const headerHeight = 30;
+        doc.rect(startX, startY, cellWidth * tableHeaders.length, headerHeight).fillAndStroke('#CCCCCC', '#000000');
+        doc.font('Helvetica-Bold').fontSize(10).fillColor('#000000');
+        tableHeaders.forEach((header, index) => {
+            doc.text(header, startX + (cellWidth * index) + (cellWidth / 2), startY + (headerHeight / 2), { width: cellWidth, align: 'start', valign: 'start' });
+        });
+        
+
+        
+        const rowHeight = 50;
+        let yPos = startY + headerHeight;
+        order.orderItems.forEach((item, rowIndex) => {
+            const fillColor = rowIndex % 2 === 0 ? '#FFFFFF' : '#EEEEEE';
+            doc.rect(startX, yPos, cellWidth * tableHeaders.length, rowHeight).fillAndStroke(fillColor, '#000000');
+            doc.fillColor('#000000');
+            doc.font('Helvetica').fontSize(10);
+            doc.text(item.Pname || 'N/A', startX + (cellWidth / 2), yPos + (rowHeight / 2), { width: cellWidth, align: 'start', valign: 'start' });
+            doc.text(item.quantity.toString(), startX + cellWidth + (cellWidth / 2), yPos + (rowHeight / 2), { width: cellWidth, align: 'start', valign: 'start' });
+            doc.text(item.price !== undefined ? item.price.toString() : 'N/A', startX + (cellWidth * 2) + (cellWidth / 2), yPos + (rowHeight / 2), { width: cellWidth, align: 'start', valign: 'start' });
+            doc.text((item.price !== undefined && item.quantity !== undefined) ? (item.price * item.quantity).toString() : 'N/A', startX + (cellWidth * 3) + (cellWidth / 2), yPos + (rowHeight / 2), { width: cellWidth, align: 'start', valign: 'start' });
+            yPos += rowHeight;
+        });
+
+        doc.moveDown(2);
+
+        doc.end();
+    } catch (error) {
+        res.status(500).redirect('/500')
+        console.error("Error generating invoice:", error);
+       
+    }
+}
+
+
+
+
+
+
+
 
 
 // COUPON //
@@ -1067,6 +1164,7 @@ exports.applyCoupon = async (req, res) => {
 
 
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
     }
 
@@ -1122,8 +1220,9 @@ exports.cancelOrder = async (req, res) => {
         res.redirect('/orderList');
 
     } catch (error) {
+        res.status(500).redirect('/500')
         console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        
     }
 };
 
@@ -1170,8 +1269,9 @@ exports.return = async (req, res) => {
 
         res.redirect('/orderList')
     } catch (error) {
+        res.status(500).redirect('/500')
         console.error("Error returning product:", error);
-        res.status(500).send("Internal Server Error");
+       
     }
 }
 
@@ -1251,10 +1351,9 @@ exports.homeProductToWishlist = async (req, res) => {
 
         res.redirect('/home')
     } catch (err) {
+        res.status(500).redirect('/500')
         console.error(err);
-        res.status(500).send({
-            message: "Internal server error",
-        })
+        
     }
 }
 
@@ -1295,10 +1394,9 @@ exports.addToWishlistFromSingleProduct = async (req, res) => {
 
         res.redirect(`/home/singleProduct?id=${queryId}`)
     } catch (err) {
+        res.status(500).redirect('/500')
         console.error(err);
-        res.status(500).send({
-            message: "Internal server error",
-        })
+        
     }
 }
 
@@ -1316,10 +1414,8 @@ exports.deleteWishListFromWishlistPage = async (req, res) => {
 
         res.redirect('/wishlist')
     } catch (error) {
-
+        res.status(500).redirect('/500')
         console.error('Error deleting wishlist item:', error);
-
-        res.status(500).send('Error deleting wishlist item');
     }
 }
 
@@ -1352,10 +1448,8 @@ exports.wishlistAddToCartdb = async (req, res) => {
         await cart.save()
         res.redirect('/cart')
     } catch (err) {
+        res.status(500).redirect('/500')
         console.error(err);
-        res.status(500).send({
-            message: "Internal server error",
-        })
     }
 }
 
@@ -1388,8 +1482,8 @@ exports.addWalletMoney = async (req, res) => {
         })
 
     } catch (error) {
+        res.status(500).redirect('/500')
         console.log(error);
-        res.status(500).send("internal server error")
     }
 }
 
@@ -1419,8 +1513,8 @@ exports.addWalletMoneySuccessful = async (req, res) => {
             return res.send("adding Failed");
         }
     } catch (err) {
+        res.status(500).redirect('/500')
         console.error("add razorpay err", err);
-        res.status(500).send("Internal Server Error");
     }
 }
 
