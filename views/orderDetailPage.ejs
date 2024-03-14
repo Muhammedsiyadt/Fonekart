@@ -15,12 +15,112 @@
         .product-image {
             max-width: 100px;
         }
+
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.559);
+            /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            color: #979595;
+            width: 60%;
+        }
+
+        /* Close button */
+        .close-button {
+            background-color: #ffffff;
+            /* Red */
+            width: fit-content;
+            justify-content: right;
+
+
+            border: none;
+            color: rgb(0, 0, 0);
+            /* padding: ; */
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .close-button:hover {
+            background-color: #c2c2c289;
+            /* Darker red */
+        }
+
+        .kj {
+            padding-left: 20px;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.648);
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            margin: 15% auto;
+            color: #0a0a0a;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 35%;
+        }
+
+        .close {
+            color: #030303;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: rgb(249, 0, 0);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .plc {
+            border-color: rgba(0, 255, 30, 0.532);
+            background-color: rgb(12, 145, 0);
+            border-radius: 5px;
+            color: white;
+        }
     </style>
 </head>
 
 <body>
-     <!-- Navbar -->
-     <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top p-3">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top p-3">
         <a style="color: #0F0;" class="navbar-brand" href=""><b><em>Fonekart</em></b></a>
     </nav>
     <div class="container mb-5" style="margin-top: 90px; border: rgba(0, 0, 0, 0.632) solid 1px; ">
@@ -28,58 +128,190 @@
             <div class="col-md-8 mx-auto ">
                 <h2 class="text-center text-danger">Order Details</h2>
                 <div class="order-info ">
-                    Id :<span>
-                        <%= order._id %>
+
+                    <strong>Id :</strong><span>
+                        <%= order._id %> <br>
+                            <p><strong>Order Date:</strong>
+                                <%= new Date(order.orderDate).toLocaleDateString() %>
+                            </p> <strong>Payment:</strong>
+                            <%= order.paymentMethod %>
                     </span>
-                </div>
-                <div class="order-info">
-                    <h4 class="text-primary">Product</h4>
-                    <div class="row">
-                      <div class="col-md-3">
-                        <img src="<%= order.orderItems[0].Image[0] %>" alt="Product Image" class="img-fluid product-image">
-                      </div>
-                      <div class="col-md-9">
-                        <p><strong>Product Name:</strong> <%= order.orderItems[0].Pname %></p>
-                        <p><strong>Quantity:</strong> <%= order.orderItems[0].quantity %></p>
-                        <p><strong>Price:</strong> <%=order.orderItems[0].quantity * order.orderItems[0].price %></p>
-                        <p><strong>Status:</strong> <%= order.orderItems[0].orderStatus %></p>
-                      </div>
-                    </div>
-                  </div>
-                <div class="order-info">
-                    <h4 class="text-primary">Delivery Address</h4>
-                    <p><strong>Name:</strong>
-                        <%= order.address.name %>
-                    </p>
-                    <p><strong>Address:</strong>
-                        <%= order.address.address %>
-                    </p>
-                    <p><strong>Phone:</strong>
-                        <%= order.address.phone %>
-                    </p>
-                    <p><strong>Postal Code:</strong>
-                        <%= order.address.pin %>
-                    </p>
-                </div>
-                <div class="order-info">
-                    <h4 class="text-primary">Payment Method</h4>
-                    <p><strong>Method:</strong>
-                        <%= order.paymentMethod %>
-                    </p>
-                </div>
-                <div class="order-info">
-                    <h4 class="text-primary">Order Information</h4>
-                    <p><strong>Order Date:</strong>
-                        <%= new Date(order.orderDate).toLocaleDateString() %>
-                    </p>
-                    <p><strong>Total Price:</strong>
-                        <%=order.orderItems[0].quantity * order.orderItems[0].price %>
-                    </p>
+                    <% if(order.orderItems[0].orderStatus==='pending' ){ %>
+                        <p><strong>Status:</strong>
+                            <%= order.orderItems[0].orderStatus %>
+                        </p>
+                        <p class="text-danger">Payment failed</p>
+                        <button class="plc" id="placeOrderBtn">Retry Payment</button>
+
+                        <div id="paymentModal" class="modal">
+                            <div class="modal-content">
+                                <span class="close">&times;</span><br>
+                                <h2>Select Payment Method</h2><br>
+                                <form id="paymentForm">
+                                    <% if(order.totalPrice> 1000 ){ %>
+                                        <p class="text-danger">
+                                            COD not available for orders over ₹1000
+                                        </p>
+                                        <% }else{ %>
+                                            <input type="radio" id="cod" name="paymentMethod" value="cod">
+                                            <label for="cod">Cash on Delivery</label><br><br>
+                                            <% } %>
+
+                                                <input type="radio" id="online" name="paymentMethod" value="online">
+                                                <label for="online">Online Payment</label><br><br>
+
+                                                <!-- <input type="radio" id="wallet" name="paymentMethod" value="wallet">
+                        <label for="wallet">Wallet</label><br><br> -->
+                                                <button class="plc" type="button"
+                                                    onclick="confirmPayment('<%= order._id %>')">Confirm
+                                                    Payment</button>
+                                </form>
+                            </div>
+                        </div>
+
+
+                        <% }else{ %>
+                            <p><strong>Status:</strong>
+                                <%= order.orderItems[0].orderStatus %>
+                            </p>
+                            <% } %>
+                                <br>
+                                <br>
+
+                                <span>
+                                    <strong>Address:</strong>
+                                    <%= order.address.name %>, <%= order.address.address %>, <%= order.address.phone %>,
+                                                <%= order.address.pin %>,
+                                </span>
+
                 </div>
 
+                <div class="order-info">
+
+                    <div class="row">
+                        <% for(i=0;i<order.orderItems.length;i++){ %>
+                            <div class="col-md-3">
+                                <img src="<%= order.orderItems[i].Image[0] %>" alt="Product Image"
+                                    class="img-fluid product-image">
+                            </div>
+                            <div class="col-md-9">
+                                <p><strong>Product Name:</strong>
+                                    <%= order.orderItems[i].Pname %>
+                                </p>
+                                <p><strong>Quantity:</strong>
+                                    <%= order.orderItems[i].quantity %>
+                                </p>
+                                <p><strong>Price:</strong>
+                                    <%=order.orderItems[i].quantity * order.orderItems[0].price %>
+                                </p>
+
+                            </div>
+                            <% } %>
+                    </div>
+                </div>
+
+                <p style="text-decoration: underline;"><strong>Total Price:</strong>
+                    <%=order.totalAmount %>
+                </p>
             </div>
         </div>
     </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+        function confirmPayment(orderId) {
+            var paymentMethod = $('input[name="paymentMethod"]:checked').val();
+            console.log(paymentMethod);
+
+            // Validate payment method selection
+            if (!paymentMethod) {
+                $('#errorMessage').text('Please select a payment method.');
+                return;
+            }
+
+            // Make AJAX request
+            $.ajax({
+                url: '/retryPayment',
+                method: 'POST',
+                data: {
+                    paymentMethod: paymentMethod,
+                    orderId: orderId
+                },
+                success: function (res) {
+                    if (res.paymentMethod === "cod" || res.paymentMethod === "wallet") {
+                        if (res.success === true) {
+                            window.location.href = res.url;
+                        }
+                    } else if (res.paymentMethod === 'onlinePayment') {
+                        if (res.success === true) {
+                            const options = {
+                                key: res.key_id,
+                                amount: res.order.amount,
+                                currency: "INR",
+                                name: "Fonekart",
+                                description: "Test Transaction",
+                                order_id: res.order.id,
+                                callback_url: "/ordersuccefull",
+                                prefill: {
+                                    name: "Siyad kundala",
+                                    email: "siyadkundala10@gmail.com",
+                                    contact: "7558001145"
+                                },
+                                notes: {
+                                    address: "Razorpay Corporate Office"
+                                },
+                                theme: {
+                                    color: "#3399cc"
+                                }
+                            };
+
+                            const rzp1 = new Razorpay(options);
+                            rzp1.open();
+
+                        } else {
+
+                            console.error("Order creation failed:", res.error);
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+
+                    console.error(error);
+                }
+            });
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+
+            var modal = document.getElementById("paymentModal");
+
+
+            var btn = document.getElementById("placeOrderBtn");
+
+            var span = document.getElementsByClassName("close")[0];
+
+            btn.onclick = function () {
+                modal.style.display = "block";
+            }
+
+            span.onclick = function () {
+                modal.style.display = "none";
+            }
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+
+        });
+
+
+    </script>
 </body>
 
 </html>

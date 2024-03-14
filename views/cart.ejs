@@ -43,7 +43,7 @@
         }
 
         .product-info {
-            margin-left: 20px;
+            margin-left: 10px;
         }
 
         .product-info h4 {
@@ -338,6 +338,71 @@
                 stroke-dashoffset: -440;
             }
         }
+
+        .value-minus,
+        .value-plus {
+            height: 30px;
+            line-height: 24px;
+            width: 30px;
+            margin-right: 3px;
+            display: inline-block;
+            cursor: pointer;
+            position: relative;
+            font-size: 18px;
+            color: #fff;
+            text-align: center;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            border: 1px solid #b2b2b2;
+            vertical-align: bottom;
+            
+        }
+
+        .quantity-select .entry.value-minus:before,
+        .quantity-select .entry.value-plus:before {
+            content: "";
+            width: 13px;
+            height: 2px;
+            background: #000;
+            left: 50%;
+            margin-left: -7px;
+            top: 50%;
+            margin-top: -0.5px;
+            position: absolute;
+        }
+
+        .quantity-select .entry.value-plus:after {
+            content: "";
+            height: 13px;
+            width: 2px;
+            background: #000;
+            left: 50%;
+            margin-left: -1.4px;
+            top: 50%;
+            margin-top: -6.2px;
+            position: absolute;
+        }
+
+        .value {
+            cursor: default;
+            width: 20px;
+            height: 20px;
+            padding: 8px 0px;
+            color: #000000;
+            line-height: 24px;
+            text-align: center;
+            display: inline-block;
+            margin-right: 3px;
+        }
+
+        .quantity-select .entry.value-minus:hover,
+        .quantity-select .entry.value-plus:hover {
+            background: #E5E5E5;
+        }
+
+        .quantity-select .entry.value-minus {
+            margin-left: 0;
+        }
     </style>
 </head>
 
@@ -408,7 +473,7 @@
                 <div class="row ">
                     <div class="col-md-8">
                         <% if(cartData.length!==0){ %>
-                        <div class="container cart-container ">
+                            <div class="container cart-container ">
                                 <% if(typeof cartData !=='undefined' ){ %>
                                     <h3 style="color: rgb(0, 159, 0);">Your shopping cart</h3>
                                     <% for(let i=0 ; i<cartData.length ; i++){ %>
@@ -445,35 +510,31 @@
 
                                                 </div>
                                             </div>
-                                            <div class="product-quantity quantity"
-                                                data-url="/api/updateCartQuantity?pid=<%=cartData[i].productDetails[0]?._id %>">
-                                                <input type="number" name="num" id="quantity"
-                                                    style="width: 75px; border-radius: 0; margin-right: 10px;"
-                                                    value="<%= cartData[i].cartItems.quantity %>"
-                                                    class="form-control quantity-input"
-                                                    data-max-quantity="<%= cartData[i].productDetails[0]?.quantity %>">
-
-                                                <div class="modal fade" id="outOfStockModal" tabindex="-1"
-                                                    aria-labelledby="outOfStockModalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title text-danger"
-                                                                    id="outOfStockModalLabel">Out of Stock</h5>
-                                                                <button type="button" class="btn-close"
-                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <!-- data-url="/api/updateCartQuantity?pid=<%#= cartData[i].productDetails[0]?._id %>" -->
+                                            <div class="product-quantity quantity ">
+                                                <td class="invert ">
+                                                    <div class="quantity">
+                                                        <div class="quantity-select">
+                                                            <div class="entry value-minus"
+                                                                data-id="<%= cartData[i].productDetails[0]?._id %>">
+                                                                &nbsp;
                                                             </div>
-                                                            <div class="modal-body">
-                                                                <p id="outOfStockMessage"> Please enter a valid
-                                                                    quantity.</p>
+                                                            <div class="entry value">
+                                                                <span >
+                                                                    <%= cartData[i].cartItems?.quantity %>
+                                                                </span>
                                                             </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary"
-                                                                    data-bs-dismiss="modal">Close</button>
+                                                            <input type="hidden"
+                                                                value="<%= cartData[i].productDetails[0]?.quantity %>">
+                                                            <div class="entry value-plus active"
+                                                                data-id="<%= cartData[i].productDetails[0]?._id %>">
+                                                                &nbsp;
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </td>
+
+
                                                 <a href="#" class="delete-cart-item-btn"
                                                     data-product-id="<%= cartData[i].productDetails[0]?._id %>">
                                                     <button style="border-radius: 0;" class="buy-now-btn"><i
@@ -485,7 +546,7 @@
                                         <% } %>
                                             <% } %>
                                                 <% } %>
-                        </div>
+                            </div>
                     </div>
 
                     <!-- Checkout Box -->
@@ -513,7 +574,8 @@
                                         <p><b>Shipping - </b><span style="margin-left: 50px;"><b
                                                     style="color: green;">Free</b></span></p>
                                         <p><b>Total - </b><span style="margin-left: 80px;"><b style="color: crimson;">₹
-                                                    <%= (Subtotal - Discount).toFixed(2) %></b></span></p>
+                                                    <%= (Subtotal - Discount).toFixed(2) %>
+                                                </b></span></p>
 
                                         <!-- Checkout Button -->
                                         <a href="/cart/checkout"><button class="buy-now-btn">Proceed to
@@ -564,52 +626,60 @@
 
 
             <script>
-
-
                 $(document).ready(function () {
-                    var quantitySelect = document.querySelectorAll("#quantity");
+                    $('.value-plus').on('click', function () {
+                        var $container = $(this).closest('.quantity-select');
+                        var $quantityDisplay = $container.find('.value');
+                        var currentVal = parseInt($quantityDisplay.text(), 10);
+                        var newVal = currentVal + 1;
+                        var maxVal = parseInt($container.find('input[type="hidden"]').val(), 10);
 
-                    quantitySelect.forEach((qtyselected, index) => {
-                        qtyselected.addEventListener('change', function (e) {
-                            var availableQuantity = parseInt(quantitySelect[index].getAttribute('data-max-quantity'));
-                            var enteredQuantity = parseInt(quantitySelect[index].value);
+                        if (newVal <= maxVal) {
+                            $quantityDisplay.text(newVal);
+                            var productId = $(this).attr('data-id');
+                            updateCartQuantity(productId, newVal);
+                        } else {
+                            $('#quantityErrorMessage').text('Out of Stock');
+                            $('#quantityErrorModal').modal('show');
+                        }
+                    });
 
-                            if (enteredQuantity > availableQuantity) {
+                    $('.value-minus').on('click', function () {
+                        var $container = $(this).closest('.quantity-select');
+                        var $quantityDisplay = $container.find('.value');
+                        var currentVal = parseInt($quantityDisplay.text(), 10);
+                        var newVal = currentVal - 1;
 
-                                $('#outOfStockModal').modal('show');
-                                quantitySelect[index].value = availableQuantity;
-                            } else if (enteredQuantity < 1) {
+                        if (newVal >= 1) {
+                            $quantityDisplay.text(newVal);
+                            var productId = $(this).attr('data-id');
+                            updateCartQuantity(productId, newVal);
+                        } else {
+                            $('#quantityErrorMessage').text('Quantity cannot be less than 1.');
+                            $('#quantityErrorModal').modal('show');
+                        }
+                    });
 
-                                $('#outOfStockModal').modal('show');
-                                quantitySelect[index].value = 1;
-                            } else {
-
-                                var url = document.querySelectorAll('.quantity')[index].getAttribute('data-url');
-                                var quantity = enteredQuantity;
-
-                                $.ajax({
-                                    url: `${url}&qty=${quantity}`,
-                                    method: "Post",
-                                    success: function (data) {
-                                        if (data.message == "outOfStock") {
-
-                                            $('#outOfStockModal').modal('show');
-                                            quantitySelect[index].value = availableQuantity;
-                                        } else {
-                                            location.reload();
-                                            console.log("Data:", data);
-                                        }
-                                    },
-                                    error: function (error) {
-                                        console.error("Error:", error);
-                                    },
-                                });
+                    function updateCartQuantity(productId, quantityUpdate) {
+                        $.ajax({
+                            url: `/api/updateCartQuantity?pid=${productId}&qty=${quantityUpdate}`,
+                            type: 'POST',
+                            success: function (response) {
+                                // Reload only the specific sections
+                                $('.checkout-box').load(location.href + ' .checkout-box>*');
+                                console.log('Quantity updated successfully');
+                            },
+                            error: function (error) {
+                                console.error('Error updating quantity:', error);
+                                $('#quantityErrorMessage').text('Quantity error: ' + error.responseJSON.message);
+                                $('#quantityErrorModal').modal('show');
                             }
                         });
-                    });
+                    }
                 });
-
             </script>
+
+
 
             <script>
 

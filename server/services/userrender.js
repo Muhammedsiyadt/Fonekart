@@ -21,12 +21,12 @@ exports.slashpage = async (req, res) => {
     } catch (err) {
         res.status(500).redirect('/500')
         console.error(err);
-        
+
     }
 }
 
 // 500 page 
-exports.errorPage = (req,res) => {
+exports.errorPage = (req, res) => {
     res.render('500page')
 }
 
@@ -147,7 +147,7 @@ exports.singleProduct = async (req, res) => {
     } catch (error) {
         res.status(500).redirect('/500')
         console.log(error);
-        
+
     }
 }
 
@@ -163,7 +163,7 @@ exports.singleProduct = async (req, res) => {
 
 exports.categoryProducts = async (req, res) => {
     try {
-        
+
 
         let products;
         const category = await categorydb.find({ delete: false });
@@ -242,7 +242,7 @@ exports.categoryProducts = async (req, res) => {
     } catch (error) {
         res.status(500).redirect('/500')
         console.error(error);
-       
+
     }
 };
 
@@ -370,6 +370,11 @@ exports.userProfile = async (req, res) => {
 // Update profile
 exports.updateProfile = async (req, res) => {
 
+    const userId = req.session.userId
+    if (typeof userId == 'undefined') {
+        return res.redirect('/login')
+    }
+
     try {
         const data = await userdb.findOne({ _id: req.session.email })
         res.render('updateProfile', { userData: data })
@@ -381,6 +386,11 @@ exports.updateProfile = async (req, res) => {
 
 // Old Password
 exports.changePassword = async (req, res) => {
+
+    const userId = req.session.userId
+    if (typeof userId == 'undefined') {
+        return res.redirect('/login')
+    }
     try {
         res.render('changePassword', { message: req.session.message }, (err, html) => {
             if (err) {
@@ -401,6 +411,10 @@ exports.changePassword = async (req, res) => {
 
 // change password from profile After old password page 
 exports.changePasswordFromProfile = (req, res) => {
+    const userId = req.session.userId
+    if (typeof userId == 'undefined') {
+        return res.redirect('/login')
+    }
     res.render('changePasswordFromProfile')
 }
 
@@ -408,6 +422,11 @@ exports.changePasswordFromProfile = (req, res) => {
 // PROFILE / ADDRESS MANAGEMENT ======================================================== //
 
 exports.address_management = async (req, res) => {
+
+    const userId = req.session.userId
+    if (typeof userId == 'undefined') {
+        return res.redirect('/login')
+    }
 
     // console.log(req.session.userId)
     try {
@@ -422,6 +441,11 @@ exports.address_management = async (req, res) => {
 
 // Add address 
 exports.add_address = (req, res) => {
+
+    const userId = req.session.userId
+    if (typeof userId == 'undefined') {
+        return res.redirect('/login')
+    }
     res.render('addAddress')
 }
 
@@ -429,6 +453,10 @@ exports.add_address = (req, res) => {
 exports.editAddress = async (req, res) => {
 
     const user_Id = req.session.userId
+
+    if (typeof user_Id == 'undefined') {
+        return res.redirect('/login')
+    }
 
     const queryid = req.query.id
 
@@ -498,7 +526,7 @@ exports.cartPage = async (req, res) => {
             }
         ]);
 
-
+        
         res.render('cart', { cartData: userCart });
 
     } catch (error) {
@@ -510,15 +538,20 @@ exports.cartPage = async (req, res) => {
 
 // Check out page 
 exports.checkout = async (req, res) => {
+
     const user_Id = req.session.userId
+    if (typeof user_Id == 'undefined') {
+        return res.redirect('/login')
+    }
+
     const queryid = req.query.id
 
-    const TotalPriceChangeUsingCoupon = req.session.afterCouponApply
+    const TotalPriceChangeUsingCoupon = req.session.afterCouponApply 
     const maxError = req.session.maxErr
     const notAvailableCoupon = req.session.notAvailable
     const success = req.session.success
     const expired = req.session.expiredCoupon
-    const address = req.session.addressErrorMessage
+    const address = req.session.addressErrorMessage 
 
     try {
 
@@ -592,10 +625,10 @@ exports.orderList = async (req, res) => {
     try {
 
         const user_Id = req.session.userId
-    if (typeof user_Id == 'undefined') {
-        return res.redirect('/login')
-    }
-        
+        if (typeof user_Id == 'undefined') {
+            return res.redirect('/login')
+        }
+
         const page = req.query.page || 1;
         const limit = 5;
 
@@ -654,8 +687,13 @@ exports.orderSuccessPage = (req, res) => {
 
 // order detail page 
 exports.orderDetailPage = async (req, res) => {
+    const userId = req.session.userId
+    if (typeof userId == 'undefined') {
+        return res.redirect('/login')
+    }
+
     const productId = req.query.id;
-    const userId = req.session.userId;
+    
 
     try {
 
@@ -666,7 +704,7 @@ exports.orderDetailPage = async (req, res) => {
     } catch (error) {
         res.status(500).redirect('/500')
         console.error("Error finding order:", error);
-       
+
     }
 }
 
@@ -752,7 +790,7 @@ exports.wallet = async (req, res) => {
     } catch (error) {
         res.status(500).redirect('/500')
         console.log(error)
-       
+
     }
 }
 

@@ -48,12 +48,20 @@ const schema = new mongoose.Schema({
         }],
         orderStatus: {
             type: String,
-            default: "ordered",
+            default: "pending",
             required: true
         }
         ,
         returnReason: {
             type: String
+        },
+        couponCode: {
+            type: String,
+            default: null
+        },
+        priceAfterCoupon: {
+            type: Number,
+            default: 0
         }
         // ,
         // cancelReason: {

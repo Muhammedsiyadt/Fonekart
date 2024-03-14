@@ -14,6 +14,7 @@
         body {
             /* background-image: url(/images/gray-scale-shot-black-watch.jpg); */
             color: #000000;
+
         }
 
 
@@ -90,7 +91,8 @@
         #cpnbtn:hover {
             border-radius: 10px;
         }
-        #placeOrderBtn:hover{
+
+        #placeOrderBtn:hover {
             background-color: #5eff00;
             color: #000000;
         }
@@ -129,10 +131,9 @@
     </nav>
 
 
-    <div class="container-fluid  "
-        style="background-color: rgb(255, 255, 255);  margin-top: 70px; border: rgba(0, 0, 0, 0.321) 3px solid;">
+    <div class="container-fluid  " style="background-color: rgb(255, 255, 255);  margin-top: 70px;">
         <dv class="row">
-            <div class="col-lg-8 col-12 " style=" margin-top: 20px;">
+            <div class="col-lg-8 col-12 " style=" margin-top: 20px; border: #000000 1px solid;">
                 <h3
                     style="font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; color: rgb(0, 0, 0);">
                     Products</h3>
@@ -176,11 +177,11 @@
 
             </div>
 
-            <div class="col-lg-4  col-12 mt-5 mb-4 ">
+            <div class="col-lg-4  col-12 mt-5  ">
                 <% let Subtotal=0 %>
                     <% if (Checkout && Checkout.length> 0) { %>
                         <div
-                            style="background-color: rgb(212, 205, 205); border-radius: 1px; border: 1px #000000 solid; padding: 10px; text-align: center; justify-content: end;">
+                            style="background-color: rgb(255, 255, 255); border-radius: 1px; border: 1px #000000 solid; padding: 10px; text-align: center; justify-content: end;">
                             <% Subtotal=Checkout.reduce((total, item)=> {
                                 return total + (item.productDetails[0].price * item.cartItems.quantity)
                                 }, 0) %>
@@ -313,23 +314,23 @@
                                             <div
                                                 style="border: solid rgb(50, 50, 49); border-radius: 6px; width: 290px; padding: 10px;">
                                                 <b>Name :</b><span>
-                                                        <%= addressSelect.address[i].name %>
-                                                    </span><br>
+                                                    <%= addressSelect.address[i].name %>
+                                                </span><br>
                                                 <b>Phone :</b><span>
-                                                        <%= addressSelect.address[i].phone %>
-                                                    </span><br>
+                                                    <%= addressSelect.address[i].phone %>
+                                                </span><br>
                                                 <b>Pin:</b><span>
-                                                        <%= addressSelect.address[i].pin %>
-                                                    </span><br>
+                                                    <%= addressSelect.address[i].pin %>
+                                                </span><br>
                                                 <b>Address :</b><span>
-                                                        <%= addressSelect.address[i].address %>
-                                                    </span><br>
+                                                    <%= addressSelect.address[i].address %>
+                                                </span><br>
                                                 <b>District :</b><span>
-                                                        <%= addressSelect.address[i].district %>
-                                                    </span><br>
+                                                    <%= addressSelect.address[i].district %>
+                                                </span><br>
                                                 <b>City :</b><span>
-                                                        <%= addressSelect.address[i].city %>
-                                                    </span>
+                                                    <%= addressSelect.address[i].city %>
+                                                </span>
                                             </div>
                                             <% } %>
                                                 <% } %>
@@ -354,9 +355,8 @@
                 <section class="banner-bottom-wthreelayouts ">
                     <div class="container">
                         <div class="inner-sec-shop px-lg-4 px-3"
-                            style="border: #0000003c 1px solid;  border-radius: 2px;">
-                            <h3 class="tittle-w3layouts my-lg-4 mt-3 "
-                                style="background: #1499ff;  ">
+                            style="border: #000000 1px solid;  border-radius: 2px;">
+                            <h3 class="tittle-w3layouts my-lg-4 mt-3 " style="background: #1499ff;  ">
                                 PAYMENT OPTIONS</h3>
 
                             <div class="responsive_tabs">
@@ -371,31 +371,38 @@
                                                         <div class="check_box_one cashon_delivery ">
                                                             <label class="anim ">
 
-                                                                <% if (Subtotal.toFixed(2) <= 1000) { %>
-                                                                    <p class="text-danger">Insufficient balance for COD</p>
-                                                                        
-                                                                <% } else { %>
-                                                                    <input type="radio" class="radio" name="paymentMethod" value="cod" id="cod">
-                                                                    <label for="cod">COD</label>
-                                                                    <br>
-                                                                <% } %>
-                                                                   
+                                                                <% if (Subtotal.toFixed(2) <=1000) { %>
+                                                                    <p class="text-danger">Insufficient balance for COD
+                                                                    </p>
 
-                                                                <input type="radio" class="radio" name="paymentMethod"
-                                                                    value="onlinePayment" id="online">
-                                                                <label for="online">ONLINE PAYMANT</label>
-                                                                <br>
-
-                                                                <% if (walletInfo?.balance>= Subtotal.toFixed(2)) { %>
-                                                                    <input type="radio" class="radio"
-                                                                        name="paymentMethod" value="wallet" id="cod">
-                                                                    <label for="cod">WALLET</label>
                                                                     <% } else { %>
-                                                                        <p class="text-danger">Insufficient balance in
-                                                                            wallet</p>
+                                                                        <input type="radio" class="radio"
+                                                                            name="paymentMethod" value="cod" id="cod">
+                                                                        <label for="cod">COD</label>
+                                                                        <br>
                                                                         <% } %>
 
-                                                                            <p id="errorMessage" style="color: red;"></p>
+
+                                                                            <input type="radio" class="radio"
+                                                                                name="paymentMethod"
+                                                                                value="onlinePayment" id="online">
+                                                                            <label for="online">ONLINE PAYMANT</label>
+                                                                            <br>
+
+                                                                            <% if (walletInfo?.balance>=
+                                                                                Subtotal.toFixed(2)) { %>
+                                                                                <input type="radio" class="radio"
+                                                                                    name="paymentMethod" value="wallet"
+                                                                                    id="cod">
+                                                                                <label for="cod">WALLET</label>
+                                                                                <% } else { %>
+                                                                                    <p class="text-danger">Insufficient
+                                                                                        balance in
+                                                                                        wallet</p>
+                                                                                    <% } %>
+
+                                                                                        <p id="errorMessage"
+                                                                                            style="color: red;"></p>
 
                                                             </label>
 
@@ -405,8 +412,7 @@
                                             </div>
                                             <div class="text-center mb-3">
                                                 <input type="text" style="display: none;" name="totalAmount" value="">
-                                                <button   type="button" id="placeOrderBtn"
-                                                    class="btn btn-info ">
+                                                <button type="button" id="placeOrderBtn" class="btn btn-info ">
                                                     ORDER</button>
 
                                             </div>

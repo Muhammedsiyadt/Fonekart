@@ -49,7 +49,7 @@ exports.home = async (req, res) => {
         { "$group": { _id: "$orderItems.productId", productName: { $first: '$orderItems.Pname' }, totalQuantitySold: { "$sum": "$orderItems.quantity" } } },
         { $project: { _id: 0, productName: 1, totalQuantitySold: 1 } },
         { $sort: { totalQuantitySold: -1 } },
-        { $limit: 10 }
+        { $limit: 3 }
     ])
 
     // console.log(topProducts);
@@ -58,7 +58,7 @@ exports.home = async (req, res) => {
         { $group: { _id: '$orderItems.category', totalQuantitySold: { $sum: '$orderItems.quantity' } } },
         { $project: { _id: 0, _id: 1, totalQuantitySold: 1 } },
         { $sort: { totalQuantitySold: -1 } },
-        { $limit: 10 }
+        { $limit: 3 }
     ])
     // console.log(topCategory);
 

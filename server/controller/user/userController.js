@@ -28,7 +28,7 @@ const otpGenerator = () => {
 };
 
 // send mail
-const sendOtpMail = async (req, res) => {
+const sendOtpMail = async (req, res ) => {
 
     const otp = otpGenerator()
     console.log(otp)
@@ -39,14 +39,16 @@ const sendOtpMail = async (req, res) => {
             user: process.env.AUTH_EMAIL,
             pass: process.env.AUTH_PASS,
         }
+        
     });
-
+// console.log(process.env.AUTH_EMAIL,process.env.AUTH_PASS);
     const MailGenerator = new Mailgen({
         theme: 'default',
         product: {
             name: 'Fonkart',
             link: 'https://mailgen.js/',
-            logo: 'Fonkart',
+            logo: 'Fonekart',
+            
         },
     });
 
@@ -70,7 +72,7 @@ const sendOtpMail = async (req, res) => {
     const message = {
         from: process.env.AUTH_EMAIL,
         to: req.session.userEmail,
-        subject: 'Fonekart',
+        subject: "Fonekart - OTP Verification",
         html: mail,
     }
 
@@ -86,16 +88,138 @@ const sendOtpMail = async (req, res) => {
         res.status(200).redirect('/otppage');
         await transporter.sendMail(message);
     } catch (err) {
-        res.status(500).redirect('/500')
+        
+        console.log('siyaaaaaaaaaaaaaaaa');
         console.log(err);
+        res.status(500).redirect('/500');
+        
     }
 }
 
+// Resend otp 
+
+// const ResendotpGenrator = () => {
+//     return `${Math.floor(1000 + Math.random() * 9000)}`;
+// };
+
+// exports.resendOtp = async (res, req) => {
+//     const otp = ResendotpGenrator()
+//     console.log(otp)
+
+//     const transporter = nodemailer.createTransport({
+//         service: 'gmail',
+//         auth: {
+//             user: process.env.AUTH_EMAIL,
+//             pass: process.env.AUTH_PASS,
+//         }
+//     });
+
+//     const MailGenerator = new Mailgen({
+//         theme: 'default',
+//         product: {
+//             name: 'Fonkart',
+//             link: 'https://mailgen.js/',
+//             logo: 'Fonkart',
+//         },
+//     });
+
+//     const response = {
+//         body: {
+//             name: req.session.userEmail,
+//             intro: 'Your OTP for Fonekart verification is:',
+//             table: {
+//                 data: [
+//                     {
+//                         otp: otp,
+//                     },
+//                 ],
+//             },
+//             outro: '✅',
+//         },
+//     };
+
+//     const mail = MailGenerator.generate(response)
+
+//     const message = {
+//         from: process.env.AUTH_EMAIL,
+//         to: req.session.userEmail,
+//         subject: 'Fonekart',
+//         html: mail,
+//     }
+
+//     try {
+//         const newOtp = new Otpdb({
+//             email: req.session.userEmail,
+//             otp: otp,
+//             createdAt: Date.now(),
+//             expiresAt: Date.now() + 60000,
+//         });
+//         const data = await newOtp.save();
+//         req.session.otpId = data._id;
+//         res.status(200).redirect('/login');
+//         await transporter.sendMail(message);
+//     } catch (err) {
+//         res.status(500).redirect('/500')
+//         console.log(err);
+//     }
+// }
+
 
 // Register // 
+// exports.register = async (req, res) => {
+//     try {
+//         req.session.userData = req.body;
+
+//         const userData = await Userdb.findOne({ email: req.body.email });
+
+//         if (userData) {
+//             req.session.message = 'Email already taken, Please enter a different email';
+
+//             if (req.query.referralCode) {
+//                 return res.redirect(`/register?referralCode=${req.query.referralCode}`);
+//             }
+
+//             return res.redirect('/register');
+//         }
+
+//         // let referralCode = req.query.referralCode;
+
+//         // req.session.referralCode = referralCode;
+
+//         // if (referralCode) {
+//             // const userReferral = await Userdb.findOne({ referralCode: referralCode });
+
+//             // if (!userReferral) {
+//             //     return res.redirect("/register");
+//             // }
+
+//             // const referral = await refferaldb.findOne({ expiredate: { $gte: Date.now() } });
+
+//             // if (!referral) {
+//             //     return res.redirect("/register");
+//             // }
+
+//             req.session.user = req.body.Email;
+
+//             await sendOtpMail(req, res);
+
+//             return res.redirect("/register");
+//         // }
+
+//         req.session.userEmail = req.body.email;
+//         // console.log(req.session.userEmail);
+//         req.session.pass = req.body.password;
+
+//         await sendOtpMail(req, res);
+//     } catch (error) {
+//         res.status(500).redirect('/500')
+//         res.send(error);
+//     }
+// };
 exports.register = async (req, res) => {
     try {
         req.session.userData = req.body;
+        req.session.userEmail = req.body.email
 
         const userData = await Userdb.findOne({ email: req.body.email });
 
@@ -109,92 +233,33 @@ exports.register = async (req, res) => {
             return res.redirect('/register');
         }
 
-        let referralCode = req.query.referralCode;
-
-        req.session.referralCode = referralCode;
-
-        if (referralCode) {
-            const userReferral = await Userdb.findOne({ referralCode: referralCode });
-
-            if (!userReferral) {
-                return res.redirect("/register");
-            }
-
-            const referral = await referraldb.findOne({ expiredate: { $gte: Date.now() } });
-
-            if (!referral) {
-                return res.redirect("/register");
-            }
-
-            req.session.user = req.body.Email;
-
-            await sendOtpMail(req, res);
-
-            return res.redirect("/register");
-        }
-
         req.session.userEmail = req.body.email;
         req.session.pass = req.body.password;
 
         await sendOtpMail(req, res);
+
+        
+        // return res.redirect("/register");
     } catch (error) {
-        res.status(500).redirect('/500')
-        res.send(error);
+        // Handle errors appropriately
+        console.error(error);
+        res.status(500).redirect('/500');
     }
 };
 
 
+
 // OTP VERIFY //
 exports.otpverify = async (req, res) => {
-    try {
-        if (!req.body) {
-            return res.status(400).send({ message: "Enter something" });
-        }
 
-        const otp = await Otpdb.findOne({ _id: req.session.otpId });
-        if (!otp) {
-            req.session.message = 'OTP Not found'
-        }
+        const otp = await Otpdb.findOne({ email: req.session.userEmail });
+        console.log(otp);
 
+        console.log('sdfghjkdfgbhn',req.body.otp === otp.otp);
         if (req.body.otp === otp.otp) {
-
             const userData = req.session.userData;
 
-
             let referralCode = req.query.refferalCode;
-            console.log('reffeeeeeeeeeeeeerrrrrrrrrrrr', referralCode);
-            if (!referralCode && req.session.referalCode) {
-                referralCode = req.session.referalCode;
-            }
-
-            if (referralCode) {
-
-                const existingUser = await Userdb.findOne({ refferalCode: referralCode })
-
-
-                const refferalAmount = await refferaldb.findOne()
-
-                console.log('amount', refferalAmount);
-
-                const dd = walletdb.findOneAndUpdate(
-                    { userId: existingUser._id }
-                )
-                console.log('wallettt', dd);
-
-                await walletdb.findOneAndUpdate(
-                    { userId: existingUser._id },
-                    {
-                        $inc: { balance: refferalAmount.referralAmount },
-                        $push: {
-                            transactions: {
-                                amount: refferalAmount.referralAmount,
-                                PaymentType: "Credit",
-                            },
-                        },
-                    }
-                );
-            }
-
 
             const user = new Userdb({
                 name: userData.name,
@@ -203,24 +268,16 @@ exports.otpverify = async (req, res) => {
                 referralCode: shortid.generate(),
             });
 
-            await user.save()
-
-            const walletData = new walletdb({
-                userId: user._id,
-            });
-
-            await walletData.save();
-
+            console.log('saveeeeeeeee',user);
+            const save = await user.save()
+            console.log('ssssssssssssssss',save);
+            req.session.authentication = true;
             res.redirect("/login")
         } else {
             req.session.otpValidation = "Your OTP is wrong";
             res.redirect("/register");
         }
-    } catch (error) {
-        res.status(500).redirect('/500')
-        console.error('Error verifying OTP:', error);
-        res.status(500).send('Internal Server Error');
-    }
+    
 }
 // exports.otpverify = async (req, res) => {
 
@@ -316,8 +373,7 @@ exports.otpverify = async (req, res) => {
 // }
 
 
-// LOGIN VERIFICATION //
-
+// LOGIN VERIFICATION //    
 
 exports.loginverification = async (req, res) => {
 
@@ -346,7 +402,7 @@ exports.loginverification = async (req, res) => {
 
 }
 
-// logout
+// logout      
 exports.logout = async (req, res) => {
     try {
 
@@ -378,7 +434,7 @@ exports.emailForResetPassword = async (req, res) => {
     } catch (error) {
         res.status(500).redirect('/500')
         console.log(error);
-        
+
     }
 }
 
@@ -612,7 +668,7 @@ exports.updateProfile = async (req, res) => {
     } catch (error) {
         res.status(500).redirect('/500')
         console.log(error);
-      
+
     }
 }
 
@@ -632,7 +688,7 @@ exports.oldPasswordChecking = async (req, res) => {
     } catch (error) {
         res.status(500).redirect('/500')
         console.log(error);
-       
+
     }
 }
 
@@ -648,7 +704,7 @@ exports.updatePasswordAfterChanged = async (req, res) => {
     } catch (error) {
         res.status(500).redirect('/500')
         console.log(error);
-        
+
     }
 }
 
@@ -691,7 +747,7 @@ exports.productAddToCartdb = async (req, res) => {
     } catch (err) {
         res.status(500).redirect('/500')
         console.error(err);
-        
+
     }
 }
 
@@ -821,13 +877,13 @@ exports.updateCartQuantity = async (req, res, next) => {
 
 exports.postingOrder = async (req, res) => {
 
-
     const userId = req.session.userId;
 
 
     try {
 
         const walletInfo = await walletdb.findOne({ userId: userId })
+
 
         const [data] = await addressdb.aggregate([
             { $match: { user_Id: new mongoose.Types.ObjectId(userId) } },
@@ -874,13 +930,20 @@ exports.postingOrder = async (req, res) => {
         let subtotal = cartProducts.reduce((total, item) => {
             return total + parseInt(item.productDetails.price * item.cartItems.quantity);
         }, 0)
+        console.log('BEFORE ', subtotal);
+        console.log(req.session.afterCouponApply);
+
 
         if (req.session.afterCouponApply) {
+            console.log('yyyyyyyeeeeeeeeeeeeeeesssssssssssss');
             subtotal = req.session.afterCouponApply
+            console.log("now total", subtotal);
         }
+        console.log('IF NOT ', subtotal);
+        console.log(req.session.afterCouponApply);
 
         const orderItems = cartProducts.map((element) => {
-            return {
+            const order = {
                 productId: element.cartItems.productId,
                 Image: element.productDetails.images[0],
                 Pname: element.productDetails.Pname,
@@ -889,8 +952,15 @@ exports.postingOrder = async (req, res) => {
                 quantity: element.cartItems.quantity,
                 color: element.productDetails.color,
                 Pmodel: element.productDetails.Pmodel,
+            };
+            if (req.session.appliedCouponCode) {
+                const totalUnitPrice = order.price * order.quantity
+                const afterDiscountPrice = Math.round(totalUnitPrice - ((totalUnitPrice * req.session.couponDiscount) / 100))
+                order.priceAfterCoupon = afterDiscountPrice
+                order.couponCode = req.session.appliedCouponCode
             }
-        })
+            return order
+        });
 
 
 
@@ -904,11 +974,16 @@ exports.postingOrder = async (req, res) => {
         const newOrder = new orderdb({
             user_id: userId,
             orderItems: orderItems,
+            totalAmount:subtotal,
             address: data,
             paymentMethod: req.body.paymentMethod === "cod" ?
                 "cod" : req.body.paymentMethod === "onlinePayment" ?
                     "onlinePayment" : "wallet" ?? "wallet"
+            
         });
+
+        //     const nr = await newOrder.save()
+        //    console.log("okkkkkkkkkkkkkkkk",nr);
 
         if (req.body.paymentMethod === "cod") {
             await newOrder.save();
@@ -1011,7 +1086,7 @@ exports.orderSuccessful = async (req, res) => {
     } catch (err) {
         res.status(500).redirect('/500')
         console.error("order razorpay err", err);
-        
+
     }
 }
 
@@ -1026,7 +1101,7 @@ exports.invoiceDownload = async (req, res) => {
     const orderId = req.query.productId;
     try {
         const order = await orderdb.findOne({ _id: orderId });
-        
+
 
         const doc = new PDFDocument();
 
@@ -1035,21 +1110,21 @@ exports.invoiceDownload = async (req, res) => {
 
         doc.pipe(res);
 
-        
+
         const invoiceNumber = generateInvoiceNumber();
 
         doc.font('Helvetica').fontSize(24).text('Fonekart', { align: 'center' }).moveDown().moveDown();
         doc.font('Helvetica-Bold').fontSize(24).text('INVOICE', { align: 'start' }).moveDown();
 
-        
+
         doc.fontSize(12).text(`Invoice Number: ${invoiceNumber}`, { align: 'start' }).moveDown();
         doc.fontSize(10).text(`Order Date: ${order.orderDate.toDateString()}`, { align: 'start' }).moveDown().moveDown();
 
-        
+
         doc.fontSize(12).text('BILLED TO :', { underline: true })
         doc.fontSize(10).text(`Name: ${order.address.name}`)
         doc.fontSize(10).text(`Address: ${order.address.address}, ${order.address.city}, ${order.address.pin}`)
-        
+
         const tableHeaders = ['Product Name', 'Quantity', 'Unit Price', 'Total Price'];
 
 
@@ -1057,16 +1132,16 @@ exports.invoiceDownload = async (req, res) => {
         const startY = doc.y + 15;
         const cellWidth = 120;
 
-      
+
         const headerHeight = 30;
         doc.rect(startX, startY, cellWidth * tableHeaders.length, headerHeight).fillAndStroke('#CCCCCC', '#000000');
         doc.font('Helvetica-Bold').fontSize(10).fillColor('#000000');
         tableHeaders.forEach((header, index) => {
             doc.text(header, startX + (cellWidth * index) + (cellWidth / 2), startY + (headerHeight / 2), { width: cellWidth, align: 'start', valign: 'start' });
         });
-        
 
-        
+
+
         const rowHeight = 50;
         let yPos = startY + headerHeight;
         order.orderItems.forEach((item, rowIndex) => {
@@ -1087,7 +1162,7 @@ exports.invoiceDownload = async (req, res) => {
     } catch (error) {
         res.status(500).redirect('/500')
         console.error("Error generating invoice:", error);
-       
+
     }
 }
 
@@ -1142,15 +1217,19 @@ exports.applyCoupon = async (req, res) => {
 
 
 
-            // Check if the total amount before discount exceeds the maximum price allowed by the coupon
+
             if (total >= coupon.MaxPrice) {
 
-                // Apply discount
-                const discountedTotal = Math.round(total - (total * (coupon.Discount / 100)))
+                req.session.appliedCouponCode = coupon.Code
+                const discountedTotal = parseInt(total - (total * (coupon.Discount / 100)))
                 req.session.success = 'Coupon applied'
                 req.session.afterCouponApply = discountedTotal;
-                console.log(discountedTotal);
-                res.redirect('/cart/checkout');
+
+                req.session.couponDiscount = coupon.Discount
+
+                res.redirect('/cart/checkout')
+                req.session.afterCouponApply = discountedTotal;
+
 
             } else {
 
@@ -1222,7 +1301,7 @@ exports.cancelOrder = async (req, res) => {
     } catch (error) {
         res.status(500).redirect('/500')
         console.error(error);
-        
+
     }
 };
 
@@ -1271,7 +1350,7 @@ exports.return = async (req, res) => {
     } catch (error) {
         res.status(500).redirect('/500')
         console.error("Error returning product:", error);
-       
+
     }
 }
 
@@ -1311,6 +1390,99 @@ exports.return = async (req, res) => {
 //     }
 // };
 
+// Retry Payment
+exports.retryPayment = async(req,res)=>{
+    const queryPaymentMethod  = req.body.paymentMethod;
+    const queryOrderId = req.body.orderId;
+    
+    try {
+        if (queryPaymentMethod === "cod") {
+            console.log("yes enetring");
+            const orderFind = await orderdb.findById(queryOrderId)
+            function updateOrderStatus(originalOrder, newStatus) {
+                originalOrder.orderItems.forEach((item) => {
+                  item.orderStatus = newStatus;
+                });
+              }
+
+              updateOrderStatus(orderFind, "ordered") 
+              const ko = await orderFind.save();
+
+
+            console.log("dfsfsfsfsdfssf",ko);
+            await cartdb.updateOne(
+                { userId: req.session.email },
+                { $set: { products: [] } }
+            );
+            req.session.orderSuccessPage = true;
+            return res.status(200).json({
+                success: true,
+                url: "/orderSuccessPage",
+                paymentMethod: "cod",
+            });;
+        }
+
+
+        if (req.body.paymentMethod === "wallet") {
+            if (walletInfo && walletInfo.balance >= subtotal) {
+                await newOrder.save();
+                req.session.newOrder = newOrder;
+                delete req.session.totalPrice;
+                await cartdb.updateOne(
+                    { userId: req.session.email },
+                    { $set: { products: [] } }
+                );
+                await walletdb.updateOne(
+                    { userId: req.session.email },
+                    { $inc: { balance: -(subtotal) }, 
+                    $push: {transactions: {amount: -(subtotal)} } },
+                    { upsert: true }
+                );
+                req.session.orderSucessPage = true;
+                res.json({
+                    success: true,
+                    paymentMethod: "wallet",
+                    url: "/orderPlaced",
+                });
+            }
+        }
+
+
+        if (queryPaymentMethod === "online") {
+            console.log("yes enetring");
+            const orderFind = await orderdb.findById(queryOrderId)
+            const razorpayInstance = new Razorpay({
+                key_id: process.env.key_id || "rzp_test_inNDLEzjcNEB4V",
+                key_secret: process.env.key_secret || "zLiACER7KwWbTAVg8XcylyjE"
+            })
+            const amount = orderFind.totalAmount * 100;
+
+            const options = {
+                amount,
+                currency: "INR",
+                receipt: "" + orderFind._id,
+            };
+
+            const order = await razorpayInstance.orders.create(options);
+
+            // req.session.newOrder = newOrder;
+            console.log(order);
+
+
+            return res.status(200).json({
+                success: true,
+                msg: 'order created',
+                key_id: process.env.key_id || "rzp_test_inNDLEzjcNEB4V",
+                order: order,
+                paymentMethod: "onlinePayment"
+            });
+        }
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).redirect('/500');
+    }
+}
 
 
 
@@ -1353,7 +1525,7 @@ exports.homeProductToWishlist = async (req, res) => {
     } catch (err) {
         res.status(500).redirect('/500')
         console.error(err);
-        
+
     }
 }
 
@@ -1396,7 +1568,7 @@ exports.addToWishlistFromSingleProduct = async (req, res) => {
     } catch (err) {
         res.status(500).redirect('/500')
         console.error(err);
-        
+
     }
 }
 

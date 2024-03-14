@@ -64,3 +64,21 @@ exports.validateDateFormat = (req, res, next) => {
 
     next();
 };
+
+// admin middleware
+exports.isAdminAuth = (req, res, next) => {
+    if(req.session.isAdminAuth){
+        next();
+    }else{
+        res.status(401).redirect('/adminlogin');
+    }
+}
+
+// user 
+exports.isUserAuth = (req, res, next) => {
+    if(req.session.authentication){
+        next();
+    }else{
+        res.status(401).redirect('/home');
+    }
+}

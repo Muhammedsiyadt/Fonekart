@@ -22,7 +22,7 @@
 		<h1 style="margin-left: 45px; margin-top: 20px; font-size: 45px;">Fonekart</h1>
 		<ul class="side-menu top">
 			<li class="active">
-				<a href="#">
+				<a href="/adminhome">
 					<i class='bx bxs-dashboard'></i>
 					<span class="text">Dashboard</span>
 				</a>
@@ -72,7 +72,7 @@
 		</ul>
 		<ul class="side-menu">
 			<li>
-				<a href="/adminlogin" class="logout">
+				<a href="/adminLogout" class="logout">
 					<i class='bx bxs-log-out-circle'></i>
 					<span class="text">Logout</span>
 				</a>
@@ -87,28 +87,12 @@
 
 	<section id="content">
 		<main>
-			<div class="head-title">
-				<div class="left">
-					<h1>Dashboard</h1>
-					<ul class="breadcrumb">
-						<li>
-							<a href="#">Dashboard</a>
-						</li>
-						<li><i class='bx bx-chevron-right'></i></li>
-						<li>
-							<a class="active" href="/adminhome">Home</a>
-						</li>
-					</ul>
-				</div>
+		
 
-			</div>
-
-			<div
-				style="background-color: rgba(255, 255, 255, 0.505); border-radius: 10px; justify-content: center; align-items: center; margin-top: 20px; padding: 10px;">
-
-				<button class="download-button" style="margin-left: 450px;" onclick="openModal()">
-					<div class="docs" style="width: 190px;"><svg class="css-i6dzq1" stroke-linejoin="round"
-							stroke-linecap="round" fill="none" stroke-width="2" stroke="currentColor" height="20"
+			<div style="margin-top: 10px;">
+				<button class="download-button" style="" onclick="openModal()">
+					<div class="docs" ><svg class="css-i6dzq1" stroke-linejoin="round"
+							stroke-linecap="round" fill="none" stroke-width="2" stroke="currentColor" height="15"
 							width="20" viewBox="0 0 24 24">
 							<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
 							<polyline points="14 2 14 8 20 8"></polyline>
@@ -172,9 +156,66 @@
 
 
 		</main>
+
+		<div style="margin-bottom: 10px; background-color: rgb(255, 255, 255); padding: 10px; margin-left: 20px; margin-right: 20px; border: rgba(0, 0, 0, 0.112) 3px solid; border-radius: 20px;">
+			<b><h2 style="text-align: center;">TOP SELLING PRODUCTS</h2></b>
+			<br>
+			<table style="width: 100%; border-collapse: collapse;">
+				<thead>
+					<tr>
+						<th style="border: 1px solid #434343; padding: 8px; background-color: #1818181a; text-align: left;">Product Name</th>
+						<th style="border: 1px solid #434343; padding: 8px; background-color: #1818181a; text-align: left;">Quantity Sold</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% if (topProducts.length !== 0) { %>
+						<% for (let i = 0; i < topProducts.length; i++) { %>
+					<tr>
+						<td style="border: 1px solid rgb(0, 0, 0); padding: 8px; text-align: left;"><%= topProducts[i].productName %></td>
+						<td style="border: 1px solid #000000; padding: 8px; text-align: left;"><%= topProducts[i].totalQuantitySold %></td>
+					</tr>
+					<% } %>
+            <% } %>
+				</tbody>
+			</table>
+		</div>
 		<!-- MAIN -->
+		<div style="margin-bottom: 10px; background-color: rgb(255, 255, 255); padding: 10px; margin-left: 20px; margin-right: 20px; border: rgba(0, 0, 0, 0.196) 3px solid; border-radius: 20px; ">
+			<b><h2 style="text-align: center;">TOP SELLING CATEGORY</h2></b>
+			<br>
+			<table style="width: 100%; border-collapse: collapse;">
+				<thead>
+					<tr >
+						<th style="border: 1px solid #434343; padding: 8px; background-color: #1818181a; text-align: left;">Category Name</th>
+						<th style="border: 1px solid #434343; padding: 8px; background-color: #1818181a; text-align: left;">Quantity Sold</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% if (topCategory.length !== 0) { %>
+						<% for (let i = 0; i < topCategory.length; i++) { %>
+					<tr>
+						<td style="border: 1px solid rgb(0, 0, 0); padding: 8px; text-align: left;"><%= topCategory[i]._id %></td>
+						<td style="border: 1px solid #000000; padding: 8px; text-align: left;"><%= topCategory[i].totalQuantitySold %></td>
+					</tr>
+					<% } %>
+            <% } %>
+				</tbody>
+			</table>
+		</div>
+
+		<select id="intervalSelect" onchange="updateChart()" style="background-color: rgb(255, 255, 255); width: 100px; height: 25px; margin-top: 10px; margin-left: 10px;">
+			<option value="daily" >Daily</option>
+			<option value="weekly">Weekly</option>
+			<option value="monthly">Monthly</option>
+			<option value="yearly">Yearly</option>
+		  </select>
+		  <div style="width: 90%;">
+			<canvas id="myChart"></canvas>
+		  </div>
 	</section>
-	<!-- CONTENT -->
+
+	
+	
 
 	<!-- <div id="myModal" class="modal">
 		<div class="modal-content">
@@ -195,8 +236,8 @@
 		</div>
 	</div> -->
 
-	<div id="myModal" class="modal">
-		<div class="modal-content">
+	<div id="myModal" class="modal ">
+		<div class="modal-content" >
 			<span class="close" onclick="closeModal()">&times;</span>
 			<h2 style="padding: 10px; margin-bottom: 10px;"><b>Report</b></h2>
 			<!-- daily -->
@@ -223,8 +264,81 @@
 		</div>
 	</div>
 
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+    integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous"></script>
+
 
 	<script src="js/adminhome.js"></script>
+
+	<script>
+		// Function to update chart based on selected interval
+		function updateChart() {
+		  var interval = document.getElementById('intervalSelect').value;
+	  
+		  // Making AJAX request
+		  $.ajax({
+			type: 'POST',
+			url: '/admin/chartData',
+			data: { filter: interval }, 
+			success: function (response) {
+			 
+			  var labels = response.label;
+			  var salesCount = response.salesCount;
+	
+			  myChart.data.labels = labels;
+			  myChart.data.datasets[0].data = salesCount;
+			  myChart.update();
+			},
+			error: function (xhr, status, error) {
+			  console.error(error);
+			}
+		  });
+		}
+	  
+		var data = {
+		  labels: [],
+		  datasets: [{
+			label: 'Sales Count',
+			backgroundColor: '#27ae60',
+			borderColor: 'rgb(255, 99, 132)',
+			data: []
+		  }]
+		};
+	  
+		var config = {
+		  type: 'bar',
+		  data: data,
+		  options: {
+			scales: {
+			  yAxes: [{
+				ticks: {
+				  beginAtZero: true
+				}
+			  }]
+			}
+		  }
+		};
+	  
+		var ctx = document.getElementById('myChart').getContext('2d');
+		var myChart = new Chart(ctx, config);
+		updateChart();
+	  </script>
+
+	   <script>
+		// Get today's date in the format YYYY-MM-DD
+		var today = new Date().toISOString().split('T')[0];
+	
+		// Set the max attribute of the date inputs to today's date
+		document.getElementById('from-date').max = today;
+		document.getElementById('to-date').max = today;
+	  </script>
 	<script>
 		function openModal() {
 			document.getElementById("myModal").style.display = "block";

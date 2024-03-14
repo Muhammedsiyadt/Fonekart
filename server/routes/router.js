@@ -30,6 +30,8 @@ router.post('/regiter',services.register)
 
 // OTP page router
 router.get('/otppage',services.otppage)
+// Resend otp 
+// router.get('/resendOtp',controller.resendOtp)
 
 // Forgot page router
 router.get('/forgetpage',services.forgetpage) 
@@ -76,7 +78,7 @@ router.post('/api/updateCartQuantity',controller.updateCartQuantity)
 // === Check out === //
 // Check out Page //
 router.get('/cart/checkout',middleman.isBlocked,services.checkout)
-// address change from Check out
+// address change from Check out 
 router.get('/selectAddressFromCheckout', controller.selectAddressInCheckout);
 // Add address in checkout
 router.post('/api/add-addressToCheckoutWay',controller.addaddressFromCheckout)
@@ -111,6 +113,8 @@ router.post('/returnOrder',controller.return)
 router.get('/orderDetailPage',middleman.isBlocked,services.orderDetailPage)
 // Return reason
 // router.post('/returnReasonSave',controller.returnReasonSave)
+// retry payment
+router.post('/retryPayment',controller.retryPayment)
 
 // Shubham route
 router.post('/postingOrder',controller.postingOrder)
