@@ -23,7 +23,7 @@ const schema = new mongoose.Schema({
             type: String,
             required: true
         },
-        // descriptionHead: {
+        // descriptionHead: { 
         //     type: String
         // }, 
         price: {

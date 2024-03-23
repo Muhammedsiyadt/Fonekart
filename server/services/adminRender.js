@@ -50,7 +50,7 @@ exports.home = async (req, res) => {
         { $project: { _id: 0, productName: 1, totalQuantitySold: 1 } },
         { $sort: { totalQuantitySold: -1 } },
         { $limit: 3 }
-    ])
+    ]) 
 
     // console.log(topProducts);
     const topCategory = await orderdb.aggregate([

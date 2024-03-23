@@ -131,7 +131,7 @@ exports.dailyReport = async (req, res) => {
 exports.weeklyReport = async (req, res) => {
     try {
         const startDate = new Date()
-        const endDate = new Date(startDate.getTime() - 7 * 24 * 60 * 60 * 1000)
+        const endDate = new Date(startDate.getTime() - 7 * 24 * 60 * 60 * 1000) 
 
         let doc = new PDFDocument({ margin: 10, size: 'A4' }) // Move this line up
 

@@ -928,19 +928,11 @@ exports.postingOrder = async (req, res) => {
 
 
         let subtotal = cartProducts.reduce((total, item) => {
-            return total + parseInt(item.productDetails.price * item.cartItems.quantity);
+            return req.session.afterCouponApply ? req.session.afterCouponApply:  total + parseInt(item.productDetails.price * item.cartItems.quantity);
         }, 0)
         console.log('BEFORE ', subtotal);
         console.log(req.session.afterCouponApply);
 
-
-        if (req.session.afterCouponApply) {
-            console.log('yyyyyyyeeeeeeeeeeeeeeesssssssssssss');
-            subtotal = req.session.afterCouponApply
-            console.log("now total", subtotal);
-        }
-        console.log('IF NOT ', subtotal);
-        console.log(req.session.afterCouponApply);
 
         const orderItems = cartProducts.map((element) => {
             const order = {
@@ -1227,7 +1219,7 @@ exports.applyCoupon = async (req, res) => {
 
                 req.session.couponDiscount = coupon.Discount
 
-                res.redirect('/cart/checkout')
+                res.redirect(`/cart/checkout?afterCouponApply=${discountedTotal}`)
                 req.session.afterCouponApply = discountedTotal;
 
 
@@ -1516,7 +1508,7 @@ exports.homeProductToWishlist = async (req, res) => {
             }
         }
 
-        await whishlist.save()
+        await whishlist.save() 
 
 
         req.session.wishlist = whishlist

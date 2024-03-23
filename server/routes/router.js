@@ -106,7 +106,7 @@ router.get('/orderList',middleman.isBlocked,services.orderList)
 // order success page
 router.get('/orderSuccessPage',middleman.isBlocked,services.orderSuccessPage)
 // cancel Order
-router.get('/api/cancelOrder',controller.cancelOrder)
+router.get('/api/cancelOrder',controller.cancelOrder)  
 // return
 router.post('/returnOrder',controller.return)
 // order detail page 

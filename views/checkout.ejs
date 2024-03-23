@@ -235,7 +235,7 @@
                                                     <% if (typeof totalUsingCoupon !=='undefined' ) { %>
                                                         <p
                                                             style="color: red; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
-                                                            <%= totalUsingCoupon %>
+                                                            ₹ <%= totalUsingCoupon %>
                                                         </p>
                                                         <% } else { %>
                                                             <p
@@ -371,13 +371,15 @@
                                                         <div class="check_box_one cashon_delivery ">
                                                             <label class="anim ">
 
-                                                                <% if (Subtotal.toFixed(2) <=1000) { %>
-                                                                    <p class="text-danger">Insufficient balance for COD
-                                                                    </p>
+                                                                <% if (Subtotal.toFixed(2) >=1000) { %>
+                                                                    <input type="radio" class="radio" name="paymentMethod" value="cod" id="cod" disabled>
+                                                                        <label for="cod">COD</label>
+                                                                        <h6 class="text-warning">Insufficient balance</h6>
+                                                                        <br>
+                                                                    <!-- <h6 class="text-warning">Insufficient balance for COD</h6> -->
 
                                                                     <% } else { %>
-                                                                        <input type="radio" class="radio"
-                                                                            name="paymentMethod" value="cod" id="cod">
+                                                                        <input type="radio" class="radio" name="paymentMethod" value="cod" id="cod">
                                                                         <label for="cod">COD</label>
                                                                         <br>
                                                                         <% } %>
@@ -389,18 +391,16 @@
                                                                             <label for="online">ONLINE PAYMANT</label>
                                                                             <br>
 
-                                                                            <% if (walletInfo?.balance>=
-                                                                                Subtotal.toFixed(2)) { %>
-                                                                                <input type="radio" class="radio"
-                                                                                    name="paymentMethod" value="wallet"
-                                                                                    id="cod">
+                                                                            <% if (walletInfo?.balance >= Subtotal.toFixed(2)) { %>
+                                                                                <input type="radio" class="radio" name="paymentMethod" value="wallet" id="cod">
                                                                                 <label for="cod">WALLET</label>
-                                                                                <% } else { %>
-                                                                                    <p class="text-danger">Insufficient
-                                                                                        balance in
-                                                                                        wallet</p>
-                                                                                    <% } %>
-
+                                                                            <% } else { %>
+                                                                                <input type="radio" class="radio" name="paymentMethod" value="wallet" id="cod" disabled>
+                                                                                <label for="cod">WALLET</label>
+                                                                                <h6 class="text-warning">Insufficient balance</h6>
+                                                                                <!-- <h6 class="text-warning">Insufficient balance in wallet</h6> -->
+                                                                            <% } %>
+                                                                            
                                                                                         <p id="errorMessage"
                                                                                             style="color: red;"></p>
 
