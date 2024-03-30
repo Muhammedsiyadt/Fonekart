@@ -9,7 +9,7 @@ const coupondb = require('../../model/couponSchema')
 const { default: mongoose } = require('mongoose')
 const offerdb = require('../../model/offerSchema')
 const refferaldb = require('../../model/refferalSchema')
-const PDFDocument = require("pdfkit-table")
+const PDFDocument = require("pdfkit-table")   
 const fs = require("fs")
 const moment = require('moment')
 
@@ -69,7 +69,7 @@ exports.dailyReport = async (req, res) => {
         });
 
 
-        const doc = new PDFDocument();
+        const doc = new PDFDocument(); 
 
 
         res.setHeader('Content-Type', 'application/pdf');
@@ -94,9 +94,9 @@ exports.dailyReport = async (req, res) => {
                     order.address.name,
                     `${order.address.address}, ${order.address.district}, ${order.address.city}, ${order.address.pin}`,
                     order.address.phone,
-                    item.Pname || 'N/A',
+                    item.Pname || 'N/A', 
                     item.category || 'N/A',
-                    item.orderStatus || 'N/A',
+                    item.orderStatus || 'N/A', 
                     item.price !== undefined ? item.price.toString() : 'N/A'
                 ])
                 if (item.price !== undefined) {

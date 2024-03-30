@@ -25,7 +25,7 @@ exports.login = (req, res) => {
 // home page 
 exports.home = async (req, res) => {
     const countUsers = await Userdb.countDocuments();
-    const ordercount = await orderdb.countDocuments()
+    const ordercount = await orderdb.countDocuments() 
     const [orderTotalAmountObject] = await orderdb.aggregate([
         {
             $unwind: "$orderItems"

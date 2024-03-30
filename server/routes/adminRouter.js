@@ -18,7 +18,7 @@ adminRouter.post('/api/adminlogin',controller.verifylogin)
 // home page 
 adminRouter.get('/adminhome',middle.isAdminAuth,services.home)
 // chart post route
-adminRouter.post('/admin/chartData',controller.getDetailsChart)
+adminRouter.post('/admin/chartData',controller.getDetailsChart) 
 
 // SALES REPORT------------------------------------------------------------------------
 // daily

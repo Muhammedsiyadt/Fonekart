@@ -216,18 +216,23 @@ const sendOtpMail = async (req, res ) => {
 //         res.send(error);
 //     }
 // };
+
+
 exports.register = async (req, res) => {
     try {
         req.session.userData = req.body;
         req.session.userEmail = req.body.email
 
-        const userData = await Userdb.findOne({ email: req.body.email });
+        const userData = await Userdb.findOne({ email: req.body.email })
+
+        // console.log(userData);
 
         if (userData) {
-            req.session.message = 'Email already taken, Please enter a different email';
+            req.session.message = 'Email already taken, Please enter a different email'
+            
 
             if (req.query.referralCode) {
-                return res.redirect(`/register?referralCode=${req.query.referralCode}`);
+                return res.redirect(`/register?referralCode=${req.query.referralCode}`) 
             }
 
             return res.redirect('/register');
@@ -256,6 +261,7 @@ exports.otpverify = async (req, res) => {
         console.log(otp);
 
         console.log('sdfghjkdfgbhn',req.body.otp === otp.otp);
+
         if (req.body.otp === otp.otp) {
             const userData = req.session.userData;
 
@@ -265,12 +271,12 @@ exports.otpverify = async (req, res) => {
                 name: userData.name,
                 email: userData.email,
                 password: userData.password,
-                referralCode: shortid.generate(),
+                referralCode: shortid.generate(), 
             });
 
-            console.log('saveeeeeeeee',user);
+            // console.log('saveeeeeeeee',user);
             const save = await user.save()
-            console.log('ssssssssssssssss',save);
+            // console.log('ssssssssssssssss',save);
             req.session.authentication = true;
             res.redirect("/login")
         } else {
@@ -619,7 +625,7 @@ exports.selectAddress = async (req, res) => {
 
         )
 
-        console.log(updateResult)
+        // console.log(updateResult)
 
         const data = await addressdb.updateOne({ "user_Id": user_Id, "address._id": queryid }, { $set: { 'address.$.defaultAddress': false } })
 
@@ -927,11 +933,18 @@ exports.postingOrder = async (req, res) => {
         // console.log(cartProducts);
 
 
-        let subtotal = cartProducts.reduce((total, item) => {
-            return req.session.afterCouponApply ? req.session.afterCouponApply:  total + parseInt(item.productDetails.price * item.cartItems.quantity);
+        var subtotal = cartProducts.reduce((total, item) => {
+            return req.session.afterCouponApply ? req.session.afterCouponApply:  total + parseInt(item.productDetails.price * item.cartItems.quantity) || 
+            req.session.afterCouponApply
         }, 0)
-        console.log('BEFORE ', subtotal);
-        console.log(req.session.afterCouponApply);
+
+        // console.log('BEFORE ', subtotal)  
+        // console.log(req.session.afterCouponApply)
+        
+        // if(req.session.afterCouponApply){
+        //     subtotal = req.session.afterCouponApply
+        //     console.log("now total",subtotal);
+        // }
 
 
         const orderItems = cartProducts.map((element) => {
@@ -974,8 +987,8 @@ exports.postingOrder = async (req, res) => {
             
         });
 
-        //     const nr = await newOrder.save()
-        //    console.log("okkkkkkkkkkkkkkkk",nr);
+            const nr = await newOrder.save()
+           console.log("okkkkkkkkkkkkkkkk",nr)
 
         if (req.body.paymentMethod === "cod") {
             await newOrder.save();
@@ -984,6 +997,8 @@ exports.postingOrder = async (req, res) => {
             await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
 
             req.session.orderSuccessPage = true;
+            
+            
             return res.status(200).json({
                 success: true,
                 url: "/orderSuccessPage",
@@ -1049,6 +1064,7 @@ exports.postingOrder = async (req, res) => {
 
     } catch (error) {
         res.status(500).redirect('/500')
+        console.log('this is error')
         console.log(error);
     }
 };
@@ -1059,18 +1075,25 @@ exports.orderSuccessful = async (req, res) => {
         const userId = req.session.userId;
         const crypto = require("crypto");
 
-        const hmac = crypto.createHmac("sha256", process.env.key_secret);
+        const hmac = crypto.createHmac("sha256", process.env.key_secret) 
         hmac.update(
             req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id
         );
 
         if (hmac.digest("hex") === req.body.razorpay_signature) {
             const newOrder = new orderdb(req.session.newOrder)
-            await newOrder.save()
 
             await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
-
             req.session.orderSucessPage = true;
+
+            
+
+            await orderdb.updateOne(
+                { _id: newOrder._id },
+                { $set: { "orderItems.$[].orderStatus": "ordered" } } 
+            )
+            
+
             return res.status(200).redirect("/orderSuccessPage");
         } else {
             return res.send("Order Failed");
@@ -1168,7 +1191,7 @@ exports.invoiceDownload = async (req, res) => {
 
 // COUPON //
 // appy coupon 
-exports.applyCoupon = async (req, res) => {
+exports.applyCoupon = async (req, res) => {  
 
     const user_Id = req.session.userId
 
@@ -1205,10 +1228,7 @@ exports.applyCoupon = async (req, res) => {
                 const quantity = item.cartItems.quantity;
                 const totalPrice = price * quantity;
                 return accumulator + totalPrice;
-            }, 0);
-
-
-
+            }, 0) 
 
             if (total >= coupon.MaxPrice) {
 
@@ -1219,7 +1239,10 @@ exports.applyCoupon = async (req, res) => {
 
                 req.session.couponDiscount = coupon.Discount
 
-                res.redirect(`/cart/checkout?afterCouponApply=${discountedTotal}`)
+
+
+                res.redirect('/cart/checkout')
+                // res.redirect(`/cart/checkout?afterCouponApply=${discountedTotal}`)
                 req.session.afterCouponApply = discountedTotal;
 
 
@@ -1395,13 +1418,13 @@ exports.retryPayment = async(req,res)=>{
                 originalOrder.orderItems.forEach((item) => {
                   item.orderStatus = newStatus;
                 });
-              }
+              } 
 
               updateOrderStatus(orderFind, "ordered") 
               const ko = await orderFind.save();
 
 
-            console.log("dfsfsfsfsdfssf",ko);
+            // console.log("dfsfsfsfsdfssf",ko);
             await cartdb.updateOne(
                 { userId: req.session.email },
                 { $set: { products: [] } }
@@ -1411,7 +1434,7 @@ exports.retryPayment = async(req,res)=>{
                 success: true,
                 url: "/orderSuccessPage",
                 paymentMethod: "cod",
-            });;
+            });
         }
 
 
@@ -1441,7 +1464,7 @@ exports.retryPayment = async(req,res)=>{
 
 
         if (queryPaymentMethod === "online") {
-            console.log("yes enetring");
+            // console.log("yes enetring");
             const orderFind = await orderdb.findById(queryOrderId)
             const razorpayInstance = new Razorpay({
                 key_id: process.env.key_id || "rzp_test_inNDLEzjcNEB4V",
@@ -1458,7 +1481,7 @@ exports.retryPayment = async(req,res)=>{
             const order = await razorpayInstance.orders.create(options);
 
             // req.session.newOrder = newOrder;
-            console.log(order);
+            // console.log(order);
 
 
             return res.status(200).json({
@@ -1468,6 +1491,8 @@ exports.retryPayment = async(req,res)=>{
                 order: order,
                 paymentMethod: "onlinePayment"
             });
+
+            
         }
         
     } catch (error) {

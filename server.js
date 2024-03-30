@@ -29,7 +29,7 @@ app.use(session({
 
 
 
-app.use(express.urlencoded({ extended: false }))
+app.use(express.urlencoded({ extended: false }))  
 
 app.use("/css", express.static(path.join(__dirname, 'assets/css')))
 app.use("/js", express.static(path.join(__dirname, 'assets/js')))

@@ -9,7 +9,7 @@ const schema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    expirydate: {
+    expirydate: { 
         type: Date,
         required: true
     }

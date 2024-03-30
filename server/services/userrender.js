@@ -10,6 +10,7 @@ const wishlistdb = require('../model/wishlistSchema')
 const offerdb = require('../model/offerSchema')
 const refferaldb = require('../model/refferalSchema')
 const walletdb = require('../model/walletSchema')
+const coupondb = require('../model/couponSchema')
 
 // Slash page (Only /)
 exports.slashpage = async (req, res) => {
@@ -94,7 +95,7 @@ exports.home = async (req, res) => {
                     localField: 'offerId',
                     foreignField: '_id',
                     as: 'offerDetails'
-                }
+                } 
             }
         ])
 
@@ -109,6 +110,7 @@ exports.home = async (req, res) => {
                 }
             }
         ])
+        
 
         // const categoryDetails = await categorydb.find({ delete: false })
 
@@ -552,6 +554,7 @@ exports.checkout = async (req, res) => {
     const success = req.session.success
     const expired = req.session.expiredCoupon
     const address = req.session.addressErrorMessage 
+    
 
     try {
 
@@ -580,6 +583,7 @@ exports.checkout = async (req, res) => {
             }
         ]);
 
+        const coupons = await coupondb.find({})
 
         const wallet = await walletdb.findOne({ userId: user_Id })
 
@@ -589,6 +593,7 @@ exports.checkout = async (req, res) => {
         res.render('checkout', {
             Checkout: checkoutData,
             addressSelect: addressData,
+            coupons:coupons,
             address: address,
             walletInfo: wallet,
             totalUsingCoupon: TotalPriceChangeUsingCoupon,

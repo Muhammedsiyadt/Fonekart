@@ -198,7 +198,14 @@
                                       </svg>
                                     </button></a>
                                 </td>
-                                <% } %>
+                                <% }else if(OrderData[i].orderItems.orderStatus=='pending' ) { %>
+                                  <td style="color: rgb(255, 0, 0); ">
+                                    <%= OrderData[i].orderItems.orderStatus %>
+                                    <br>
+                                    <!-- <a style="text-decoration: none;" href="/orderDetailPage?id=<%#= OrderData[i]._id %>">Retry</a> -->
+                                    
+                                  </td>
+                                  <% } %>
               </tr>
               <% } %>
           </tbody>

@@ -96,6 +96,41 @@
             background-color: #5eff00;
             color: #000000;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        /* Close button styles */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -131,7 +166,7 @@
     </nav>
 
 
-    <div class="container-fluid  " style="background-color: rgb(255, 255, 255);  margin-top: 70px;">
+    <div class="container-fluid" style="background-color: rgb(255, 255, 255);  margin-top: 70px;">
         <dv class="row">
             <div class="col-lg-8 col-12 " style=" margin-top: 20px; border: #000000 1px solid;">
                 <h3
@@ -177,7 +212,7 @@
 
             </div>
 
-            <div class="col-lg-4  col-12 mt-5  ">
+            <div class="col-lg-4  col-12 mt-4  ">
                 <% let Subtotal=0 %>
                     <% if (Checkout && Checkout.length> 0) { %>
                         <div
@@ -189,7 +224,7 @@
                                     <% Checkout.forEach(item=> {
                                         if (item.offerDetails && item.offerDetails[0]) {
                                         Discount += (item.productDetails[0].price * item.cartItems.quantity *
-                                        item.offerDetails[0].discount / 100)
+                                        item.offerDetails[0].discount / 100) 
                                         }
                                         }) %>
                                         <div class="order-item">
@@ -235,7 +270,7 @@
                                                     <% if (typeof totalUsingCoupon !=='undefined' ) { %>
                                                         <p
                                                             style="color: red; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
-                                                            ₹ <%= totalUsingCoupon %>
+                                                            ₹ <%= totalUsingCoupon %> 
                                                         </p>
                                                         <% } else { %>
                                                             <p
@@ -251,6 +286,48 @@
                                             <h5
                                                 style="color: #000000; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">
                                                 Apply the Coupon</h5>
+                                            <button id="openModalBtn" class="bg-warning mb-2">Available Coupons</button>
+
+                                            <div id="myModal" class="modal">
+                                                <!-- Modal content -->
+                                                <div class="modal-content">
+                                                    <span class="close">&times;</span>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-striped">
+                                                            <thead>
+                                                                <tr>
+                                                                    <!-- <th>No</th> -->
+                                                                    <th>Coupon code</th>
+                                                                    <th>Discount</th>
+                                                                    <th>Maximum Price</th>
+                                                                    <th>Expiry Date</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <% for (let i=0; i < coupons.length; i++) { %>
+                                                                    <tr>
+                                                                        <!-- <td><%#= 1 %></td> -->
+                                                                        <td>
+                                                                            <%= coupons[i].Code %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <%= coupons[i].Discount %>%
+                                                                        </td>
+                                                                        <td>₹<%= coupons[i].MaxPrice %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <%= new
+                                                                                Date(coupons[i].expiryDate).toLocaleDateString()
+                                                                                %>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <% } %>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <form action="/applyCoupon" method="post">
                                                 <% if (typeof notAvailable !=='undefined' ) { %>
                                                     <p style="color: red;"><b>
@@ -277,6 +354,7 @@
                                                                             <%= maxError %>
                                                                         </b></p>
                                                                     <% } %>
+
                                                                         <input class="text-dark" id="cpn"
                                                                             name="couponCode" style="padding: 4px;"
                                                                             type="text" placeholder="Coupon code">
@@ -300,7 +378,7 @@
                     <h5 style="font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">Delivery Address
                     </h5>
 
-                    <% if (addressSelect?.address.length===0) { %> <!-- Check if the address array is empty -->
+                    <% if (addressSelect?.address.length===0) { %>
                         <% if (typeof address !=='undefined' ) { %>
                             <p style="color: red;"><b>
                                     <%= address %>
@@ -308,9 +386,9 @@
                             <% } %>
                                 <% } else { %>
                                     <% for (let i=0; i < addressSelect?.address.length; i++) { %>
-                                        <!-- Iterate over each address -->
+
                                         <% if (addressSelect.address[i].defaultAddress==true) { %>
-                                            <!-- Check if the address is the default address -->
+
                                             <div
                                                 style="border: solid rgb(50, 50, 49); border-radius: 6px; width: 290px; padding: 10px;">
                                                 <b>Name :</b><span>
@@ -371,15 +449,18 @@
                                                         <div class="check_box_one cashon_delivery ">
                                                             <label class="anim ">
 
-                                                                <% if (Subtotal.toFixed(2) >=1000) { %>
-                                                                    <input type="radio" class="radio" name="paymentMethod" value="cod" id="cod" disabled>
-                                                                        <label for="cod">COD</label>
-                                                                        <h6 class="text-warning">Insufficient balance</h6>
-                                                                        <br>
+                                                                <% if (Subtotal.toFixed(2)>=1000) { %>
+                                                                    <input type="radio" class="radio"
+                                                                        name="paymentMethod" value="cod" id="cod"
+                                                                        disabled>
+                                                                    <label for="cod">COD</label>
+                                                                    <h6 class="text-warning">Insufficient balance</h6>
+                                                                    <br>
                                                                     <!-- <h6 class="text-warning">Insufficient balance for COD</h6> -->
 
                                                                     <% } else { %>
-                                                                        <input type="radio" class="radio" name="paymentMethod" value="cod" id="cod">
+                                                                        <input type="radio" class="radio"
+                                                                            name="paymentMethod" value="cod" id="cod">
                                                                         <label for="cod">COD</label>
                                                                         <br>
                                                                         <% } %>
@@ -391,16 +472,23 @@
                                                                             <label for="online">ONLINE PAYMANT</label>
                                                                             <br>
 
-                                                                            <% if (walletInfo?.balance >= Subtotal.toFixed(2)) { %>
-                                                                                <input type="radio" class="radio" name="paymentMethod" value="wallet" id="cod">
+                                                                            <% if (walletInfo?.balance>=
+                                                                                Subtotal.toFixed(2)) { %>
+                                                                                <input type="radio" class="radio"
+                                                                                    name="paymentMethod" value="wallet"
+                                                                                    id="cod">
                                                                                 <label for="cod">WALLET</label>
-                                                                            <% } else { %>
-                                                                                <input type="radio" class="radio" name="paymentMethod" value="wallet" id="cod" disabled>
-                                                                                <label for="cod">WALLET</label>
-                                                                                <h6 class="text-warning">Insufficient balance</h6>
-                                                                                <!-- <h6 class="text-warning">Insufficient balance in wallet</h6> -->
-                                                                            <% } %>
-                                                                            
+                                                                                <% } else { %>
+                                                                                    <input type="radio" class="radio"
+                                                                                        name="paymentMethod"
+                                                                                        value="wallet" id="cod"
+                                                                                        disabled>
+                                                                                    <label for="cod">WALLET</label>
+                                                                                    <h6 class="text-warning">
+                                                                                        Insufficient balance</h6>
+                                                                                    <!-- <h6 class="text-warning">Insufficient balance in wallet</h6> -->
+                                                                                    <% } %>
+
                                                                                         <p id="errorMessage"
                                                                                             style="color: red;"></p>
 
@@ -614,6 +702,24 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
+
+    <script>
+
+        var modal = document.getElementById("myModal");
+        var btn = document.getElementById("openModalBtn");
+        var span = document.getElementsByClassName("close")[0];
+        btn.onclick = function () {
+            modal.style.display = "block";
+        }
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
 
     <script>
 

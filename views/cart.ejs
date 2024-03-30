@@ -494,8 +494,7 @@
 
 
                                                     <% if (cartData[i].offerDetails && cartData[i].offerDetails[0]) { %>
-                                                        <del style="color: #33333376;">₹ <%=
-                                                                cartData[i].productDetails[0]?.price %></del>
+                                                        <del style="color: #33333376;">₹ <%= cartData[i].productDetails[0]?.price %></del>
                                                         <b class="text-success">
                                                             <%= cartData[i].offerDetails[0]?.discount %>% off
                                                         </b>
