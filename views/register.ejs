@@ -58,26 +58,33 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        button:HOVER{
+
+        button:HOVER {
             background-color: #2b802e;
+        }
+        #main1{
+            box-shadow: 0 0 185px rgba(10, 10, 10, 1);
         }
     </style>
 </head>
 
-<body style="background-color: rgba(255, 243, 113, 0.348);">
+<!-- <body style="background-color: rgba(255, 243, 113, 0.348);"> -->
+
+<body style="background-image: url(/images/960x0.webp);">
+
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top p-3">
         <a style="color: #0F0;" class="navbar-brand" href=""><b><em>Fonekart</em></b></a>
     </nav>
 
     <main>
-        <form action="/api/register" method="post" onsubmit="registerSubmit(); return false;">
+        <form  id="main1" action="/api/register" method="post" onsubmit="registerSubmit(); return false;">
             <h2>Create an Account</h2>
-            <% if(typeof message !=='undefined' ){ %>
+            <% if (message) { %>
                 <p style="color: red;">
                     <%= message %>
                 </p>
-                <% } %>
+            <% } %>
                     <input type="text" name="name" placeholder="User Name" id="userName">
                     <p class="text-danger" id="userNameErr"></p>
                     <input type="email" name="email" placeholder="Email" id="email">

@@ -13,10 +13,10 @@ const path = require('path')
 app.set('view engine', 'ejs')
 
 app.use(session({
-    secret: 'your-secret-key', // Replace with your secret key
+    secret: 'your-secret-key',
     resave: false,
     saveUninitialized: true,
-
+    // cookie: { secure: true } 
 }))
 
 

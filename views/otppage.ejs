@@ -74,34 +74,34 @@
     </style>
 </head>
 
-<body>
+<body style="background-image: url(/images/960x0.webp);">
 
     <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top p-3">
         <a style="color: #0F0;" class="navbar-brand" href=""><b><em>Fonekart</em></b></a>
     </nav>
 
     <main>
-        <form action="/api/otpverify" method="post">
+        <form action="/api/otpverify" method="post"  style=" box-shadow: 0 0 185px rgba(10, 10, 10, 1);">
             <% if(typeof otpmessage !=='undefined' ){ %>
                 <span style="color: red;">
                     <%= otpmessage %>
                 </span>
                 <% } %>
-            <input type="text" name="otp" id="otpInput" placeholder="Enter OTP">
+                <input type="text" name="otp" id="otpInput" placeholder="Enter OTP" required>
+
             <br>
             <button type="submit">Verify</button>
+            <!-- <button id="resendButton" onclick="resendOtp()">Resend OTP</button> -->
             <button id="resendButton" onclick="resendOtp()">Resend OTP</button>
-            <!-- <a href="/resendOtp"><button id="resendButton" onclick="resendOtp()">Resend OTP</button></a> -->
         </form>
         
-        <div id="timer" style="color: red;"><h6>Time remaining: <span id="countdown" style=" color: rgb(0, 0, 0);">60</span> seconds</h6></div>
+        <div id="timer" style="color: rgb(255, 217, 0);"><h6>Time remaining: <span id="countdown" style=" color: rgb(255, 255, 255);">60</span> seconds</h6></div>
         
         
     </main>
 
     <script>
-       
-        var countdown = 60
+        var countdown = 60;
 
         function updateCountdown() {
             var countdownElement = document.getElementById("countdown");
@@ -111,18 +111,17 @@
                 document.getElementById("resendButton").style.display = "block";
             } else {
                 countdown--;
-                setTimeout(updateCountdown, 1000)
+                setTimeout(updateCountdown, 1000);
             }
         }
 
         function resendOtp() {
-           
             countdown = 60;
             document.getElementById("resendButton").style.display = "none";
-            updateCountdown()
+            updateCountdown();
+            window.location.href = "/resendOtp";
         }
 
-        
         window.onload = function () {
             updateCountdown();
         };

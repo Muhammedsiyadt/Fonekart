@@ -108,6 +108,7 @@ exports.dailyReport = async (req, res) => {
         })
 
         tableData.push(['Total Price', '', '', '', '', '', '', totalPrice.toString()]);
+        
 
         const tableOptions = {
             headers: tableHeaders,
@@ -121,6 +122,68 @@ exports.dailyReport = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 }
+// exports.dailyReport = async (req, res) => {
+//     try {
+//         const today = new Date();
+//         const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+//         const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+
+//         const dailyOrders = await orderdb.find({
+//             orderDate: {
+//                 $gte: startOfDay,
+//                 $lt: endOfDay
+//             }
+//         });
+
+//         let totalPrice = 0;
+//         let totalSalesCount = 0;
+//         let totalDiscountAmount = 0;
+
+//         const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
+
+//         const tableData = [];
+
+//         dailyOrders.forEach(order => {
+//             order.orderItems.forEach(item => {
+//                 tableData.push([
+//                     order.orderDate.toDateString(),
+//                     order.address.name,
+//                     `${order.address.address}, ${order.address.district}, ${order.address.city}, ${order.address.pin}`,
+//                     order.address.phone,
+//                     item.Pname || 'N/A',
+//                     item.category || 'N/A',
+//                     item.orderStatus || 'N/A',
+//                     item.price !== undefined ? item.price.toString() : 'N/A'
+//                 ]);
+//                 if (item.price !== undefined) {
+//                     totalPrice += item.price;
+//                     totalSalesCount++;
+//                     totalDiscountAmount += item.priceAfterCoupon ? (item.price - item.priceAfterCoupon) : 0;
+//                 }
+//             });
+//         });
+
+//         tableData.push(['Total Price', '', '', '', '', '', '', totalPrice.toString()]);
+
+//         const tableOptions = {
+//             headers: tableHeaders,
+//             rows: tableData
+//         };
+
+//         const summaryData = {
+//             totalSalesAmount: totalPrice,
+//             totalSalesCount: totalSalesCount,
+//             totalDiscountAmount: totalDiscountAmount
+//         };
+
+//         res.render('dailyReport', { tableOptions, summaryData });
+
+//     } catch (error) {
+//         console.error("Error generating daily sales report:", error);
+//         res.status(500).json({ error: "Internal server error" });
+//     }
+// };
+
 
 // Weekly
 exports.weeklyReport = async (req, res) => {

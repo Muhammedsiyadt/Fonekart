@@ -617,7 +617,7 @@ exports.imageDeleteSeperate = async (req, res) => {
 
         await productdb.findOneAndUpdate(
             { images: img },
-            { $pull: { images: img } }
+            { $pull: { images: img } } 
         );
 
 

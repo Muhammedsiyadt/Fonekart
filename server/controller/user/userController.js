@@ -28,7 +28,7 @@ const otpGenerator = () => {
 };
 
 // send mail
-const sendOtpMail = async (req, res ) => {
+const sendOtpMail = async (req, res) => {
 
     const otp = otpGenerator()
     console.log(otp)
@@ -39,16 +39,16 @@ const sendOtpMail = async (req, res ) => {
             user: process.env.AUTH_EMAIL,
             pass: process.env.AUTH_PASS,
         }
-        
+
     });
-// console.log(process.env.AUTH_EMAIL,process.env.AUTH_PASS);
+    // console.log(process.env.AUTH_EMAIL,process.env.AUTH_PASS);
     const MailGenerator = new Mailgen({
         theme: 'default',
         product: {
             name: 'Fonkart',
             link: 'https://mailgen.js/',
             logo: 'Fonekart',
-            
+
         },
     });
 
@@ -88,81 +88,88 @@ const sendOtpMail = async (req, res ) => {
         res.status(200).redirect('/otppage');
         await transporter.sendMail(message);
     } catch (err) {
-        
+
         console.log('siyaaaaaaaaaaaaaaaa');
         console.log(err);
         res.status(500).redirect('/500');
-        
+
     }
 }
 
+
+const resendOtpMail = async (req, res) => { 
+
+    const otp = otpGenerator()
+    console.log(otp)
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.AUTH_EMAIL,
+            pass: process.env.AUTH_PASS,
+        }
+
+    });
+    // console.log(process.env.AUTH_EMAIL,process.env.AUTH_PASS);
+    const MailGenerator = new Mailgen({
+        theme: 'default',
+        product: {
+            name: 'Fonkart',
+            link: 'https://mailgen.js/',
+            logo: 'Fonekart',
+
+        },
+    });
+
+    const response = {
+        body: {
+            name: req.session.userEmail,
+            intro: 'Your OTP for Fonekart verification is:',
+            table: {
+                data: [
+                    {
+                        otp: otp,
+                    },
+                ],
+            },
+            outro: '✅',
+        },
+    };
+
+    const mail = MailGenerator.generate(response)
+
+    const message = {
+        from: process.env.AUTH_EMAIL,
+        to: req.session.userEmail,
+        subject: "Fonekart - OTP Verification",
+        html: mail,
+    }
+
+    try {
+        const newOtp = new Otpdb({
+            email: req.session.userEmail,
+            otp: otp,
+            createdAt: Date.now(),
+            expiresAt: Date.now() + 60000,
+        });
+        const data = await newOtp.save();
+        req.session.otpId = data._id;
+        res.status(200).redirect('/otppage');
+        await transporter.sendMail(message);
+    } catch (err) {
+
+        console.log('siyaaaaaaaaaaaaaaaa');
+        console.log(err);
+        res.status(500).redirect('/500');
+
+    }
+}
 // Resend otp 
+exports.resendOtp = async (req, res) => {
+    await resendOtpMail(req, res);
+};
 
-// const ResendotpGenrator = () => {
-//     return `${Math.floor(1000 + Math.random() * 9000)}`;
-// };
 
-// exports.resendOtp = async (res, req) => {
-//     const otp = ResendotpGenrator()
-//     console.log(otp)
-
-//     const transporter = nodemailer.createTransport({
-//         service: 'gmail',
-//         auth: {
-//             user: process.env.AUTH_EMAIL,
-//             pass: process.env.AUTH_PASS,
-//         }
-//     });
-
-//     const MailGenerator = new Mailgen({
-//         theme: 'default',
-//         product: {
-//             name: 'Fonkart',
-//             link: 'https://mailgen.js/',
-//             logo: 'Fonkart',
-//         },
-//     });
-
-//     const response = {
-//         body: {
-//             name: req.session.userEmail,
-//             intro: 'Your OTP for Fonekart verification is:',
-//             table: {
-//                 data: [
-//                     {
-//                         otp: otp,
-//                     },
-//                 ],
-//             },
-//             outro: '✅',
-//         },
-//     };
-
-//     const mail = MailGenerator.generate(response)
-
-//     const message = {
-//         from: process.env.AUTH_EMAIL,
-//         to: req.session.userEmail,
-//         subject: 'Fonekart',
-//         html: mail,
-//     }
-
-//     try {
-//         const newOtp = new Otpdb({
-//             email: req.session.userEmail,
-//             otp: otp,
-//             createdAt: Date.now(),
-//             expiresAt: Date.now() + 60000,
-//         });
-//         const data = await newOtp.save();
-//         req.session.otpId = data._id;
-//         res.status(200).redirect('/login');
-//         await transporter.sendMail(message);
-//     } catch (err) {
-//         res.status(500).redirect('/500')
-//         console.log(err);
-//     }
-// }
 
 
 // Register // 
@@ -222,31 +229,34 @@ exports.register = async (req, res) => {
     try {
         req.session.userData = req.body;
         req.session.userEmail = req.body.email
+        
+        const ref = req.body.referralCode;
+        console.log(`Helloooooo ${ref}`); 
+        
 
         const userData = await Userdb.findOne({ email: req.body.email })
 
-        // console.log(userData);
-
         if (userData) {
             req.session.message = 'Email already taken, Please enter a different email'
-            
+
 
             if (req.query.referralCode) {
-                return res.redirect(`/register?referralCode=${req.query.referralCode}`) 
+              console.log('hi monuse') 
+                return res.redirect(`/register?referralCode=${req.query.referralCode}`)
             }
 
             return res.redirect('/register');
         }
-
+        
         req.session.userEmail = req.body.email;
         req.session.pass = req.body.password;
 
         await sendOtpMail(req, res);
 
-        
+
         // return res.redirect("/register");
     } catch (error) {
-        // Handle errors appropriately
+
         console.error(error);
         res.status(500).redirect('/500');
     }
@@ -257,34 +267,34 @@ exports.register = async (req, res) => {
 // OTP VERIFY //
 exports.otpverify = async (req, res) => {
 
-        const otp = await Otpdb.findOne({ email: req.session.userEmail });
-        console.log(otp);
+    const otp = await Otpdb.findOne({ email: req.session.userEmail });
+    // console.log(otp);
 
-        console.log('sdfghjkdfgbhn',req.body.otp === otp.otp);
 
-        if (req.body.otp === otp.otp) {
-            const userData = req.session.userData;
+    if (req.body.otp === otp.otp) {
+        const userData = req.session.userData;
 
-            let referralCode = req.query.refferalCode;
+        let referralCode = req.query.refferalCode;
 
-            const user = new Userdb({
-                name: userData.name,
-                email: userData.email,
-                password: userData.password,
-                referralCode: shortid.generate(), 
-            });
 
-            // console.log('saveeeeeeeee',user);
-            const save = await user.save()
-            // console.log('ssssssssssssssss',save);
-            req.session.authentication = true;
-            res.redirect("/login")
-        } else {
-            req.session.otpValidation = "Your OTP is wrong";
-            res.redirect("/register");
-        }
-    
+        const user = new Userdb({
+            name: userData.name,
+            email: userData.email,
+            password: userData.password,
+            referralCode: shortid.generate(),
+        });
+
+        const save = await user.save()
+
+        req.session.authentication = true;
+        res.redirect("/login")
+    } else {
+        req.session.otpValidation = "Your OTP is wrong";
+        res.redirect("/otppage")
+    }
+
 }
+
 // exports.otpverify = async (req, res) => {
 
 //     try {
@@ -380,33 +390,69 @@ exports.otpverify = async (req, res) => {
 
 
 // LOGIN VERIFICATION //    
+// exports.loginverification = async (req, res) => {
 
+//     const email = await Userdb.findOne({ email: req.body.email })
+
+//     if (email && email.password === req.body.password) {
+//         if (email.block === true) {
+
+//             req.session.blockmessage = 'You are blocked'
+//             return res.redirect('/login')
+//         }
+//         req.session.isLogged = true
+//         req.session.email = email
+//         req.session.userId = email._id
+
+//         await Userdb.findOneAndUpdate({ email: req.session.email.email }, { $set: { status: "Active" } })
+
+//         res.redirect('/home')
+//     } else if (req.body.password != email.password) {
+//         req.session.NotPass = 'Please check your password'
+//         return res.redirect('/login')
+//     } else {
+//         req.session.register = 'Register'
+//         res.redirect('/login')
+//     }
+
+
+// }
 exports.loginverification = async (req, res) => {
+    try {
+        const email = await Userdb.findOne({ email: req.body.email });
 
-    const email = await Userdb.findOne({ email: req.body.email })
-
-    if (email && email.password === req.body.password) {
-        if (email.block === true) {
-
-            req.session.blockmessage = 'You are blocked'
-            return res.redirect('/login')
+        if (!email) {
+            req.session.register = 'Register';
+            return res.redirect('/login');
         }
-        req.session.isLogged = true
-        req.session.email = email
-        req.session.userId = email._id
 
-        await Userdb.findOneAndUpdate({ email: req.session.email.email }, { $set: { status: "Active" } })
+        if (email.block) {
+            req.session.blockmessage = 'You are blocked';
+            return res.redirect('/login');
+        }
 
-        res.redirect('/home')
-    } else if (req.body.password != email.password) {
-        req.session.NotPass = 'Please check your password'
-        return res.redirect('/login')
-    } else {
-        res.redirect('/login')
+        if (email.password !== req.body.password) {
+            req.session.NotPass = 'Please check your password';
+            return res.redirect('/login');
+        }
+
+        req.session.isLogged = true;
+        req.session.email = email;
+        req.session.userId = email._id;
+
+        await Userdb.findOneAndUpdate(
+            { email: req.session.email.email },
+            { $set: { status: "Active" } }
+        );
+
+        res.redirect('/home');
+    } catch (error) {
+        console.error('Error during login verification:', error);
+        req.session.errorMessage = 'An error occurred. Please try again later.';
+        res.redirect('/login');
     }
+};
 
-
-}
 
 // logout      
 exports.logout = async (req, res) => {
@@ -934,13 +980,13 @@ exports.postingOrder = async (req, res) => {
 
 
         var subtotal = cartProducts.reduce((total, item) => {
-            return req.session.afterCouponApply ? req.session.afterCouponApply:  total + parseInt(item.productDetails.price * item.cartItems.quantity) || 
-            req.session.afterCouponApply
+            return req.session.afterCouponApply ? req.session.afterCouponApply : total + parseInt(item.productDetails.price * item.cartItems.quantity) ||
+                req.session.afterCouponApply
         }, 0)
 
         // console.log('BEFORE ', subtotal)  
         // console.log(req.session.afterCouponApply)
-        
+
         // if(req.session.afterCouponApply){
         //     subtotal = req.session.afterCouponApply
         //     console.log("now total",subtotal);
@@ -979,16 +1025,16 @@ exports.postingOrder = async (req, res) => {
         const newOrder = new orderdb({
             user_id: userId,
             orderItems: orderItems,
-            totalAmount:subtotal,
+            totalAmount: subtotal,
             address: data,
             paymentMethod: req.body.paymentMethod === "cod" ?
                 "cod" : req.body.paymentMethod === "onlinePayment" ?
                     "onlinePayment" : "wallet" ?? "wallet"
-            
+
         });
 
-            const nr = await newOrder.save()
-           console.log("okkkkkkkkkkkkkkkk",nr)
+        const nr = await newOrder.save()
+        console.log("okkkkkkkkkkkkkkkk", nr)
 
         if (req.body.paymentMethod === "cod") {
             await newOrder.save();
@@ -996,9 +1042,11 @@ exports.postingOrder = async (req, res) => {
 
             await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
 
+            await orderdb.updateMany({ 'address.phone': req.session.newOrder.address.phone }, { $set: { 'orderItems.$[].orderStatus': 'ordered' } });
+
             req.session.orderSuccessPage = true;
-            
-            
+
+
             return res.status(200).json({
                 success: true,
                 url: "/orderSuccessPage",
@@ -1075,7 +1123,7 @@ exports.orderSuccessful = async (req, res) => {
         const userId = req.session.userId;
         const crypto = require("crypto");
 
-        const hmac = crypto.createHmac("sha256", process.env.key_secret) 
+        const hmac = crypto.createHmac("sha256", process.env.key_secret)
         hmac.update(
             req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id
         );
@@ -1086,13 +1134,13 @@ exports.orderSuccessful = async (req, res) => {
             await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
             req.session.orderSucessPage = true;
 
-            
+
 
             await orderdb.updateOne(
                 { _id: newOrder._id },
-                { $set: { "orderItems.$[].orderStatus": "ordered" } } 
+                { $set: { "orderItems.$[].orderStatus": "ordered" } }
             )
-            
+
 
             return res.status(200).redirect("/orderSuccessPage");
         } else {
@@ -1191,7 +1239,7 @@ exports.invoiceDownload = async (req, res) => {
 
 // COUPON //
 // appy coupon 
-exports.applyCoupon = async (req, res) => {  
+exports.applyCoupon = async (req, res) => {
 
     const user_Id = req.session.userId
 
@@ -1228,7 +1276,7 @@ exports.applyCoupon = async (req, res) => {
                 const quantity = item.cartItems.quantity;
                 const totalPrice = price * quantity;
                 return accumulator + totalPrice;
-            }, 0) 
+            }, 0)
 
             if (total >= coupon.MaxPrice) {
 
@@ -1266,6 +1314,60 @@ exports.applyCoupon = async (req, res) => {
 
 
 // cancel order 
+// exports.cancelOrder = async (req, res) => {
+//     try {
+//         const user_Id = req.session.userId;
+//         const query = req.query.id;
+
+//         // Find and update the order status to 'canceled'
+//         const updatedOrder = await orderdb.findOneAndUpdate(
+//             {
+//                 user_id: user_Id,
+//                 'orderItems._id': query
+//             },
+//             {
+//                 $set: { 'orderItems.$.orderStatus': 'canceled' }
+//             },
+//             {
+//                 new: true
+//             }
+//         );
+
+
+//         if (!updatedOrder || !updatedOrder.orderItems) {
+//             return res.status(404).json({ message: 'Order not found' });
+//         }
+
+
+//         const canceledOrderItem = updatedOrder.orderItems.find(item => item._id.toString() === query);
+//         const productId = canceledOrderItem.productId;
+
+//         const returnedProductPrice = canceledOrderItem.price;
+
+//         const userWallet = await walletdb.findOne({ userId: user_Id });
+
+//         userWallet.balance += returnedProductPrice;
+
+//         userWallet.transactions.push({ amount: returnedProductPrice });
+
+//         await userWallet.save();
+
+
+//         await productdb.findOneAndUpdate(
+//             { _id: productId },
+//             { $inc: { quantity: canceledOrderItem.quantity } },
+//             { new: true }
+//         );
+
+//         res.redirect('/orderList');
+
+//     } catch (error) {
+//         res.status(500).redirect('/500')
+//         console.error(error);
+
+//     }
+// };
+
 exports.cancelOrder = async (req, res) => {
     try {
         const user_Id = req.session.userId;
@@ -1285,26 +1387,27 @@ exports.cancelOrder = async (req, res) => {
             }
         );
 
-
         if (!updatedOrder || !updatedOrder.orderItems) {
             return res.status(404).json({ message: 'Order not found' });
         }
 
-
         const canceledOrderItem = updatedOrder.orderItems.find(item => item._id.toString() === query);
         const productId = canceledOrderItem.productId;
-
         const returnedProductPrice = canceledOrderItem.price;
 
-        const userWallet = await walletdb.findOne({ userId: user_Id });
+        let userWallet = await walletdb.findOne({ userId: user_Id });
 
+        if (!userWallet) {
+            // If user wallet doesn't exist, create a new one
+            userWallet = new walletdb({ userId: user_Id, balance: 0, transactions: [] });
+        }
+
+        // Update wallet balance and transactions
         userWallet.balance += returnedProductPrice;
-
         userWallet.transactions.push({ amount: returnedProductPrice });
-
         await userWallet.save();
 
-
+        // Update product quantity
         await productdb.findOneAndUpdate(
             { _id: productId },
             { $inc: { quantity: canceledOrderItem.quantity } },
@@ -1312,13 +1415,12 @@ exports.cancelOrder = async (req, res) => {
         );
 
         res.redirect('/orderList');
-
     } catch (error) {
-        res.status(500).redirect('/500')
         console.error(error);
-
+        res.status(500).redirect('/500');
     }
 };
+
 
 
 // Return
@@ -1406,22 +1508,22 @@ exports.return = async (req, res) => {
 // };
 
 // Retry Payment
-exports.retryPayment = async(req,res)=>{
-    const queryPaymentMethod  = req.body.paymentMethod;
+exports.retryPayment = async (req, res) => {
+    const queryPaymentMethod = req.body.paymentMethod;
     const queryOrderId = req.body.orderId;
-    
+
     try {
         if (queryPaymentMethod === "cod") {
             console.log("yes enetring");
             const orderFind = await orderdb.findById(queryOrderId)
             function updateOrderStatus(originalOrder, newStatus) {
                 originalOrder.orderItems.forEach((item) => {
-                  item.orderStatus = newStatus;
+                    item.orderStatus = newStatus;
                 });
-              } 
+            }
 
-              updateOrderStatus(orderFind, "ordered") 
-              const ko = await orderFind.save();
+            updateOrderStatus(orderFind, "ordered")
+            const ko = await orderFind.save();
 
 
             // console.log("dfsfsfsfsdfssf",ko);
@@ -1449,8 +1551,10 @@ exports.retryPayment = async(req,res)=>{
                 );
                 await walletdb.updateOne(
                     { userId: req.session.email },
-                    { $inc: { balance: -(subtotal) }, 
-                    $push: {transactions: {amount: -(subtotal)} } },
+                    {
+                        $inc: { balance: -(subtotal) },
+                        $push: { transactions: { amount: -(subtotal) } }
+                    },
                     { upsert: true }
                 );
                 req.session.orderSucessPage = true;
@@ -1492,9 +1596,9 @@ exports.retryPayment = async(req,res)=>{
                 paymentMethod: "onlinePayment"
             });
 
-            
+
         }
-        
+
     } catch (error) {
         console.log(error);
         res.status(500).redirect('/500');
@@ -1533,7 +1637,7 @@ exports.homeProductToWishlist = async (req, res) => {
             }
         }
 
-        await whishlist.save() 
+        await whishlist.save()
 
 
         req.session.wishlist = whishlist

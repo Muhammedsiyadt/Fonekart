@@ -26,12 +26,12 @@ router.get('/home',middleman.isBlocked,services.home)
 
 // Register page router
 router.get('/regiter',services.register)
-router.post('/regiter',services.register)
+// router.post('/regiter',services.register)
 
 // OTP page router
 router.get('/otppage',services.otppage)
 // Resend otp 
-// router.get('/resendOtp',controller.resendOtp)
+router.get('/resendOtp',controller.resendOtp)
 
 // Forgot page router
 router.get('/forgetpage',services.forgetpage) 

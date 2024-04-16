@@ -212,7 +212,7 @@
 
             </div>
 
-            <div class="col-lg-4  col-12 mt-4  ">
+            <div id="orderDetails" class="col-lg-4  col-12 mt-4  ">
                 <% let Subtotal=0 %>
                     <% if (Checkout && Checkout.length> 0) { %>
                         <div
@@ -224,7 +224,7 @@
                                     <% Checkout.forEach(item=> {
                                         if (item.offerDetails && item.offerDetails[0]) {
                                         Discount += (item.productDetails[0].price * item.cartItems.quantity *
-                                        item.offerDetails[0].discount / 100) 
+                                        item.offerDetails[0].discount / 100)
                                         }
                                         }) %>
                                         <div class="order-item">
@@ -270,7 +270,7 @@
                                                     <% if (typeof totalUsingCoupon !=='undefined' ) { %>
                                                         <p
                                                             style="color: red; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
-                                                            ₹ <%= totalUsingCoupon %> 
+                                                            ₹ <%= totalUsingCoupon %>
                                                         </p>
                                                         <% } else { %>
                                                             <p
@@ -316,10 +316,17 @@
                                                                         <td>₹<%= coupons[i].MaxPrice %>
                                                                         </td>
                                                                         <td>
-                                                                            <%= new
-                                                                                Date(coupons[i].expiryDate).toLocaleDateString()
-                                                                                %>
+                                                                            <% const expiryDate=new
+                                                                                Date(coupons[i].expiryDate); const
+                                                                                today=new Date(); if (expiryDate <
+                                                                                today) { %>
+                                                                                <p class="text-danger">Expired</p>
+                                                                                <% } else { %>
+                                                                                    <%= expiryDate.toLocaleDateString()
+                                                                                        %>
+                                                                                        <% } %>
                                                                         </td>
+
                                                                     </tr>
                                                                     <% } %>
                                                             </tbody>
@@ -339,7 +346,7 @@
                                                                 <p
                                                                     style="color: rgb(68, 255, 0); font-family: Verdana, Geneva, Tahoma, sans-serif;">
                                                                     <b>
-                                                                        <%= success %>
+                                                                        <%#= success %>
                                                                     </b>
                                                                 </p>
                                                                 <% } %>
@@ -361,6 +368,10 @@
                                                                         <button class="" id="cpnbtn"
                                                                             style="background: #2d2821c6; color: white; padding: 4px;">Apply</button>
                                             </form>
+                                            <% if (typeof totalUsingCoupon !=='undefined' ) { %>
+                                                <button id="removeCouponButton"><i
+                                                        class="ri-chat-delete-line"></i></button>
+                                                <% } %>
                                         </div>
                         </div>
                         <% } %>
@@ -380,9 +391,7 @@
 
                     <% if (addressSelect?.address.length===0) { %>
                         <% if (typeof address !=='undefined' ) { %>
-                            <p style="color: red;"><b>
-                                    <%= address %>
-                                </b></p>
+
                             <% } %>
                                 <% } else { %>
                                     <% for (let i=0; i < addressSelect?.address.length; i++) { %>
@@ -414,14 +423,16 @@
                                                 <% } %>
                                                     <% } %>
 
-                                                        <button type="button" class="btn btn-primary bg-dark"
-                                                            data-toggle="modal" data-target="#changeAddressModal"
-                                                            style="margin-top: 10px; border-radius: 10px;">Change
-                                                            Address</button>
-                                                        <button type="button" class="btn bg-warning"
-                                                            style="margin-top: 10px; border-radius: 10px;"
-                                                            data-toggle="modal" data-target="#addAddressModal">+Add
-                                                            address</button>
+                                                        <% if(addressSelect?.address.length !=0){ %>
+                                                            <button type="button" class="btn btn-primary bg-dark"
+                                                                data-toggle="modal" data-target="#changeAddressModal"
+                                                                style="margin-top: 10px; border-radius: 10px;">Change
+                                                                Address</button>
+                                                            <% } %>
+                                                                <button type="button" class="btn bg-warning"
+                                                                    style="margin-top: 10px; border-radius: 10px;"
+                                                                    data-toggle="modal"
+                                                                    data-target="#addAddressModal">+Add address</button>
                 </div>
             </div>
 
@@ -530,8 +541,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addAddressModalLabel">Add Address
-                    </h5>
+                    <h5 class="modal-title" id="addAddressModalLabel">Add Address</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -572,19 +582,19 @@
                             Address</button>
                     </form>
                 </div>
-
             </div>
         </div>
     </div>
-    <div class="modal" id="changeAddressModal" tabindex="-1" role="dialog">
+    <div class="modal fade" id="changeAddressModal" tabindex="-1" role="dialog"
+        aria-labelledby="changeAddressModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content" style="width: 350px;">
-                <div class="modal-header" style="background-color: #ffffff; color: rgb(0, 0, 0);">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changeAddressModalLabel">Change Address</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-
                 <div class="modal-body" style="background-color: #ffffff; color: #721c24;">
                     <form id="checkoutForm" action="/selectAddressFromCheckout" method="get">
                         <div class="form-group">
@@ -621,49 +631,6 @@
                         <button type="button" onclick="validateForm()" class="btn btn-success">Select</button>
                     </form>
                 </div>
-
-                <div class="modal fade" id="errorMessageModal" tabindex="-1" role="dialog"
-                    aria-labelledby="errorMessageModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="errorMessageModalLabel">
-                                    Error</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                Please select at least one address.
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Error Modal -->
-                <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="errorModalLabel">Error
-                                </h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                Please select only one address.
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
@@ -696,6 +663,7 @@
             </div>
         </div>
     </footer>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
@@ -796,11 +764,15 @@
             });
         });
     </script>
+
     <script>
+        document.getElementById('removeCouponButton').addEventListener('click', function () {
+            // Refresh the page
+            location.reload();
+        });
+    </script>
 
-
-
-
+    <script>
         function validateForm() {
             var checkboxes = document.querySelectorAll('input[type="checkbox"]');
             var checkedCount = 0;
@@ -828,7 +800,6 @@
             var pincode = document.getElementById("pincode").value.trim();
             var isValid = true;
 
-            // Validate username
             if (username === "") {
                 document.getElementById("usernameError").innerText = "Please enter a username.";
                 isValid = false;
@@ -836,7 +807,6 @@
                 document.getElementById("usernameError").innerText = "";
             }
 
-            // Validate address
             if (address === "") {
                 document.getElementById("addressError").innerText = "Please enter an address.";
                 isValid = false;
@@ -844,7 +814,6 @@
                 document.getElementById("addressError").innerText = "";
             }
 
-            // Validate phone number
             if (phone === "") {
                 document.getElementById("phoneError").innerText = "Please enter a phone number.";
                 isValid = false;
@@ -852,7 +821,6 @@
                 document.getElementById("phoneError").innerText = "";
             }
 
-            // Validate city
             if (city === "") {
                 document.getElementById("cityError").innerText = "Please enter a city.";
                 isValid = false;
@@ -860,7 +828,6 @@
                 document.getElementById("cityError").innerText = "";
             }
 
-            // Validate district
             if (district === "") {
                 document.getElementById("districtError").innerText = "Please enter a district.";
                 isValid = false;
@@ -868,7 +835,6 @@
                 document.getElementById("districtError").innerText = "";
             }
 
-            // Validate pincode
             if (pincode === "") {
                 document.getElementById("pincodeError").innerText = "Please enter a pincode.";
                 isValid = false;
@@ -876,7 +842,6 @@
                 document.getElementById("pincodeError").innerText = "";
             }
 
-            // Prevent form submission if validation fails
             if (!isValid) {
                 event.preventDefault();
             }
@@ -885,8 +850,6 @@
         };
 
     </script>
-
-
 
 
 </body>

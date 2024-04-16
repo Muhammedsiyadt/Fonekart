@@ -34,13 +34,15 @@ exports.errorPage = (req, res) => {
 // Login Page
 exports.login = (req, res) => {
     const message = req.session.NotPass;
+    const register = req.session.register
     const block = req.session.blockmessage
-    res.render('login', { blockMsg: block, message: message }, (err, html) => {
+    res.render('login', { blockMsg: block, message: message ,register:register}, (err, html) => {
         if (err) {
             res.status(500).send(err)
         } else {
             delete req.session.NotPass
             delete req.session.blockmessage
+            delete req.session.register
             res.send(html)
         }
     });
@@ -61,10 +63,11 @@ exports.register = (req, res) => {
 }
 
 // OTP page
-exports.otppage = (req, res) => {
-    const otpmsg = req.session.message
-    res.render('otppage', { otpmessage: otpmsg })
+exports.otppage = async (req, res) => {
+    const otpmsg = req.session.otpValidation;
+    res.render('otppage', { otpmessage: otpmsg });
 }
+
 
 // Forgot page 
 exports.forgetpage = (req, res) => {
@@ -212,7 +215,7 @@ exports.categoryProducts = async (req, res) => {
                     $lookup: {
                         from: 'offers',
                         localField: 'offerId',
-                        foreignField: '_id',
+                        foreignField: '_id', 
                         as: 'offerDetails'
                     }
                 }
