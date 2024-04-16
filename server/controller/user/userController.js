@@ -1042,7 +1042,10 @@ exports.postingOrder = async (req, res) => {
 
             await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
 
-            await orderdb.updateMany({ 'address.phone': req.session.newOrder.address.phone }, { $set: { 'orderItems.$[].orderStatus': 'ordered' } });
+            await orderdb.updateOne(
+                { _id: newOrder._id },
+                { $set: { "orderItems.$[].orderStatus": "ordered" } }
+            )
 
             req.session.orderSuccessPage = true;
 
@@ -1060,6 +1063,11 @@ exports.postingOrder = async (req, res) => {
                 req.session.newOrder = newOrder;
 
                 await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
+
+                await orderdb.updateOne(
+                    { _id: newOrder._id },
+                    { $set: { "orderItems.$[].orderStatus": "ordered" } }
+                )
 
                 await walletdb.updateOne({ userId: userId },
                     {
