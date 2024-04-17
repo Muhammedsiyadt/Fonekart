@@ -1069,7 +1069,7 @@ exports.postingOrder = async (req, res) => {
 
                 const order = await orderdb.findOneAndUpdate(
                     { _id: newOrder._id },
-                    { $set: { "orderItems.$[].orderStatus": "ordered" } }, // Update all order items
+                    { $set: { "orderItems.$[].orderStatus": "ordered" } },
                     { new: true } // Return the updated document
                 );
 
@@ -1537,8 +1537,7 @@ exports.retryPayment = async (req, res) => {
     const queryOrderId = req.body.orderId;
 
     try {
-        if (queryPaymentMethod === "cod") {
-            console.log("yes enetring");
+        if (queryPaymentMethod === "cod") {x
             const orderFind = await orderdb.findById(queryOrderId)
             function updateOrderStatus(originalOrder, newStatus) {
                 originalOrder.orderItems.forEach((item) => {

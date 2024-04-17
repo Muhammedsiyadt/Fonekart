@@ -167,12 +167,16 @@
 
         if (!pimage) {
             imgErrmsg.push("Please select an image file")
-        } else {
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            if (!allowedTypes.includes(pimage.type)) {
-                imgErrmsg.push("Only JPEG, PNG, and GIF files are allowed");
-            }
         }
+
+        // if (!pimage) {
+        //     imgErrmsg.push("Please select an image file")
+        // } else {
+        //     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        //     if (!allowedTypes.includes(pimage.type)) {
+        //         imgErrmsg.push("Only JPEG, PNG, and GIF files are allowed");
+        //     }
+        // }
 
         if (pcolor.trim() === "") {
             clrErrmsg.push("This field is required")
