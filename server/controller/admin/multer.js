@@ -5,6 +5,7 @@ const storage = Multer.diskStorage({
     destination: (req, file, callBack) => {
         // console.log(file);
         const publicDir = path.join(__dirname,'../../../','Assets');
+        console.log(publicDir);
         const destinationPath = path.join(publicDir,'images');
         callBack(null, destinationPath);
     },        
