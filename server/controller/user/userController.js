@@ -976,7 +976,6 @@ exports.postingOrder = async (req, res) => {
             { $unwind: '$productDetails' }
         ])
 
-        // console.log(cartProducts);
 
 
         var subtotal = cartProducts.reduce((total, item) => {
@@ -1304,6 +1303,9 @@ exports.applyCoupon = async (req, res) => {
                 const discountedTotal = parseInt(total - (total * (coupon.Discount / 100)))
                 req.session.success = 'Coupon applied'
                 req.session.afterCouponApply = discountedTotal;
+                // console.log("req.session:::",req.session);
+                // console.log(req.session.afterCouponApply);
+                // console.log(discountedTotal);
 
                 req.session.couponDiscount = coupon.Discount
 
@@ -1312,6 +1314,8 @@ exports.applyCoupon = async (req, res) => {
                 res.redirect('/cart/checkout')
                 // res.redirect(`/cart/checkout?afterCouponApply=${discountedTotal}`)
                 req.session.afterCouponApply = discountedTotal;
+
+
 
 
             } else {

@@ -614,7 +614,7 @@ exports.checkout = async (req, res) => {
             delete req.session.notAvailable;
             delete req.session.success;
             delete req.session.expiredCoupon
-            delete req.session.afterCouponApply
+            // delete req.session.afterCouponApply
             res.status(200).send(html)
         });
 

@@ -84,7 +84,7 @@ router.get('/selectAddressFromCheckout', controller.selectAddressInCheckout);
 router.post('/api/add-addressToCheckoutWay',controller.addaddressFromCheckout)
 // Apply coupon
 router.post('/applyCoupon',controller.applyCoupon)
-
+ 
 
 // === UPDATE PROFILE === //
 // change user name
@@ -116,7 +116,7 @@ router.get('/orderDetailPage',middleman.isBlocked,services.orderDetailPage)
 // retry payment
 router.post('/retryPayment',controller.retryPayment)
 
-// Shubham route
+// posting route
 router.post('/postingOrder',controller.postingOrder)
 router.post('/ordersuccefull',controller.orderSuccessful)
 // invoice
