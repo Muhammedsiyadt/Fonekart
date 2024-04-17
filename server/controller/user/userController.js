@@ -1044,7 +1044,7 @@ exports.postingOrder = async (req, res) => {
 
             await orderdb.updateOne(
                 { _id: newOrder._id },
-                { $set: { "orderItems.$[].orderStatus": "ordered" } }
+                { $set: { "orderItems.orderStatus": "ordered" } }
             )
 
             req.session.orderSuccessPage = true;
