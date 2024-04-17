@@ -1034,7 +1034,7 @@ exports.postingOrder = async (req, res) => {
         });
 
         const nr = await newOrder.save()
-        console.log("okkkkkkkkkkkkkkkk", nr)
+        // console.log("okkkkkkkkkkkkkkkk", nr)
 
         if (req.body.paymentMethod === "cod") {
             await newOrder.save();
@@ -1042,10 +1042,14 @@ exports.postingOrder = async (req, res) => {
 
             await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
 
+            // await orderdb.updateOne(
+            //     { _id: newOrder._id },
+            //     { $set: { "orderItems.$[].orderStatus": "ordered" } }
+            // )
             await orderdb.updateOne(
-                { _id: newOrder._id },
-                { $set: { "orderItems.$[].orderStatus": "ordered" } }
-            )
+                { _id: newOrder._id, "orderItems.orderStatus": { $ne: "ordered" } },
+                { $set: { "orderItems.$.orderStatus": "ordered" } }
+            );
 
             req.session.orderSuccessPage = true;
 
@@ -1064,10 +1068,15 @@ exports.postingOrder = async (req, res) => {
 
                 await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
 
+                // await orderdb.updateOne(
+                //     { _id: newOrder._id },
+                //     { $set: { "orderItems.$[].orderStatus": "ordered" } }
+                // )
+
                 await orderdb.updateOne(
-                    { _id: newOrder._id },
-                    { $set: { "orderItems.$[].orderStatus": "ordered" } }
-                )
+                    { _id: newOrder._id, "orderItems.orderStatus": { $ne: "ordered" } },
+                    { $set: { "orderItems.$.orderStatus": "ordered" } }
+                );
 
                 await walletdb.updateOne({ userId: userId },
                     {
