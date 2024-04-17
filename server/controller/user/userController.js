@@ -1034,18 +1034,24 @@ exports.postingOrder = async (req, res) => {
         });
 
         const nr = await newOrder.save()
-        // console.log("okkkkkkkkkkkkkkkk", nr)
+        
 
         if (req.body.paymentMethod === "cod") {
             await newOrder.save();
             req.session.newOrder = newOrder;
 
+            const order = await orderdb.findOneAndUpdate(
+                { _id: newOrder._id },
+                { $set: { "orderItems.$[].orderStatus": "ordered" } },
+                { new: true } // Return the updated document
+            );
+
             await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
 
-            await orderdb.updateOne(
-                { _id: newOrder._id },
-                { $set: { "orderItems.orderStatus": "ordered" } }
-            )
+            // await orderdb.updateOne(
+            //     { _id: newOrder._id },
+            //     { $set: { "orderItems.$[].orderStatus": "ordered" } }
+            // )
 
             req.session.orderSuccessPage = true;
 
@@ -1062,12 +1068,18 @@ exports.postingOrder = async (req, res) => {
                 await newOrder.save()
                 req.session.newOrder = newOrder;
 
+                const order = await orderdb.findOneAndUpdate(
+                    { _id: newOrder._id },
+                    { $set: { "orderItems.$[].orderStatus": "ordered" } }, // Update all order items
+                    { new: true } // Return the updated document
+                );
+
                 await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
 
-                await orderdb.updateOne(
-                    { _id: newOrder._id },
-                    { $set: { "orderItems.$[].orderStatus": "ordered" } }
-                )
+                // await orderdb.updateOne(
+                //     { _id: newOrder._id },
+                //     { $set: { "orderItems.$[].orderStatus": "ordered" } }
+                // )
 
                 await walletdb.updateOne({ userId: userId },
                     {
