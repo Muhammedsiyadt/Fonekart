@@ -1448,6 +1448,53 @@ exports.cancelOrder = async (req, res) => {
 
 
 // Return
+// exports.return = async (req, res) => {
+//     const query = req.query.id;
+//     const user_Id = req.session.userId;
+//     const reason = req.body.reason;
+
+//     try {
+//         // Find the order and update the order status to 'returned'
+//         const findAndUpdate = await orderdb.findOneAndUpdate(
+//             {
+//                 user_id: user_Id,
+//                 'orderItems._id': query
+//             },
+//             {
+//                 $set: {
+//                     "orderItems.$.returnReason": reason,
+//                     "orderItems.$.orderStatus": "returned"
+//                 }
+//             },
+//             { new: true }
+//         );
+
+//         const returnedProduct = findAndUpdate.orderItems.find(item => item._id.toString() === query);
+//         const returnedProductPrice = returnedProduct.price;
+//         const productId = returnedProduct.productId;
+
+//         await productdb.findOneAndUpdate(
+//             { _id: productId },
+//             { $inc: { quantity: returnedProduct.quantity } },
+//             { new: true }
+//         );
+
+//         const userWallet = await walletdb.findOne({ userId: user_Id });
+
+//         userWallet.balance += returnedProductPrice;
+
+//         userWallet.transactions.push({ amount: returnedProductPrice });
+
+//         await userWallet.save();
+
+//         res.redirect('/orderList')
+//     } catch (error) {
+//         res.status(500).redirect('/500')
+//         console.error("Error returning product:", error);
+
+//     }
+// }
+
 exports.return = async (req, res) => {
     const query = req.query.id;
     const user_Id = req.session.userId;
@@ -1473,27 +1520,43 @@ exports.return = async (req, res) => {
         const returnedProductPrice = returnedProduct.price;
         const productId = returnedProduct.productId;
 
+        // Increase product quantity
         await productdb.findOneAndUpdate(
             { _id: productId },
             { $inc: { quantity: returnedProduct.quantity } },
             { new: true }
         );
 
+        // Update user's wallet balance
         const userWallet = await walletdb.findOne({ userId: user_Id });
-
         userWallet.balance += returnedProductPrice;
-
         userWallet.transactions.push({ amount: returnedProductPrice });
-
         await userWallet.save();
 
-        res.redirect('/orderList')
-    } catch (error) {
-        res.status(500).redirect('/500')
-        console.error("Error returning product:", error);
+        // Calculate new totalAmount
+        let totalAmount = findAndUpdate.totalAmount - returnedProductPrice;
+        // If totalAmount becomes negative due to rounding or other reasons, ensure it stays positive
+        if (totalAmount < 0) {
+            totalAmount = 0;
+        }
 
+        // Update order's totalAmount
+        await orderdb.findOneAndUpdate(
+            {
+                user_id: user_Id,
+                'orderItems._id': query
+            },
+            { $set: { totalAmount: totalAmount } },
+            { new: true }
+        );
+
+        res.redirect('/orderList');
+    } catch (error) {
+        res.status(500).redirect('/500');
+        console.error("Error returning product:", error);
     }
 }
+
 
 // Return reason
 // exports.returnReasonSave = async (req, res) => {
@@ -1537,7 +1600,7 @@ exports.retryPayment = async (req, res) => {
     const queryOrderId = req.body.orderId;
 
     try {
-        if (queryPaymentMethod === "cod") {x
+        if (queryPaymentMethod === "cod") {
             const orderFind = await orderdb.findById(queryOrderId)
             function updateOrderStatus(originalOrder, newStatus) {
                 originalOrder.orderItems.forEach((item) => {
