@@ -461,7 +461,7 @@ exports.getDetailsChart = async (req, res) => {
                     }
                 }
             ]
-        );
+        );         
         // console.log(orders);     
 
         orders.forEach((order) => {
