@@ -481,7 +481,7 @@ exports.editAddress = async (req, res) => {
         // console.log(addressIdpass);
 
 
-        res.render('editaddress', { editAddress: addressIdpass })
+        res.render('editAddress', { editAddress: addressIdpass })
     } catch (error) {
         res.status(500).redirect('/500')
         console.log(error);
