@@ -508,7 +508,7 @@ exports.add_product = async (req, res) => {
         const images = [];
         await Promise.all(req.files.map(async (file) => {
             const filename = `image_${Date.now()}.jpg`; // Adjust filename as needed
-            const imagePath = `Assets/images/${filename}`;
+            const imagePath = `assets/images/${filename}`;
 
             // Check if file exists before resizing
             if (!fs.existsSync(file.path)) {
