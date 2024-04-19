@@ -499,10 +499,7 @@ exports.add_product = async (req, res) => {
         // Check if product with the same name already exists
         const productName = req.body.productName;
         const productData = await productdb.findOne({ Pname: productName });
-        if (productData !== null) {
-            req.session.productError = 'Product with this name already exists';
-            return res.redirect('/product_management');
-        }
+         
 
         // Resize and save uploaded images, and push their paths into the images array
         const images = [];
@@ -603,7 +600,7 @@ exports.submitEdit_product = async (req, res) => {
                 }
 
                 await sharp(file.path)
-                    .resize({ width: 400, height: 400, fit: 'contain', withoutEnlargement: true, background: 'white' })
+                    .resize({ width: 500, height: 500, fit: 'contain', withoutEnlargement: true, background: 'white' })
                     .toFile(imagePath);
 
                 images.push(`/images/${filename}`); // Push image path into the images array
