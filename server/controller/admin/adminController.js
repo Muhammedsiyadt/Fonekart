@@ -585,34 +585,54 @@ exports.add_product = async (req, res) => {
 // }
 
 exports.submitEdit_product = async (req, res) => {
-    const file = req.files;
+    try {
+        let images = [];
+        const file = req.files;
 
+        // Check if files were uploaded
+        if (file && file.length > 0) {
+            // Resize and save uploaded images, and push their paths into the images array
+            await Promise.all(file.map(async (file) => {
+                const filename = `image_${Date.now()}.jpg`; // Adjust filename as needed
+                const imagePath = `assets/images/${filename}`;
 
-    let images = [];
-    if (file && file.length > 0) {
+                // Check if file exists before resizing
+                if (!fs.existsSync(file.path)) {
+                    console.error(`File ${file.path} not found`);
+                    return;
+                }
 
-        images = file.map(file => `/images/${file.originalname}`);
-    } else {
+                await sharp(file.path)
+                    .resize({ width: 500, height: 500, fit: 'contain', withoutEnlargement: true, background: 'white' })
+                    .toFile(imagePath);
 
-        const existingProduct = await productdb.findById(req.query.id);
-        images = existingProduct.images;
-    }
-
-
-    const idpass = await productdb.findOneAndUpdate({ _id: req.query.id }, {
-        $set: {
-            Pname: req.body.productName,
-            Pcategory: req.body.categoryName,
-            Pmodel: req.body.productModel,
-            price: req.body.price,
-            color: req.body.color,
-            quantity: req.body.Quantity,
-            images: images
+                images.push(`/images/${filename}`); // Push image path into the images array
+            }));
+        } else {
+            // If no new files were uploaded, use existing images
+            const existingProduct = await productdb.findById(req.query.id);
+            images = existingProduct.images;
         }
-    });
 
-    res.redirect('/product_management');
-}
+        // Update the product with the new data and images
+        await productdb.findOneAndUpdate({ _id: req.query.id }, {
+            $set: {
+                Pname: req.body.productName,
+                Pcategory: req.body.categoryName,
+                Pmodel: req.body.productModel,
+                price: req.body.price,
+                color: req.body.color,
+                quantity: req.body.Quantity,
+                images: images
+            }
+        });
+
+        res.redirect('/product_management');
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send("Internal Server Error");
+    }
+};
 
 
 // delete product

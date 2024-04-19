@@ -186,12 +186,17 @@
             if (pprice < 0) {
                 prErrmsg.push("Negative value not allowed")
             }
+            
 
             if (punit.trim() === "") {
                 uniErrmsg.push("This feild is required")
             }
             if (punit < 0) {
                 uniErrmsg.push("Negative value not allowed")
+            }
+
+            if (punit == 0) {
+                uniErrmsg.push("Zero not allowed")
             }
 
             

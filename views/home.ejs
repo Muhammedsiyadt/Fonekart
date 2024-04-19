@@ -246,7 +246,7 @@
           </div>
           <div class="searchBox d-flex align-items-center">
 
-            <input type="text" name="search" placeholder="Search for Products" required/>
+            <input type="text" name="search" placeholder="Search for Products" required />
             <button type="submit" class="searchBtn d-flex justify-content-center align-items-center">
               <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -299,9 +299,9 @@
   <h2 style="padding: 10px; text-align: center; margin-top: 20px; color: #FFF;"><b><em>New <b>Arrival</b></em></b></h2>
   <div class=" p-5"
     style="display: flex;flex-wrap:wrap;gap: 12px;  justify-content: center; margin-top: 10px; background-color: black;">
-    <% for (let i=6; i < 9; i++) { %>
+    <% for (let i=2; i < 5; i++) { %>
       <a>
-        <div class=" bg-light p-2" id="fullcards" style="height: 550px; border-radius: 5px;">
+        <div class=" bg-light p-2" id="fullcards" style="height: 550px;  border-radius: 15px;">
 
           <a style="margin-left: 350px;" href="/home/addToWislist?id=<%= product[i]._id %>"><button>
               <i class="ri-heart-line text-danger "></i></button></a>
@@ -321,11 +321,12 @@
               <% if (product[i].offerDetails && product[i].offerDetails[0] !=null) { %>
                 <del style="color: #33333376;">₹ <%= product[i].price %></del>
                 <% if (product[i].offerDetails && product[i].offerDetails[0] !=null) { %>
-                  
+
                   <br>
                   <% } %>
-                  <p class="text-success">Offer<%= product[i].offerDetails[0]?.discount %>%</p>
-                  <b class="text-dark ml-2">₹ <%= Math.floor(product[i].price - (product[i].price * product[i].offerDetails[0]?.discount / 100)) %></b>
+                    <p class="text-success">Offer<%= product[i].offerDetails[0]?.discount %>%</p>
+                    <b class="text-dark ml-2">₹ <%= Math.floor(product[i].price - (product[i].price *
+                        product[i].offerDetails[0]?.discount / 100)) %></b>
 
                     <% }else{ %>
                       <b>₹ <%= product[i].price %></b>
