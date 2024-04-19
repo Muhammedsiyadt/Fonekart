@@ -31,7 +31,7 @@
     "pdfkit": "^0.14.0",
     "pdfkit-table": "^0.1.99",
     "razorpay": "^2.9.2",
-    "sharp": "^0.33.2",
+    "sharp": "^0.33.3",
     "shortid": "^2.2.16"
   }
 }

@@ -61,7 +61,7 @@ adminRouter.get('/product/delete-products',controller.deleteproduct)
 // Unlist to product
 adminRouter.get('/unlistToProduct',controller.unlistToProduct)
 // image seperate delete while editing
-adminRouter.get('/imageDeleteSeperate',controller.imageDeleteSeperate)
+adminRouter.get('/imageDeleteSeperate', controller.imageDeleteSeperate);
 
 
 // USER_MANAGEMENT -------------------------------------------------------------------------

@@ -15,7 +15,7 @@ const schema = new mongoose.Schema({
     },
     Maxuse: {
         type: Number,
-        required: true
+        default:0
     },
     MaxPrice: {
         type: Number,

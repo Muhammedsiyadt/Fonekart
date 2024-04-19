@@ -111,7 +111,10 @@
             } else if (isNaN(discount) || parseInt(discount) < 0) {
                 document.getElementById("discountError").innerText = "Discount must be a positive number.";
                 isValid = false;
-            }
+            } else if (parseInt(discount) > 100) {
+                document.getElementById("discountError").innerText = "Discount must be less than 100%.";
+                isValid = false;
+            } 
     
             // Validate Expiry Date
             const expiryDate = document.getElementById("expiryDate").value.trim();

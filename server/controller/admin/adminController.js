@@ -9,9 +9,10 @@ const coupondb = require('../../model/couponSchema')
 const { default: mongoose } = require('mongoose')
 const offerdb = require('../../model/offerSchema')
 const refferaldb = require('../../model/refferalSchema')
-const PDFDocument = require("pdfkit-table")   
+const PDFDocument = require("pdfkit-table")
 const fs = require("fs")
 const moment = require('moment')
+const sharp = require('sharp')
 
 
 
@@ -41,7 +42,7 @@ exports.verifylogin = (req, res) => {
 }
 
 // logout
-exports.logout = async (req,res) => {
+exports.logout = async (req, res) => {
     try {
         req.session.destroy()
         // console.log("admin logged out");
@@ -69,7 +70,7 @@ exports.dailyReport = async (req, res) => {
         });
 
 
-        const doc = new PDFDocument(); 
+        const doc = new PDFDocument();
 
 
         res.setHeader('Content-Type', 'application/pdf');
@@ -94,9 +95,9 @@ exports.dailyReport = async (req, res) => {
                     order.address.name,
                     `${order.address.address}, ${order.address.district}, ${order.address.city}, ${order.address.pin}`,
                     order.address.phone,
-                    item.Pname || 'N/A', 
+                    item.Pname || 'N/A',
                     item.category || 'N/A',
-                    item.orderStatus || 'N/A', 
+                    item.orderStatus || 'N/A',
                     item.price !== undefined ? item.price.toString() : 'N/A'
                 ])
                 if (item.price !== undefined) {
@@ -131,7 +132,7 @@ exports.dailyReport = async (req, res) => {
 exports.weeklyReport = async (req, res) => {
     try {
         const startDate = new Date()
-        const endDate = new Date(startDate.getTime() - 7 * 24 * 60 * 60 * 1000) 
+        const endDate = new Date(startDate.getTime() - 7 * 24 * 60 * 60 * 1000)
 
         let doc = new PDFDocument({ margin: 10, size: 'A4' }) // Move this line up
 
@@ -461,8 +462,8 @@ exports.getDetailsChart = async (req, res) => {
                     }
                 }
             ]
-        );         
-        // console.log(orders);         
+        );
+        // console.log(orders);  
 
         orders.forEach((order) => {
             if (index === 2) {
@@ -479,7 +480,7 @@ exports.getDetailsChart = async (req, res) => {
             salesCount,
         });
     } catch (err) {
-       res.status(500).redirect('/err500');
+        res.status(500).redirect('/err500');
     }
 }
 
@@ -490,25 +491,39 @@ exports.getDetailsChart = async (req, res) => {
 // add product
 exports.add_product = async (req, res) => {
     if (!req.body) {
-        res.status(400).send('Enter anything')
-        return
+        res.status(400).send('Enter anything');
+        return;
     }
-
-    const productName = req.body.Pname
-
-    const productData = await productdb.findOne({ Pname: productName })
-    if (productData !== null) {
-        req.session.productError = 'Already used this product'
-        return res.redirect('/product_management')
-    }
-    const file = req.files
-    const images = [];
-    file.map(files => {
-        return images.push(`/images/${files.originalname}`);
-    });
 
     try {
+        // Check if product with the same name already exists
+        const productName = req.body.productName;
+        const productData = await productdb.findOne({ Pname: productName });
+        if (productData !== null) {
+            req.session.productError = 'Product with this name already exists';
+            return res.redirect('/product_management');
+        }
 
+        // Resize and save uploaded images, and push their paths into the images array
+        const images = [];
+        await Promise.all(req.files.map(async (file) => {
+            const filename = `image_${Date.now()}.jpg`; // Adjust filename as needed
+            const imagePath = `assets/images/${filename}`;
+
+            // Check if file exists before resizing
+            if (!fs.existsSync(file.path)) {
+                console.error(`File ${file.path} not found`);
+                return;
+            }
+
+            await sharp(file.path)
+                .resize({ width: 500, height: 500, fit: 'contain', withoutEnlargement: true, background: 'white' })
+                .toFile(imagePath);
+
+            images.push(`/images/${filename}`); // Push image path into the images array
+        }));
+
+        // Create new product instance and save to database
         const addproduct = new productdb({
             Pname: req.body.productName,
             Pcategory: req.body.categoryName,
@@ -517,37 +532,56 @@ exports.add_product = async (req, res) => {
             price: req.body.price,
             color: req.body.color,
             quantity: req.body.Quantity,
-            images: images
-
-        })
-
+            images: images // Assign the images array to the images property
+        });
 
         await addproduct.save();
-        res.redirect('/product_management')
+        res.redirect('/product_management');
     } catch (error) {
-        console.log(error);
+        console.error("Error:", error);
+        res.status(500).send("Internal Server Error");
     }
-}
+};
 
-// edit product 
-// exports.submitEdit_product = async (req, res) => {
+// exports.add_product = async (req, res) => {
+//     if (!req.body) {
+//         res.status(400).send('Enter anything')
+//         return
+//     }
 
+//     const productName = req.body.Pname
+
+//     const productData = await productdb.findOne({ Pname: productName })
+//     if (productData !== null) {
+//         req.session.productError = 'Already used this product'
+//         return res.redirect('/product_management')
+//     }
 //     const file = req.files
-
 //     const images = [];
 //     file.map(files => {
 //         return images.push(`/images/${files.originalname}`);
 //     });
-//     const idpass = await productdb.findOneAndUpdate({ _id: req.query.id }, {
-//         $set: {
-//             Pname: req.body.productName, Pcategory: req.body.categoryName,
-//             Pmodel: req.body.productModel, price: req.body.price, color: req.body.color, quantity: req.body.Quantity, images: images
-//         }
-//     })
+
+//     try {
+
+//         const addproduct = new productdb({
+//             Pname: req.body.productName,
+//             Pcategory: req.body.categoryName,
+//             productDescription: req.body.productDescription,
+//             Pmodel: req.body.productModel,
+//             price: req.body.price,
+//             color: req.body.color,
+//             quantity: req.body.Quantity,
+//             images: images
+
+//         })
 
 
-
-//     res.redirect('/product_management')
+//         await addproduct.save();
+//         res.redirect('/product_management')
+//     } catch (error) {
+//         console.log(error);
+//     }
 // }
 
 exports.submitEdit_product = async (req, res) => {
@@ -617,7 +651,7 @@ exports.imageDeleteSeperate = async (req, res) => {
 
         await productdb.findOneAndUpdate(
             { images: img },
-            { $pull: { images: img } } 
+            { $pull: { images: img } }
         );
 
 
