@@ -603,7 +603,7 @@ exports.submitEdit_product = async (req, res) => {
                 }
 
                 await sharp(file.path)
-                    .resize({ width: 500, height: 500, fit: 'contain', withoutEnlargement: true, background: 'white' })
+                    .resize({ width: 400, height: 400, fit: 'contain', withoutEnlargement: true, background: 'white' })
                     .toFile(imagePath);
 
                 images.push(`/images/${filename}`); // Push image path into the images array

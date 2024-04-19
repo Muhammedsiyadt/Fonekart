@@ -296,49 +296,7 @@
 
 
 
-  <h2 style="padding: 10px; text-align: center; margin-top: 20px; color: #FFF;"><b><em>New <b>Arrival</b></em></b></h2>
-  <div class=" p-5"
-    style="display: flex;flex-wrap:wrap;gap: 12px;  justify-content: center; margin-top: 10px; background-color: black;">
-    <% for (let i=2; i < 5; i++) { %>
-      <a>
-        <div class=" bg-light p-2" id="fullcards" style="height: 550px;  border-radius: 15px;">
-
-          <a style="margin-left: 350px;" href="/home/addToWislist?id=<%= product[i]._id %>"><button>
-              <i class="ri-heart-line text-danger "></i></button></a>
-          <a href="/home/singleProduct?id=<%= product[i]._id %>" style="display: flex;justify-content: center;">
-            <img style="width: 300px; height: 400px;" class="p-8 rounded-t-lg" id="imgss"
-              src="<%= product[i].images[0] %>" alt="product image" />
-          </a>
-          <div class="px-5 pb-5" style="text-align: c;">
-
-            <h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text- white">
-              <%= product[i].Pname %>
-            </h5>
-
-
-            <div class="flex items-center mt-2.5 mb-5">
-
-              <% if (product[i].offerDetails && product[i].offerDetails[0] !=null) { %>
-                <del style="color: #33333376;">₹ <%= product[i].price %></del>
-                <% if (product[i].offerDetails && product[i].offerDetails[0] !=null) { %>
-
-                  <br>
-                  <% } %>
-                    <p class="text-success">Offer<%= product[i].offerDetails[0]?.discount %>%</p>
-                    <b class="text-dark ml-2">₹ <%= Math.floor(product[i].price - (product[i].price *
-                        product[i].offerDetails[0]?.discount / 100)) %></b>
-
-                    <% }else{ %>
-                      <b>₹ <%= product[i].price %></b>
-                      <% } %>
-            </div>
-
-
-          </div>
-        </div>
-        <% } %>
-      </a>
-  </div>
+ 
 
 
 
