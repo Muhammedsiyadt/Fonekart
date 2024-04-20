@@ -149,11 +149,7 @@
                   <%= OrderData[i].orderItems.quantity %>
                 </td>
                 <td><b>₹</b>
-                  <% let totalPrice = OrderData[i].orderItems.priceAfterCoupon 
-                 totalPrice= totalPrice===0?OrderData[i].orderItems.price:OrderData[i].orderItems.priceAfterCoupon 
-                  %>
-                  
-                  <%= totalPrice * OrderData[i].orderItems.quantity %>
+                  <%= OrderData[i].totalAmount %>
                 </td>
                 <td>
                   <%= new Date(OrderData[i].orderDate).toLocaleDateString() %>

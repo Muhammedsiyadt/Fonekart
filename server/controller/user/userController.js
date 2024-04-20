@@ -1036,7 +1036,8 @@ exports.postingOrder = async (req, res) => {
         
 
         if (req.body.paymentMethod === "cod") {
-            await newOrder.save();
+            console.log(newOrder);
+            await newOrder.save();   
             req.session.newOrder = newOrder;
 
             const order = await orderdb.findOneAndUpdate(
@@ -1044,6 +1045,8 @@ exports.postingOrder = async (req, res) => {
                 { $set: { "orderItems.$[].orderStatus": "ordered" } },
                 { new: true } // Return the updated document
             );
+
+            delete req.session.afterCouponApply
 
             await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
 
@@ -1072,6 +1075,8 @@ exports.postingOrder = async (req, res) => {
                     { $set: { "orderItems.$[].orderStatus": "ordered" } },
                     { new: true } // Return the updated document
                 );
+
+                delete req.session.afterCouponApply
 
                 await cartdb.updateMany({ user_id: userId }, { $set: { cartItems: [] } })
 
@@ -1160,6 +1165,8 @@ exports.orderSuccessful = async (req, res) => {
                 { $set: { "orderItems.$[].orderStatus": "ordered" } }
             )
 
+
+            delete req.session.afterCouponApply
 
             return res.status(200).redirect("/orderSuccessPage");
         } else {
@@ -1336,6 +1343,12 @@ exports.applyCoupon = async (req, res) => {
 
 }
 
+// Remove coupon 
+exports.removeCoupon = async (req,res) => {
+     delete req.session.afterCouponApply
+     res.redirect('/cart/checkout')
+}
+
 
 // cancel order 
 // exports.cancelOrder = async (req, res) => {
@@ -1411,13 +1424,18 @@ exports.cancelOrder = async (req, res) => {
             }
         );
 
+
         if (!updatedOrder || !updatedOrder.orderItems) {
             return res.status(404).json({ message: 'Order not found' });
         }
 
         const canceledOrderItem = updatedOrder.orderItems.find(item => item._id.toString() === query);
         const productId = canceledOrderItem.productId;
-        const returnedProductPrice = canceledOrderItem.price;
+
+
+            var returnedProductPrice = updatedOrder.totalAmount;
+    
+        
 
         let userWallet = await walletdb.findOne({ userId: user_Id });
 
@@ -1517,6 +1535,7 @@ exports.return = async (req, res) => {
         );
 
         const returnedProduct = findAndUpdate.orderItems.find(item => item._id.toString() === query);
+
         const returnedProductPrice = returnedProduct.price;
         const productId = returnedProduct.productId;
 

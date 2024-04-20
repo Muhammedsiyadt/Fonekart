@@ -55,24 +55,25 @@
         }
     
         function validateForm() {
-            const couponCodeInput = document.getElementById('couponCode');
-            const couponCodeError = document.getElementById('couponCodeError');
-            if (couponCodeInput.value.trim() === '' || couponCodeInput.value.includes(' ')) {
-                couponCodeError.style.display = 'block';
-                return; // Exit the function if there's an error
-            } else {
-                couponCodeError.style.display = 'none';
-            }
-    
-            // Discount validation
-            const discountInput = document.getElementById('discount');
-            const discountError = document.getElementById('discountError');
-            if (discountInput.value.trim() === '' || discountInput.value.includes(' ')) {
-                discountError.style.display = 'block';
-                return;
-            } else {
-                discountError.style.display = 'none';
-            }
+    const couponCodeInput = document.getElementById('couponCode');
+    const couponCodeError = document.getElementById('couponCodeError');
+    if (couponCodeInput.value.trim() === '' || couponCodeInput.value.includes(' ')) {
+        couponCodeError.style.display = 'block';
+        return; // Exit the function if there's an error
+    } else {
+        couponCodeError.style.display = 'none';
+    }
+
+    // Discount validation
+    const discountInput = document.getElementById('discount');
+    const discountError = document.getElementById('discountError');
+    const discountValue = parseFloat(discountInput.value); // Parse discount value as a float
+    if (discountInput.value.trim() === '' || discountInput.value.includes(' ') || discountValue === 0 || discountValue >= 100) {
+        discountError.style.display = 'block';
+        return;
+    } else {
+        discountError.style.display = 'none';
+    }
     
             // Max Use validation
             const maxUseInput = document.getElementById('maxUse');

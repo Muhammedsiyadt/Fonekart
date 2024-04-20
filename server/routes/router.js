@@ -84,6 +84,8 @@ router.get('/selectAddressFromCheckout', controller.selectAddressInCheckout);
 router.post('/api/add-addressToCheckoutWay',controller.addaddressFromCheckout)
 // Apply coupon
 router.post('/applyCoupon',controller.applyCoupon)
+// remove coupon 
+router.get('/remove_coupon',controller.removeCoupon)
  
 
 // === UPDATE PROFILE === //

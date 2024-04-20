@@ -599,7 +599,7 @@ exports.checkout = async (req, res) => {
             coupons:coupons,
             address: address,
             walletInfo: wallet,
-            totalUsingCoupon: TotalPriceChangeUsingCoupon,
+            totalUsingCoupon: TotalPriceChangeUsingCoupon, 
             maxError: maxError,
             notAvailable: notAvailableCoupon,
             success: success,
@@ -659,9 +659,6 @@ exports.orderList = async (req, res) => {
             }
         ])
 
-
-
-
         const totalOrders = await orderdb.aggregate([
             {
                 $match: { user_id: new mongoose.Types.ObjectId(user_Id) }
@@ -672,7 +669,7 @@ exports.orderList = async (req, res) => {
                     count: { $sum: 1 }
                 }
             }
-        ]);
+        ]) 
 
 
         const totalCount = totalOrders.length > 0 ? totalOrders[0].count : 0;
