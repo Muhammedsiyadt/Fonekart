@@ -203,7 +203,7 @@
                                     <%= order.orderItems[i].quantity %>
                                 </p>
                                 <p><strong>Price:</strong>
-                                    <%=order.orderItems[i].quantity * order.orderItems[0].price  %>
+                                    <%=order.orderItems[i].quantity * order.orderItems[i].price  %>
                                 </p>
 
                             </div>
@@ -214,11 +214,11 @@
                 <p style="text-decoration: none;"><strong>Total Price:</strong>
                     <%=order.totalAmount %>
                 </p>
-                <% for(i=0;i<order.orderItems.length;i++){ %>
-                <p style="text-decoration: none;"><strong>Discount: </strong>
-                    <%= order.orderItems[i].quantity * order.orderItems[0].price - order.totalAmount %>
-                </p>
-                <% } %>
+                <%# for(i=0;i<order.orderItems.length;i++){ %>
+                <!-- <p style="text-decoration: none;"><strong>Discount: </strong> -->
+                    <%#= order.orderItems[i].quantity * order.orderItems[i].price - order.totalAmount %>
+                <!-- </p> -->
+                <%# } %>
             </div>
         </div>
     </div>
