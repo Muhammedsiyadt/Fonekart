@@ -98,7 +98,7 @@
             color: #000000;
         }
 
-        .modal {
+        #myModal2 {
             display: none;
             position: fixed;
             z-index: 1;
@@ -110,7 +110,7 @@
             background-color: rgba(0, 0, 0, 0.4);
         }
 
-        .modal-content {
+        #md {
             background-color: #fefefe;
             margin: 15% auto;
             padding: 20px;
@@ -282,113 +282,94 @@
                                                 </h5>
                                             </span>
                                         </div>
-                                        <div class="pt-2"
+                                        <div class="pt-1"
                                             style="border: 1px #ffffff31 solid; padding: 10px; text-align: center; justify-content: end;">
-                                            <%
-                                            if (typeof totalUsingCoupon === 'undefined') {
-                                            %>
-                                                <h5 style="color: #000000; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">
-                                                    Apply the Coupon
-                                                </h5>
-                                                <button id="openModalBtn" class="bg-warning mb-2">Available Coupons</button>
-                                            <%
-                                            } else {
-                                                var discountDifference = Math.floor((Subtotal - Discount).toFixed(2)) - totalUsingCoupon;
-                                            %>
-                                                <b>Coupon Applied</b>
-                                                <p class="text-success">Discount: <strong><%= discountDifference %>₹</strong></p>
-                                                <a href="/remove_coupon"><button class="btn btn-danger" id="removeCouponBtn">Remove</button> </a>
-                                            <%
-                                            }
-                                            %>
+                                            <h5
+                                                style="color: #000000; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">
+                                                Apply the Coupon</h5>
+                                            <button id="openModalBtn" class="bg-warning mb-2">Available Coupons</button>
 
+                                            <div id="myModal2" class="modal">
+                                                <!-- Modal content -->
+                                                <div class="modal-content" id="md">
+                                                    <span class="close">&times;</span>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-striped">
+                                                            <thead>
+                                                                <tr>
+                                                                    <!-- <th>No</th> -->
+                                                                    <th>Coupon code</th>
+                                                                    <th>Discount</th>
+                                                                    <th>Maximum Price</th>
+                                                                    <th>Expiry Date</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <% for (let i=0; i < coupons.length; i++) { %>
+                                                                    <tr>
+                                                                        <!-- <td><%#= 1 %></td> -->
+                                                                        <td>
+                                                                            <%= coupons[i].Code %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <%= coupons[i].Discount %>%
+                                                                        </td>
+                                                                        <td>₹<%= coupons[i].MaxPrice %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <% const expiryDate=new
+                                                                                Date(coupons[i].expiryDate); const
+                                                                                today=new Date(); if (expiryDate <
+                                                                                today) { %>
+                                                                                <p class="text-danger">Expired</p>
+                                                                                <% } else { %>
+                                                                                    <%= expiryDate.toLocaleDateString()
+                                                                                        %>
+                                                                                        <% } %>
+                                                                        </td>
 
+                                                                    </tr>
+                                                                    <% } %>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
 
-                                                        <div id="myModal" class="modal">
-                                                            <!-- Modal content -->
-                                                            <div class="modal-content">
-                                                                <span class="close">&times;</span>
-                                                                <div class="table-responsive">
-                                                                    <table class="table table-striped">
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <!-- <th>No</th> -->
-                                                                                <th>Coupon code</th>
-                                                                                <th>Discount</th>
-                                                                                <th>Maximum Price</th>
-                                                                                <th>Expiry Date</th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            <% for (let i=0; i < coupons.length; i++) {
-                                                                                %>
-                                                                                <tr>
-                                                                                    <!-- <td><%#= 1 %></td> -->
-                                                                                    <td>
-                                                                                        <%= coupons[i].Code %>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <%= coupons[i].Discount %>%
-                                                                                    </td>
-                                                                                    <td>₹<%= coupons[i].MaxPrice %>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <% const expiryDate=new
-                                                                                            Date(coupons[i].expiryDate);
-                                                                                            const today=new Date(); if
-                                                                                            (expiryDate < today) { %>
-                                                                                            <p class="text-danger">
-                                                                                                Expired</p>
-                                                                                            <% } else { %>
-                                                                                                <%= expiryDate.toLocaleDateString()
-                                                                                                    %>
-                                                                                                    <% } %>
-                                                                                    </td>
-
-                                                                                </tr>
-                                                                                <% } %>
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <form action="/applyCoupon" method="post">
-                                                            <% if (typeof notAvailable !=='undefined' ) { %>
-                                                                <p style="color: red;"><b>
-                                                                        <%= notAvailable %>
-                                                                    </b></p>
+                                            <form action="/applyCoupon" method="post">
+                                                <% if (typeof notAvailable !=='undefined' ) { %>
+                                                    <p style="color: red;"><b>
+                                                            <%= notAvailable %>
+                                                        </b></p>
+                                                    <% } %>
+                                                        <h5>
+                                                            <% if (typeof success !=='undefined' ) { %>
+                                                                <p
+                                                                    style="color: rgb(68, 255, 0); font-family: Verdana, Geneva, Tahoma, sans-serif;">
+                                                                    <b>
+                                                                        <%#= success %>
+                                                                    </b>
+                                                                </p>
                                                                 <% } %>
-                                                                    <h5>
-                                                                        <% if (typeof success !=='undefined' ) { %>
-                                                                            <p
-                                                                                style="color: rgb(68, 255, 0); font-family: Verdana, Geneva, Tahoma, sans-serif;">
-                                                                                <b>
-                                                                                    <%#= success %>
-                                                                                </b>
-                                                                            </p>
-                                                                            <% } %>
-                                                                    </h5>
-                                                                    <% if (typeof expired !=='undefined' ) { %>
-                                                                        <p style="color: red;"><b>
-                                                                                <%= expired %>
-                                                                            </b></p>
-                                                                        <% } %>
-                                                                            <% if (typeof maxError !=='undefined' ) { %>
-                                                                                <p style="color: red;"><b>
-                                                                                        <%= maxError %>
-                                                                                    </b></p>
-                                                                                <% } %>
+                                                        </h5>
+                                                        <% if (typeof expired !=='undefined' ) { %>
+                                                            <p style="color: red;"><b>
+                                                                    <%= expired %>
+                                                                </b></p>
+                                                            <% } %>
+                                                                <% if (typeof maxError !=='undefined' ) { %>
+                                                                    <p style="color: red;"><b>
+                                                                            <%= maxError %>
+                                                                        </b></p>
+                                                                    <% } %>
 
-                                                                                    <input class="text-dark" id="cpn"
-                                                                                        name="couponCode"
-                                                                                        style="padding: 4px;"
-                                                                                        type="text"
-                                                                                        placeholder="Coupon code">
-                                                                                    <button class="" id="cpnbtn"
-                                                                                        style="background: #2d2821c6; color: white; padding: 4px;">Apply</button>
-                                                        </form>
-
+                                                                        <input class="text-dark" id="cpn"
+                                                                            name="couponCode" style="padding: 4px;"
+                                                                            type="text" placeholder="Coupon code" required>
+                                                                        <button class="" id="cpnbtn"
+                                                                            style="background: #2d2821c6; color: white; padding: 4px;">Apply</button>
+                                            </form>
+                                    
                                         </div>
                         </div>
                         <% } %>
@@ -605,20 +586,20 @@
     <div class="modal fade" id="changeAddressModal" tabindex="-1" role="dialog"
         aria-labelledby="changeAddressModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content" style="width: 350px;">
                 <div class="modal-header">
                     <h5 class="modal-title" id="changeAddressModalLabel">Change Address</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" style="background-color: #ffffff; color: #721c24;">
+                <div class="modal-body" style="background-color: #ffffff; color: #000000; ">
                     <form id="checkoutForm" action="/selectAddressFromCheckout" method="get">
                         <div class="form-group">
 
                             <% for(let i=0; i < addressSelect?.address.length; i++) { %>
                                 <div
-                                    style="border: solid rgb(194, 194, 205); border-radius: 6px; width: 320px; margin-bottom: 10px; background-color: #fff; padding: 10px;">
+                                    style="border: solid rgb(194, 194, 205); border-radius: 6px; width: 300px; margin-bottom: 10px; background-color: #fff; padding: 10px;">
                                     <br>
                                     <b style="margin-left: 10px;">Name :</b><span>
                                         <%= addressSelect?.address[i].name %>
@@ -687,10 +668,12 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
+    
+
 
     <script>
 
-        var modal = document.getElementById("myModal");
+        var modal = document.getElementById("myModal2");
         var btn = document.getElementById("openModalBtn");
         var span = document.getElementsByClassName("close")[0];
         btn.onclick = function () {
@@ -779,6 +762,13 @@
                     }
                 });
             });
+        });
+    </script>
+
+    <script>
+        document.getElementById('removeCouponButton').addEventListener('click', function () {
+            // Refresh the page
+            location.reload();
         });
     </script>
 
