@@ -73,9 +73,15 @@
                     <p><strong>Order Date:</strong>
                         <%= new Date(order[0].orderDate).toLocaleDateString() %>
                     </p>
-                    <p><strong>Total Price:</strong>
-                        <%=order[0]?.orderItems?.quantity * order[0]?.orderItems?.price %>
-                    </p>
+
+                    <h4><strong>Total Discount:</strong>
+                        <%= (order[0]?.orderItems?.quantity * order[0]?.orderItems?.price) - order[0].totalAmount %>
+                    </h4>
+                    <h4><strong>Total Price:</strong>
+                        <%=order[0].totalAmount %>
+                    </h4>
+                    
+                    
                 </div>
 
             </div>

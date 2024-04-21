@@ -703,6 +703,7 @@ exports.orderDetailPage = async (req, res) => {
     try {
 
         const order = await orderdb.findOne({ _id: productId })
+        
 
         res.render('orderDetailPage', { order: order });
 

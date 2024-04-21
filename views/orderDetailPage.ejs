@@ -124,14 +124,17 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top p-3 ">
         <a style="color: #0F0;" class="navbar-brand" href=""><b><em>Fonekart</em></b></a>
     </nav>
+   
     <div class="container mb-5 " style="margin-top: 110px; border: rgba(0, 0, 0, 0.632) solid 1px; ">
         <div class="row mt-5">
             <div class="col-md-8 mx-auto ">
                 <h2 class="text-center text-danger">Order Details</h2>
                 <div class="order-info ">
 
-                    <strong>Id :</strong><span>
+                    <strong>Order Id :</strong><span>
                         <%= order._id %> <br>
+                        <strong>Product Id :</strong><span>
+                            <%= order.orderItems[0].productId %> <br><br>
                             <p><strong>Order Date:</strong>
                                 <%= new Date(order.orderDate).toLocaleDateString() %>
                             </p> <strong>Payment:</strong>
@@ -190,30 +193,34 @@
                 <div class="order-info">
 
                     <div class="row">
-                        <% for(i=0;i<order.orderItems.length;i++){ %>
-                            <div class="col-md-3">
-                                <img src="<%= order.orderItems[i].Image[0] %>" alt="Product Image"
-                                    class="img-fluid product-image">
-                            </div>
-                            <div class="col-md-9">
-                                <p><strong>Product Name:</strong>
-                                    <%= order.orderItems[i].Pname %>
-                                </p>
-                                <p><strong>Quantity:</strong>
-                                    <%= order.orderItems[i].quantity %>
-                                </p>
-                                <p><strong>Price:</strong>
-                                    <%=order.orderItems[i].quantity * order.orderItems[i].price  %>
-                                </p>
-
-                            </div>
-                            <% } %>
+                        <% let totalPrice = 0; %>
+                        <% for (let i = 0; i < order.orderItems.length; i++) { %>
+                        <div class="col-md-3">
+                            <img src="<%= order.orderItems[i].Image[0] %>" alt="Product Image" class="img-fluid product-image">
+                        </div>
+                        <div class="col-md-9">
+                            <p><strong>Product Name:</strong>
+                                <%= order.orderItems[i].Pname %>
+                            </p>
+                            <p><strong>Quantity:</strong>
+                                <%= order.orderItems[i].quantity %>
+                            </p>
+                            <p><strong>Price:</strong>
+                                <%= order.orderItems[i].quantity * order.orderItems[i].price %>
+                            </p>
+                            <% totalPrice += order.orderItems[i].quantity * order.orderItems[i].price; %>
+                        </div>
+                        <% } %>
                     </div>
-                </div>
-
-                <p style="text-decoration: none;"><strong>Total Price:</strong>
-                    <%=order.totalAmount %>
-                </p>
+                    </div>
+                    <h6 style="text-decoration: none;"><strong>Total Discount:</strong>
+                        <%= totalPrice - order.totalAmount %>
+                    </h6>
+                    <h4 style="text-decoration: none;"><strong>Total Price:</strong>
+                        <%= order.totalAmount %>
+                    </h4>
+                    
+                
                 <%# for(i=0;i<order.orderItems.length;i++){ %>
                 <!-- <p style="text-decoration: none;"><strong>Discount: </strong> -->
                     <%#= order.orderItems[i].quantity * order.orderItems[i].price - order.totalAmount %>

@@ -76,7 +76,6 @@ exports.dailyReport = async (req, res) => {
         const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
 
-
         const dailyOrders = await orderdb.find({
             orderDate: {
                 $gte: startOfDay,
@@ -84,7 +83,7 @@ exports.dailyReport = async (req, res) => {
             }
         });
 
-        const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
+        const tableHeaders = ['Order id', 'Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
 
         let totalPrice = 0;
         const tableData = [];
@@ -92,6 +91,7 @@ exports.dailyReport = async (req, res) => {
         dailyOrders.forEach(order => {
             order.orderItems.forEach(item => {
                 tableData.push([
+                    order._id,
                     order.orderDate.toDateString(),
                     order.address.name,
                     `${order.address.address}, ${order.address.district}, ${order.address.city}, ${order.address.pin}`,
@@ -99,16 +99,15 @@ exports.dailyReport = async (req, res) => {
                     item.Pname || 'N/A',
                     item.category || 'N/A',
                     item.orderStatus || 'N/A',
-                    item.price !== undefined ? item.price.toString() : 'N/A'
-                ])
-                if (item.price !== undefined) {
-                    totalPrice += item.price;
+                    order.totalAmount !== undefined ? order.totalAmount.toString() : 'N/A',
+                ]);
+                if (order.totalAmount !== undefined) {
+                    totalPrice += order.totalAmount;
                 }
             });
-        })
+        });
 
-        tableData.push(['Total Price', '', '', '', '', '', '', totalPrice.toString()]);
-        
+        tableData.push(['Total Price', '', '', '', '', '', '', '', totalPrice.toString()]);
 
         const tableOptions = {
             headers: tableHeaders,
@@ -121,7 +120,7 @@ exports.dailyReport = async (req, res) => {
         console.error("Error generating daily sales report:", error);
         res.status(500).json({ error: "Internal server error" });
     }
-}
+};
 // exports.dailyReport = async (req, res) => {
 //     try {
 //         const today = new Date();
@@ -186,6 +185,7 @@ exports.dailyReport = async (req, res) => {
 
 
 // Weekly
+
 exports.weeklyReport = async (req, res) => {
     try {
         const startDate = new Date()
@@ -198,7 +198,7 @@ exports.weeklyReport = async (req, res) => {
             }
         });
 
-        const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
+        const tableHeaders = ['Order id','Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
 
         let totalPrice = 0;
         const tableData = [];
@@ -206,6 +206,7 @@ exports.weeklyReport = async (req, res) => {
         weeklyOrders.forEach(order => {
             order.orderItems.forEach(item => {
                 tableData.push([
+                    order._id,
                     order.orderDate.toDateString(),
                     order.address.name,
                     `${order.address.address}, ${order.address.district}, ${order.address.city}, ${order.address.pin}`,
@@ -213,14 +214,14 @@ exports.weeklyReport = async (req, res) => {
                     item.Pname || 'N/A',
                     item.category || 'N/A',
                     item.orderStatus || 'N/A',
-                    item.price !== undefined ? item.price.toString() : 'N/A',
+                    order.totalAmount !== undefined ? order.totalAmount.toString() : 'N/A',
                 ])
-                if (item.price !== undefined) {
-                    totalPrice += item.price;
+                if (order.totalAmount !== undefined) {
+                    totalPrice += order.totalAmount;
                 }
             })
         })
-        tableData.push(['Total Price', '', '', '', '', '', '', totalPrice.toString()]);
+        tableData.push(['Total Price', '', '', '', '', '', '', '', totalPrice.toString()]);
 
         const tableOptions = {
             headers: tableHeaders,
@@ -248,13 +249,14 @@ exports.yearlyReport = async (req, res) => {
             }
         });
 
-        const tableHeaders = ['Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
+        const tableHeaders = ['Order id','Order Date', "User's Name", 'Address', 'Phone', 'Product Name', 'Category', 'Order Status', 'Price'];
         let totalPrice = 0;
         const tableData = [];
 
         yearlyOrders.forEach(order => {
             order.orderItems.forEach(item => {
                 tableData.push([
+                    order._id,
                     order.orderDate.toDateString(),
                     order.address.name,
                     `${order.address.address}, ${order.address.district}, ${order.address.city}, ${order.address.pin}`,
@@ -262,16 +264,16 @@ exports.yearlyReport = async (req, res) => {
                     item.Pname || 'N/A',
                     item.category || 'N/A',
                     item.orderStatus || 'N/A',
-                    item.price !== undefined ? item.price.toString() : 'N/A',
+                    order.totalAmount !== undefined ? order.totalAmount.toString() : 'N/A',
                 ]);
 
-                if (item.price !== undefined) {
-                    totalPrice += item.price;
+                if (order.totalAmount !== undefined) {
+                    totalPrice += order.totalAmount;
                 }
             });
         });
 
-        tableData.push(['Total Price', '', '', '', '', '', '', totalPrice.toString()]);
+        tableData.push(['Total Price', '', '', '', '', '', '', '', totalPrice.toString()]);
 
         const tableOptions = {
             title: 'Yearly Sales Report',
@@ -367,6 +369,8 @@ exports.Order_management = async (req, res) => {
 
             ]
         )
+
+
 
         // await PageNation('Order');
         const totalOrders = await orderdb.aggregate([
