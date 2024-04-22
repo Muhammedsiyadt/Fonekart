@@ -97,7 +97,7 @@ const sendOtpMail = async (req, res) => {
 }
 
 
-const resendOtpMail = async (req, res) => { 
+const resendOtpMail = async (req, res) => {
 
     const otp = otpGenerator()
     console.log(otp)
@@ -229,10 +229,10 @@ exports.register = async (req, res) => {
     try {
         req.session.userData = req.body;
         req.session.userEmail = req.body.email
-        
+
         const ref = req.body.referralCode;
-        console.log(`Helloooooo ${ref}`); 
-        
+        console.log(`Helloooooo ${ref}`);
+
 
         const userData = await Userdb.findOne({ email: req.body.email })
 
@@ -241,13 +241,13 @@ exports.register = async (req, res) => {
 
 
             if (req.query.referralCode) {
-              console.log('hi monuse') 
+                console.log('hi monuse')
                 return res.redirect(`/register?referralCode=${req.query.referralCode}`)
             }
 
             return res.redirect('/register');
         }
-        
+
         req.session.userEmail = req.body.email;
         req.session.pass = req.body.password;
 
@@ -1033,11 +1033,11 @@ exports.postingOrder = async (req, res) => {
         });
 
         const nr = await newOrder.save()
-        
+
 
         if (req.body.paymentMethod === "cod") {
             console.log(newOrder);
-            await newOrder.save();   
+            await newOrder.save();
             req.session.newOrder = newOrder;
 
             const order = await orderdb.findOneAndUpdate(
@@ -1190,49 +1190,44 @@ exports.invoiceDownload = async (req, res) => {
     const orderId = req.query.productId;
     try {
         const order = await orderdb.findOne({ _id: orderId });
-
-
         const doc = new PDFDocument();
 
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename="invoice.pdf"');
-
         doc.pipe(res);
-
 
         const invoiceNumber = generateInvoiceNumber();
 
-        doc.font('Helvetica').fontSize(24).text('Fonekart', { align: 'center' }).moveDown().moveDown();
-        doc.font('Helvetica-Bold').fontSize(24).text('INVOICE', { align: 'start' }).moveDown();
+        doc.font('Helvetica-Bold').fontSize(10).text('Fonekart', { align: 'center' }).moveDown();
+        doc.font('Helvetica').fontSize(15).text('INVOICE', { align: 'center' }).moveDown();
+
+        doc.font('Helvetica-Bold').fontSize(8).text(`Invoice Number: ${invoiceNumber}`, { align: 'start' })
+        doc.font('Helvetica-Bold').fontSize(8).text(`Order Date: ${order.orderDate.toDateString()}`, { align: 'start' }).moveDown();
+        doc.font('Helvetica-Bold').fontSize(8).text(`Order id: ${order._id}`, { align: 'start' })
+        doc.font('Helvetica-Bold').fontSize(8).text(`Product id: ${order.orderItems[0].productId}`, { align: 'start' }).moveDown().moveDown();
 
 
-        doc.fontSize(12).text(`Invoice Number: ${invoiceNumber}`, { align: 'start' }).moveDown();
-        doc.fontSize(10).text(`Order Date: ${order.orderDate.toDateString()}`, { align: 'start' }).moveDown().moveDown();
 
+        doc.font('Helvetica-Bold').fontSize(12).text('Address')
+        doc.font('Helvetica').fontSize(10).text(`Name: ${order.address.name}`);
+        doc.font('Helvetica').fontSize(10).text(`Address: ${order.address.address}, ${order.address.city}, ${order.address.pin}`).moveDown();
 
-        doc.fontSize(12).text('BILLED TO :', { underline: true })
-        doc.fontSize(10).text(`Name: ${order.address.name}`)
-        doc.fontSize(10).text(`Address: ${order.address.address}, ${order.address.city}, ${order.address.pin}`)
-
-        const tableHeaders = ['Product Name', 'Quantity', 'Unit Price', 'Total Price'];
-
+        const tableHeaders = ['Product Name', 'Quantity', 'Unit Price'];
 
         const startX = 50;
         const startY = doc.y + 15;
         const cellWidth = 120;
-
-
         const headerHeight = 30;
+
         doc.rect(startX, startY, cellWidth * tableHeaders.length, headerHeight).fillAndStroke('#CCCCCC', '#000000');
         doc.font('Helvetica-Bold').fontSize(10).fillColor('#000000');
         tableHeaders.forEach((header, index) => {
             doc.text(header, startX + (cellWidth * index) + (cellWidth / 2), startY + (headerHeight / 2), { width: cellWidth, align: 'start', valign: 'start' });
         });
 
-
-
         const rowHeight = 50;
         let yPos = startY + headerHeight;
+        let totalPrice = 0;
         order.orderItems.forEach((item, rowIndex) => {
             const fillColor = rowIndex % 2 === 0 ? '#FFFFFF' : '#EEEEEE';
             doc.rect(startX, yPos, cellWidth * tableHeaders.length, rowHeight).fillAndStroke(fillColor, '#000000');
@@ -1241,20 +1236,23 @@ exports.invoiceDownload = async (req, res) => {
             doc.text(item.Pname || 'N/A', startX + (cellWidth / 2), yPos + (rowHeight / 2), { width: cellWidth, align: 'start', valign: 'start' });
             doc.text(item.quantity.toString(), startX + cellWidth + (cellWidth / 2), yPos + (rowHeight / 2), { width: cellWidth, align: 'start', valign: 'start' });
             doc.text(item.price !== undefined ? item.price.toString() : 'N/A', startX + (cellWidth * 2) + (cellWidth / 2), yPos + (rowHeight / 2), { width: cellWidth, align: 'start', valign: 'start' });
-            doc.text((item.price !== undefined && item.quantity !== undefined) ? (item.price * item.quantity).toString() : 'N/A', startX + (cellWidth * 3) + (cellWidth / 2), yPos + (rowHeight / 2), { width: cellWidth, align: 'start', valign: 'start' });
+            const itemTotalPrice = item.price !== undefined && item.quantity !== undefined ? item.price * item.quantity : 0;
+            totalPrice += itemTotalPrice;
             yPos += rowHeight;
         });
 
-        doc.moveDown(2);
+        // Calculate discount
+        yPos += rowHeight;
+        const discount = totalPrice - order.totalAmount;
 
+        // Add the total amount and discount at the end
+        doc.font('Helvetica-Bold').text(`Total Amount: ${order.totalAmount.toFixed(2)}    Discount: ${discount.toFixed(2)}`, startX, yPos, { width: cellWidth * tableHeaders.length, align: 'start', valign: 'center' });
         doc.end();
     } catch (error) {
         res.status(500).redirect('/500')
         console.error("Error generating invoice:", error);
-
     }
 }
-
 
 
 
@@ -1344,9 +1342,9 @@ exports.applyCoupon = async (req, res) => {
 }
 
 // Remove coupon 
-exports.removeCoupon = async (req,res) => {
-     delete req.session.afterCouponApply
-     res.redirect('/cart/checkout')
+exports.removeCoupon = async (req, res) => {
+    delete req.session.afterCouponApply
+    res.redirect('/cart/checkout')
 }
 
 
@@ -1433,9 +1431,9 @@ exports.cancelOrder = async (req, res) => {
         const productId = canceledOrderItem.productId;
 
 
-            var returnedProductPrice = updatedOrder.totalAmount;
-    
-        
+        var returnedProductPrice = updatedOrder.totalAmount;
+
+
 
         let userWallet = await walletdb.findOne({ userId: user_Id });
 
