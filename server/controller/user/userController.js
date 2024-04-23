@@ -1551,21 +1551,22 @@ exports.return = async (req, res) => {
         await userWallet.save();
 
         // Calculate new totalAmount
-        let totalAmount = findAndUpdate.totalAmount - returnedProductPrice;
+        // let totalAmount = findAndUpdate.totalAmount - returnedProductPrice;
+        // console.log(totalAmount);
         // If totalAmount becomes negative due to rounding or other reasons, ensure it stays positive
-        if (totalAmount < 0) {
-            totalAmount = 0;
-        }
+        // if (totalAmount < 0) {
+        //     totalAmount = 0;
+        // }
 
         // Update order's totalAmount
-        await orderdb.findOneAndUpdate(
-            {
-                user_id: user_Id,
-                'orderItems._id': query
-            },
-            { $set: { totalAmount: totalAmount } },
-            { new: true }
-        );
+        // await orderdb.findOneAndUpdate(
+        //     {
+        //         user_id: user_Id,
+        //         'orderItems._id': query
+        //     },
+        //     { $set: { totalAmount: totalAmount } },
+        //     { new: true }
+        // );
 
         res.redirect('/orderList');
     } catch (error) {
