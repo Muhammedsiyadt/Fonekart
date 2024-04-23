@@ -1567,7 +1567,7 @@ exports.return = async (req, res) => {
         //     { $set: { totalAmount: totalAmount } },
         //     { new: true }
         // );
-
+       
         res.redirect('/orderList');
     } catch (error) {
         res.status(500).redirect('/500');
