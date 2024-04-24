@@ -58,46 +58,40 @@
                 <div class="address-form">
                     <a href="/profile/address_management"><button class="back">Back</button></a>
                     <h2 class="mb-4">Edit Address</h2>
-                    <form action="/api/submitEdit_address?id=<%= editAddress[0].address._id %>" method="post"
-                        onsubmit="addAddress(); return false;">
+                    <form action="/api/submitEdit_address?id=<%= editAddress[0].address._id %>" method="post" onsubmit="addAddress(); return false;">
                         <div class="form-group">
                             <label for="userName">Name</label>
-                            <input type="text" class="form-control" id="name" name="name"
-                                value="<%= editAddress[0].address.name %>">
+                            <input type="text" class="form-control" id="name" name="name" value="<%= editAddress[0].address.name %>">
                             <p id="nameErr"></p>
                         </div>
                         <div class="form-group">
                             <label for="address">Address</label>
-                            <textarea class="form-control" id="address" name="address"
-                                rows="3"><%= editAddress[0].address.address %></textarea>
+                            <textarea class="form-control" id="address" name="address" rows="3"><%= editAddress[0].address.address %></textarea>
                             <p id="addressErr"></p>
                         </div>
                         <div class="form-group">
                             <label for="phoneNumber">Phone Number</label>
-                            <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber"
-                                value="<%= editAddress[0].address.phone %>">
+                            <input type="tel" class="form-control" id="phoneNumber" name="phone" value="<%= editAddress[0].address.phone %>">
                             <p id="phoneErr"></p>
                         </div>
                         <div class="form-group">
                             <label for="city">City</label>
-                            <input type="text" class="form-control" id="city" name="city"
-                                value="<%= editAddress[0].address.city %>">
+                            <input type="text" class="form-control" id="city" name="city" value="<%= editAddress[0].address.city %>">
                             <p id="cityErr"></p>
                         </div>
                         <div class="form-group">
                             <label for="district">District</label>
-                            <input type="text" class="form-control" id="dis" name="district"
-                                value="<%= editAddress[0].address.district %>">
+                            <input type="text" class="form-control" id="dis" name="district" value="<%= editAddress[0].address.district %>">
                             <p id="disErr"></p>
                         </div>
                         <div class="form-group">
                             <label for="pinCode">Pin Code</label>
-                            <input type="text" class="form-control" id="pinCode" name="pinCode"
-                                value="<%= editAddress[0].address.pin %>">
+                            <input type="text" class="form-control" id="pinCode" name="pinCode" value="<%= editAddress[0].address.pin %>">
                             <p id="pinErr"></p>
                         </div>
                         <button type="submit" class="btn btn-primary submit-btn">Submit</button>
                     </form>
+                    
                 </div>
             </div>
         </div>

@@ -585,37 +585,66 @@ exports.saveAddress = async (req, res) => {
 
 }
 
+// exports.updateAddress = async (req, res) => {
+//     // console.log("siiii");
+//     const user_Id = req.session.userId
+//     const queryid = req.query.id
+
+//     try {
+//         const AddressData = await addressdb.aggregate([
+//             {
+//                 $match: { user_Id: new mongoose.Types.ObjectId(user_Id) }
+//             },
+//             {
+//                 $unwind: '$address'
+//             },
+//             {
+//                 $match: { 'address._id': new mongoose.Types.ObjectId(queryid) }
+//             }
+//         ])
+
+//         // console.log(AddressData);
+//         const updateAddress = {
+//             name: req.body.name,
+//             address: req.body.address,
+//             phone: req.body.phone,
+//             city: req.body.city,
+//             district: req.body.district,
+//             pin: req.body.pinCode
+//         }
+
+//         const data = await addressdb.updateOne(
+//             { "user_Id": user_Id, "address._id": queryid },
+//             {
+//                 $set: {
+//                     "address.$.name": req.body.name,
+//                     "address.$.address": req.body.address,
+//                     "address.$.phone": req.body.phone,
+//                     "address.$.city": req.body.city,
+//                     "address.$.district": req.body.district,
+//                     "address.$.pin": req.body.pinCode
+//                 }
+//             }
+//         );
+
+//         // console.log(data);
+//         // console.log(dee)
+//         res.redirect('/profile/address_management')
+//     } catch (error) {
+//         res.status(500).redirect('/500')
+//         res.send(error)
+//     }
+
+// }
 
 // edited address update 
+
 exports.updateAddress = async (req, res) => {
-    // console.log("siiii");
-    const user_Id = req.session.userId
-    const queryid = req.query.id
+    const user_Id = req.session.userId;
+    const queryid = req.query.id;
 
     try {
-        const AddressData = await addressdb.aggregate([
-            {
-                $match: { user_Id: new mongoose.Types.ObjectId(user_Id) }
-            },
-            {
-                $unwind: '$address'
-            },
-            {
-                $match: { 'address._id': new mongoose.Types.ObjectId(queryid) }
-            }
-        ])
-
-        // console.log(AddressData);
-        const updateAddress = {
-            name: req.body.name,
-            address: req.body.address,
-            phone: req.body.phone,
-            city: req.body.city,
-            district: req.body.district,
-            pin: req.body.pinCode
-        }
-
-        const data = await addressdb.updateOne(
+        const updatedData = await addressdb.updateOne(
             { "user_Id": user_Id, "address._id": queryid },
             {
                 $set: {
@@ -629,15 +658,16 @@ exports.updateAddress = async (req, res) => {
             }
         );
 
-        // console.log(data);
-        // console.log(dee)
-        res.redirect('/profile/address_management')
-    } catch (error) {
-        res.status(500).redirect('/500')
-        res.send(error)
-    }
+        if (updatedData.nModified === 0) {
+            return res.status(404).json({ message: "Address not found" });
+        }
 
-}
+        res.redirect('/profile/address_management');
+    } catch (error) {
+        console.error(error);
+        res.status(500).redirect('/500');
+    }
+};
 
 // delete address
 exports.deleteAddress = async (req, res) => {
@@ -1551,23 +1581,22 @@ exports.return = async (req, res) => {
         await userWallet.save();
 
         // Calculate new totalAmount
-        // let totalAmount = findAndUpdate.totalAmount - returnedProductPrice;
-        // console.log(totalAmount);
+        let totalAmount = findAndUpdate.totalAmount - returnedProductPrice;
         // If totalAmount becomes negative due to rounding or other reasons, ensure it stays positive
-        // if (totalAmount < 0) {
-        //     totalAmount = 0;
-        // }
+        if (totalAmount < 0) {
+            totalAmount = 0;
+        }
 
         // Update order's totalAmount
-        // await orderdb.findOneAndUpdate(
-        //     {
-        //         user_id: user_Id,
-        //         'orderItems._id': query
-        //     },
-        //     { $set: { totalAmount: totalAmount } },
-        //     { new: true }
-        // );
-       
+        await orderdb.findOneAndUpdate(
+            {
+                user_id: user_Id,
+                'orderItems._id': query
+            },
+            { $set: { totalAmount: totalAmount } },
+            { new: true }
+        );
+
         res.redirect('/orderList');
     } catch (error) {
         res.status(500).redirect('/500');
