@@ -108,10 +108,10 @@
             if (discount === "") {
                 document.getElementById("discountError").innerText = "Discount is required.";
                 isValid = false;
-            } else if (isNaN(discount) || parseInt(discount) < 0) {
+            } else if (isNaN(discount) || parseInt(discount) <= 0) {
                 document.getElementById("discountError").innerText = "Discount must be a positive number.";
                 isValid = false;
-            } else if (parseInt(discount) > 100) {
+            } else if (parseInt(discount) > 99) {
                 document.getElementById("discountError").innerText = "Discount must be less than 100%.";
                 isValid = false;
             } 
