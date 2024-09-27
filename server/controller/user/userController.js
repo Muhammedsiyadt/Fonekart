@@ -28,27 +28,92 @@ const otpGenerator = () => {
 };
 
 // send mail
-const sendOtpMail = async (req, res) => {
+// const sendOtpMail = async (req, res) => {
 
-    const otp = otpGenerator()
-    console.log(otp)
+//     const otp = otpGenerator()
+//     console.log(otp)
+
+//     const transporter = nodemailer.createTransport({
+//         service: 'gmail',
+//         auth: {
+//             user: process.env.AUTH_EMAIL,
+//             pass: process.env.AUTH_PASS,
+//         }
+
+//     });
+//     // console.log(process.env.AUTH_EMAIL,process.env.AUTH_PASS);
+//     const MailGenerator = new Mailgen({
+//         theme: 'default',
+//         product: {
+//             name: 'Fonkart',
+//             link: 'https://mailgen.js/',
+//             logo: 'Fonekart',
+
+//         },
+//     });
+
+//     const response = {
+//         body: {
+//             name: req.session.userEmail,
+//             intro: 'Your OTP for Fonekart verification is:',
+//             table: {
+//                 data: [
+//                     {
+//                         otp: otp,
+//                     },
+//                 ],
+//             },
+//             outro: '✅',
+//         },
+//     };
+
+//     const mail = MailGenerator.generate(response)
+
+//     const message = {
+//         from: process.env.AUTH_EMAIL,
+//         to: req.session.userEmail,
+//         subject: "Fonekart - OTP Verification",
+//         html: mail,
+//     }
+
+//     try {
+//         const newOtp = new Otpdb({
+//             email: req.session.userEmail,
+//             otp: otp,
+//             createdAt: Date.now(),
+//             expiresAt: Date.now() + 60000,
+//         });
+//         const data = await newOtp.save();
+//         req.session.otpId = data._id;
+//         res.status(200).redirect('/otppage');
+//         await transporter.sendMail(message);
+//     } catch (err) {
+
+//         console.log('siyaaaaaaaaaaaaaaaa');
+//         console.log(err);
+//         res.status(500).redirect('/500');
+
+//     }
+// }
+
+const sendOtpMail = async (req, res) => {
+    const otp = otpGenerator();
+    console.log(otp);
 
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
             user: process.env.AUTH_EMAIL,
             pass: process.env.AUTH_PASS,
-        }
-
+        },
     });
-    // console.log(process.env.AUTH_EMAIL,process.env.AUTH_PASS);
+
     const MailGenerator = new Mailgen({
         theme: 'default',
         product: {
             name: 'Fonkart',
             link: 'https://mailgen.js/',
             logo: 'Fonekart',
-
         },
     });
 
@@ -67,14 +132,14 @@ const sendOtpMail = async (req, res) => {
         },
     };
 
-    const mail = MailGenerator.generate(response)
+    const mail = MailGenerator.generate(response);
 
     const message = {
         from: process.env.AUTH_EMAIL,
         to: req.session.userEmail,
         subject: "Fonekart - OTP Verification",
         html: mail,
-    }
+    };
 
     try {
         const newOtp = new Otpdb({
@@ -85,16 +150,16 @@ const sendOtpMail = async (req, res) => {
         });
         const data = await newOtp.save();
         req.session.otpId = data._id;
-        res.status(200).redirect('/otppage');
-        await transporter.sendMail(message);
-    } catch (err) {
 
+        await transporter.sendMail(message); // Send mail before redirecting
+        return res.status(200).redirect('/otppage'); // Use return to prevent further execution
+    } catch (err) {
         console.log('siyaaaaaaaaaaaaaaaa');
         console.log(err);
-        res.status(500).redirect('/500');
-
+        return res.status(500).redirect('/500'); // Use return to prevent further execution
     }
-}
+};
+
 
 
 const resendOtpMail = async (req, res) => {
@@ -223,6 +288,7 @@ exports.resendOtp = async (req, res) => {
 //         res.send(error);
 //     }
 // };
+
 
 
 exports.register = async (req, res) => {
